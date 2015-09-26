@@ -1,0 +1,15 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".BLE_SHTC">
+    <item android:id="@+id/action_settings"
+          android:title="@string/actionSettings"
+          android:orderInCategory="100"
+          app:showAsAction="never" />
+    <item android:id="@+id/add"
+          android:title="@string/add"
+          android:icon="@android:drawable/ic_menu_add"/>
+    <item android:id="@+id/scan"
+          android:title="@string/menu_scan"
+          android:icon="@android:drawable/ic_menu_search"/>
+</menu>
