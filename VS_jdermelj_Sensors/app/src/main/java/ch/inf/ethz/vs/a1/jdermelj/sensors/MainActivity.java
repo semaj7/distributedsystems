@@ -14,7 +14,7 @@ public class MainActivity extends AppCompatActivity {
 
     SensorManager sm;
     List<Sensor> sensors;
-    
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
