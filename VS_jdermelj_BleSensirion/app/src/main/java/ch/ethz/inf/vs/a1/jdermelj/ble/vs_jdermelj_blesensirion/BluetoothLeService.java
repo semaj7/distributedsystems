@@ -65,8 +65,8 @@ public class BluetoothLeService extends Service {
     public final static String EXTRA_DATA =
             "com.example.bluetooth.le.EXTRA_DATA";
 
-    public final static UUID UUID_RHT_TASK3 =
-            UUID.fromString("0000AA20-0000-1000-8000-00805f9b34fb");
+    public final static UUID UUID_RHT_CHARACTERSTIC =
+            UUID.fromString("0000aa21-0000-1000-8000-00805f9b34fb");
 
     // Implements callback methods for GATT events that the app cares about.  For example,
     // connection change and services discovered.
@@ -125,22 +125,24 @@ public class BluetoothLeService extends Service {
                                  final BluetoothGattCharacteristic characteristic) {
         final Intent intent = new Intent(action);
 
-        // This is special handling for the Heart Rate Measurement profile.  Data parsing is
-        // carried out as per profile specifications:
-        // http://developer.bluetooth.org/gatt/characteristics/Pages/CharacteristicViewer.aspx?u=org.bluetooth.characteristic.heart_rate_measurement.xml
-        if (UUID_RHT_TASK3.equals(characteristic.getUuid())) {
-            int flag = characteristic.getProperties();
+
+        if (UUID_RHT_CHARACTERSTIC.equals(characteristic.getUuid())) {
+
+          //  int flag = characteristic.getProperties();
+
+
             int format = -1;
-            if ((flag & 0x01) != 0) {
-                format = BluetoothGattCharacteristic.FORMAT_UINT16;
-                Log.d(TAG, "Heart rate format UINT16.");
-            } else {
-                format = BluetoothGattCharacteristic.FORMAT_UINT8;
-                Log.d(TAG, "Heart rate format UINT8.");
-            }
-            final int heartRate = characteristic.getIntValue(format, 1);
-            Log.d(TAG, String.format("Received heart rate: %d", heartRate));
-            intent.putExtra(EXTRA_DATA, String.valueOf(heartRate));
+            format = BluetoothGattCharacteristic.FORMAT_SINT16;
+            int temp = characteristic.getIntValue(format, 0); //somehow, getting just float doesn't work
+            float temperature = (float) temp /100; //scale
+            String temperatureString = getString(R.string.temperature) + ": " + String.valueOf(temperature) + " °C";
+
+            int hum = characteristic.getIntValue(format, 2); //somehow, getting just float doesn't work
+            float humidity = (float) hum /100; //scale
+            String humidityString = getString(R.string.humidity) +": " + String.valueOf(humidity) + " %RH";
+
+            intent.putExtra(EXTRA_DATA, humidityString + "\n" + temperatureString);
+
         } else {
             // For all other profiles, writes the data formatted in HEX.
             final byte[] data = characteristic.getValue();
@@ -281,7 +283,9 @@ public class BluetoothLeService extends Service {
             Log.w(TAG, "BluetoothAdapter not initialized");
             return;
         }
-        mBluetoothGatt.readCharacteristic(characteristic);
+
+
+        mBluetoothGatt.readCharacteristic(characteristic); //changed here from characteristic to rht
     }
 
     /**
@@ -298,14 +302,6 @@ public class BluetoothLeService extends Service {
         }
         mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
 
-        // This is specific to Heart Rate Measurement.
-
-      /*  if (UUID_RHT_TEMPERATUREHUMIDITY.equals(characteristic.getUuid())) {
-            BluetoothGattDescriptor descriptor = characteristic.getDescriptor(
-                    UUID.fromString(SampleGattAttributes.CLIENT_CHARACTERISTIC_CONFIG));
-            descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-            mBluetoothGatt.writeDescriptor(descriptor);
-        } */
     }
 
     /**

@@ -26,19 +26,19 @@ import java.util.HashMap;
  */
 public class SampleGattAttributes {
     private static HashMap<String, String> attributes = new HashMap();
-    public static String UUID_RHT_TEMPERATUREHUMIDITY = "0000AA20-0000-1000-8000-00805f9b34fb";
-    public static String RHT_CHARACTERISTIC = "0000AA21-0000-1000-8000-00805f9b34fb";
+    public static String UUID_RHT_TEMPERATUREHUMIDITY = "0000aa20-0000-1000-8000-00805f9b34fb";
+    public static String RHT_CHARACTERISTIC = "0000aa21-0000-1000-8000-00805f9b34fb";
 
     static {
         // Sample Services.
 
         // Sample Characteristics.
-        attributes.put(UUID_RHT_TEMPERATUREHUMIDITY, "RHT Sensor Messung");
-        attributes.put(RHT_CHARACTERISTIC, "RHT Feuchtigkeit & Temperatur Charakteristik");
+        attributes.put(UUID_RHT_TEMPERATUREHUMIDITY.toLowerCase(), "RHT Sensor Messung");
+        attributes.put(RHT_CHARACTERISTIC.toLowerCase(), "RHT Feuchtigkeit & Temperatur Charakteristik");
     }
 
     public static String lookup(String uuid, String defaultName) {
-        String name = attributes.get(uuid);
+        String name = attributes.get(uuid.toLowerCase());
         return name == null ? defaultName : name;
     }
 }
