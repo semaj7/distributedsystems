@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="ch.ethz.inf.vs.a1.jdermelj.antitheft.SeekBarPreference">
+        <attr name="sensitivity" format="integer" />
+        <attr name="timeout" format="integer" />
+    </declare-styleable>
+</resources>

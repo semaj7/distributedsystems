@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:settings="http://schemas.android.com/apk/res/ch.ethz.inf.vs.a1.jdermelj.antitheft.vs_jdermelj_antitheft.Settings">
+
+    <ch.ethz.inf.vs.a1.jdermelj.antitheft.vs_jdermelj_antitheft.SeekBarPreference
+        android:key="seekBarPreference"
+        android:title="Sensititiviiivitääääät"
+        android:dialogTitle="Diolöguli"
+        android:summary="Sö Sömmeri"
+        android:persistent="true"
+        android:defaultValue="20"
+        />
+
+    <ch.ethz.inf.vs.a1.jdermelj.antitheft.vs_jdermelj_antitheft.SeekBarPreference
+        android:key="seekBarPreference"
+        android:title="Timööööt"
+        android:dialogTitle="Diolöguli"
+        android:summary="Sö Sömmeri"
+        android:persistent="true"
+        android:defaultValue="20"
+        />
+
+</PreferenceScreen>

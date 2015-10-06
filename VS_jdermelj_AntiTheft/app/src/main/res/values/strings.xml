@@ -3,4 +3,11 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="toggle_turn_on">Ein</string>
+    <string name="toggle_turn_off">Aus</string>
+    <string name="alarm_activated">Alarm scharf!</string>
+    <string name="alarm_deactivated">Alarm entschärft.</string>
+    <string name="description">Schalten Sie hier den Alarm ein oder aus.</string>
+    <string name="general_settings">Allgmeine Einstellungen</string>
+    <string name="title_activity_settings">Generelle Einstellungen</string>
 </resources>

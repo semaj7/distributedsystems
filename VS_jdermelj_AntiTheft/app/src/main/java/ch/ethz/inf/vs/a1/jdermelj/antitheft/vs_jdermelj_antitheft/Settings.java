@@ -8,7 +8,10 @@ public class Settings {
 	public static final int SENSITIVITY_DEFAULT = 0;
 	public static final int TIMEOUT_DEFAULT = 0;
 
+	public static int sensitivity = 0;
+	public static int timeout = 0;
+
 	public static final String ACTIVATE_STR = "activate";
-	public static final String SENSITIVITY_STR = "sensitivity";
-	public static final String TIMEOUT_STR = "timeout";
+	public static final String SENSITIVITY_STR = "sensitivity_def";
+	public static final String TIMEOUT_STR = "timeout_def";
 }

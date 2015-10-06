@@ -21,7 +21,8 @@ public abstract class AbstractMovementDetector implements SensorEventListener {
 
 		// Add code to populate the 'values' array with the sensor values
 		
-		boolean isAlarm = doAlarmLogic(values);
+		//boolean isAlarm = doAlarmLogic(values);
+		boolean isAlarm = true;
 		if (isAlarm) {
 			((AbstractAntiTheftService)antiTheftService).startAlarm();
 		}
