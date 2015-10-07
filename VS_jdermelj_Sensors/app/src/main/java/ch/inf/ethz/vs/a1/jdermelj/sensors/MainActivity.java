@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -18,12 +19,16 @@ public class MainActivity extends AppCompatActivity {
 
     SensorManager sm;
     List<Sensor> sensors;
+    ListView listview;
+    Button button;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        final ListView listview = (ListView) findViewById(R.id.listView);
+        listview = (ListView) findViewById(R.id.listView);
+        button = (Button) findViewById(R.id.button);
         sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         sensors=sm.getSensorList(Sensor.TYPE_ALL);
         List<String> sensor_names;
@@ -34,21 +39,25 @@ public class MainActivity extends AppCompatActivity {
         }
 
         listview.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, sensor_names));
-        listview.setOnItemSelectedListener(new ListView.OnItemSelectedListener(){
+        listview.setOnItemClickListener(new ListView.OnItemClickListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent myIntent;
                 myIntent = new Intent(MainActivity.this, SensorActivity.class);
-                myIntent.putExtra("SENSORINDEX",position);
+                myIntent.putExtra("SENSORINDEX", position);
                 MainActivity.this.startActivity(myIntent);
             }
 
+
+        });
+
+        button.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
+            public void onClick(View v) {
+                Intent myIntent;
+                myIntent = new Intent(MainActivity.this, ActuatorsActivity.class);
+                MainActivity.this.startActivity(myIntent);
             }
-
-
         });
 
     }

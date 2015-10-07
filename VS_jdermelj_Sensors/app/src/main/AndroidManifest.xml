@@ -20,6 +20,8 @@
             android:label="@string/title_activity_sensor"
             android:theme="@style/AppTheme.NoActionBar" >
         </activity>
+        <activity android:name=".ActuatorsActivity" >
+        </activity>
     </application>
-
+    <uses-permission android:name="android.permission.VIBRATE"></uses-permission>
 </manifest>

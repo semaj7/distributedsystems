@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">VS_jdermelj_Sensors</string>
     <string name="title_activity_sensor">SensorActivity</string>
+    <string name="btn_sound">Play</string>
 </resources>

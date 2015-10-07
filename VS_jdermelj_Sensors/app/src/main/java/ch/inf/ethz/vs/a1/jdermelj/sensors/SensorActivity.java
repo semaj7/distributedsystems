@@ -2,6 +2,8 @@ package ch.inf.ethz.vs.a1.jdermelj.sensors;
 
 import android.content.Context;
 import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -15,7 +17,7 @@ import android.widget.ListView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SensorActivity extends AppCompatActivity implements {
+public class SensorActivity extends AppCompatActivity implements SensorEventListener {
 
     SensorManager sm;
     List<Sensor> sensors;
@@ -35,7 +37,20 @@ public class SensorActivity extends AppCompatActivity implements {
         listview.setAdapter(sensor_adapter);
         sensor_index=getIntent().getExtras().getInt("SENSORINDEX");
         current_sensor=sensors.get(sensor_index);
-
+        sm.registerListener(this, current_sensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        sensor_adapter.clear();
+        float[] values=event.values;
+        for(int i=0;i<values.length;i++){
+            sensor_adapter.add(String.valueOf(values[i]));
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
 }
