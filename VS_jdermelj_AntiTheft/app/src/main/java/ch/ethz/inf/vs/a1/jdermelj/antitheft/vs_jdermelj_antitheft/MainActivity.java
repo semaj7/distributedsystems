@@ -12,37 +12,69 @@ import android.widget.ToggleButton;
 public class MainActivity extends AppCompatActivity {
 
     private static final int RESULT_SETTINGS = 1;
+    Intent intentToStartAntiTheftService;
+    ToggleButton toggle;
+    //TODO: use a Switch for nicer GUI
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        toggleButtonCreation();
+
+
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        toggleButtonCreation();
+
 
         return true;
     }
 
+
+    //onStart is called when the app is openend by an intent
+    //this means we can check if the Intent comes from the notification that wants to stop the alarm
+    @Override
+    protected void onStart() {
+
+        Intent callingIntent = getIntent();
+        if(callingIntent.getBooleanExtra(AntiTheftService.DEACTIVATION_SOURCE, false))
+        {
+            if(toggle.isChecked()) {
+                toggle.setChecked(false);
+            }
+            else {
+                deactivateAlarm();
+            }
+        }
+        super.onStart();
+    }
+
     public void toggleButtonCreation() {
 
-        ToggleButton toggle = (ToggleButton) findViewById(R.id.toggleButton);
+        toggle = (ToggleButton) findViewById(R.id.toggleButton);
 
         toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                //TODO: these two might be switched in the layout, laut Jimmy
+
                 if (isChecked) {
                     //button is now set to Off
                     Toast.makeText(MainActivity.this, getString(R.string.alarm_deactivated), Toast.LENGTH_SHORT).show();
 
+                    activateAlarm();
 
                 } else {
                     // The toggle is set to On
                     Toast.makeText(MainActivity.this, getString(R.string.alarm_activated), Toast.LENGTH_SHORT).show();
 
+                    deactivateAlarm();
                 }
             }
         });
@@ -50,6 +82,19 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void activateAlarm() {
+
+        intentToStartAntiTheftService = new Intent(this, AntiTheftService.class);
+        startService(intentToStartAntiTheftService);
+
+    }
+
+    public void deactivateAlarm() {
+
+        intentToStartAntiTheftService = new Intent(this, AntiTheftService.class);
+        stopService(intentToStartAntiTheftService);
+
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -61,9 +106,7 @@ public class MainActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
 
-            //TODO: switch to settings view
-            Intent i = new Intent(this, SettingsActivity.class);
-            startActivityForResult(i, RESULT_SETTINGS);
+            startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
 

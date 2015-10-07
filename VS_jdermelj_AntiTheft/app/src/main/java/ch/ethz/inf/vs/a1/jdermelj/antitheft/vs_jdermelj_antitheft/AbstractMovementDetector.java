@@ -8,6 +8,7 @@ public abstract class AbstractMovementDetector implements SensorEventListener {
 	protected AbstractAntiTheftService antiTheftService;
 	
 	public void setCallbackService(AbstractAntiTheftService service) {
+
 		antiTheftService = service;
 	}
 	
@@ -20,7 +21,8 @@ public abstract class AbstractMovementDetector implements SensorEventListener {
 		float[] values;
 
 		// Add code to populate the 'values' array with the sensor values
-		
+		values = event.values;
+
 		//boolean isAlarm = doAlarmLogic(values);
 		boolean isAlarm = true;
 		if (isAlarm) {

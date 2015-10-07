@@ -4,21 +4,28 @@
     xmlns:settings="http://schemas.android.com/apk/res/ch.ethz.inf.vs.a1.jdermelj.antitheft.vs_jdermelj_antitheft.Settings">
 
     <ch.ethz.inf.vs.a1.jdermelj.antitheft.vs_jdermelj_antitheft.SeekBarPreference
-        android:key="seekBarPreference"
-        android:title="Sensititiviiivitääääät"
-        android:dialogTitle="Diolöguli"
-        android:summary="Sö Sömmeri"
+        android:key="SENSKEY"
+        android:title="@string/sensitivity"
+        android:dialogTitle="@string/sensitivity_set"
+        android:dialogMessage=""
+        android:summary="@string/settings_summary_sens"
+        android:text="@string/settings_unit_prozent"
         android:persistent="true"
-        android:defaultValue="20"
+        android:defaultValue="50"
+        android:max="100"
         />
 
+
     <ch.ethz.inf.vs.a1.jdermelj.antitheft.vs_jdermelj_antitheft.SeekBarPreference
-        android:key="seekBarPreference"
-        android:title="Timööööt"
-        android:dialogTitle="Diolöguli"
-        android:summary="Sö Sömmeri"
+        android:key="TIMEKEY"
+        android:title="@string/timeout"
+        android:dialogTitle="@string/timeout_set"
+        android:dialogMessage=""
+        android:summary="@string/settings_summary_time"
+        android:text="@string/settings_unit_sek"
         android:persistent="true"
         android:defaultValue="20"
+        android:max="100"
         />
 
 </PreferenceScreen>
