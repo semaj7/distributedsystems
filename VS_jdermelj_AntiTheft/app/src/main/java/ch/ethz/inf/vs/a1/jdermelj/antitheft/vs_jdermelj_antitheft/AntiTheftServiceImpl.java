@@ -28,8 +28,6 @@ public class AntiTheftServiceImpl extends AbstractAntiTheftService {
     private AudioManager audioManager;
     private int standardVolume;
 
-    private boolean ringToneRunning = false;
-
     private CountDownTimer countDownTimer;
 
 
@@ -131,19 +129,18 @@ public class AntiTheftServiceImpl extends AbstractAntiTheftService {
 
     private void activateRingtone() {
 
-        if (ringToneRunning || countDownTimer != null) return;
+        if (ringTone.isPlaying() || countDownTimer != null) return;
 
         //save the current volume
         standardVolume = audioManager.getStreamVolume(AudioManager.STREAM_RING);
 
         //Dreh das Volume VOLL ume!
-        audioManager.setStreamVolume(AudioManager.STREAM_RING,
+        /*audioManager.setStreamVolume(AudioManager.STREAM_RING,
                 audioManager.getStreamMaxVolume(AudioManager.STREAM_RING), //<- this is the interisting part
                 audioManager.FLAG_ALLOW_RINGER_MODES | audioManager.FLAG_PLAY_SOUND);
-
+        */
         //start the ringtone
         ringTone.play();
-        ringToneRunning = true;
 
     }
 
@@ -157,7 +154,6 @@ public class AntiTheftServiceImpl extends AbstractAntiTheftService {
         if (ringTone.isPlaying()) {
 
             ringTone.stop();
-            ringToneRunning = false;
 
             audioManager.setStreamVolume(AudioManager.STREAM_RING,
                     standardVolume,

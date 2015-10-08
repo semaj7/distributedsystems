@@ -57,9 +57,10 @@ public class MainActivity extends AppCompatActivity {
             if(toggleButton.isChecked()) {
 
                 toggleButton.setChecked(false);
+                deactivateAlarm();
             }
             else {
-                deactivateAlarm();
+
             }
         }
         super.onStart();
