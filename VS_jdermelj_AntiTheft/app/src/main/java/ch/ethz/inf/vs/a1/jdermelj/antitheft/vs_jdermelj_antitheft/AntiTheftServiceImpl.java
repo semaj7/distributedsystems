@@ -21,7 +21,7 @@ import android.util.Log;
 public class AntiTheftServiceImpl extends AbstractAntiTheftService {
 
     private NotificationManager notificationManager;
-    public static final String DEACTIVATION_SOURCE = "ch.ethz.inf.vs.a1.jdermelj.antitheft.stop";
+    public static final String DEACTIVATION_CODE = "STOPSTOPSTOP!";
     public static final int NOTIFICATION_ID = 42;
 
     private Ringtone ringTone;
@@ -41,6 +41,8 @@ public class AntiTheftServiceImpl extends AbstractAntiTheftService {
 
         //set the context of the listener
        ((MovementDetector)listener).setContext(this);
+
+        notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         audioManager = (AudioManager)getSystemService(AUDIO_SERVICE);
 
@@ -76,9 +78,11 @@ public class AntiTheftServiceImpl extends AbstractAntiTheftService {
     private void makeNotification(Context context) {
 
         Intent intent = new Intent(context, MainActivity.class);
+        intent.putExtra(DEACTIVATION_CODE, true);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(context,
                 NOTIFICATION_ID, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
 
         Notification.Builder builder = new Notification.Builder(context)
                 .setContentTitle(getString(R.string.notification_title))
@@ -94,7 +98,6 @@ public class AntiTheftServiceImpl extends AbstractAntiTheftService {
         //this makes the notification sticky
         n.flags |= Notification.FLAG_NO_CLEAR | Notification.FLAG_ONGOING_EVENT;
 
-        notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(NOTIFICATION_ID, n);
     }
 
@@ -166,7 +169,7 @@ public class AntiTheftServiceImpl extends AbstractAntiTheftService {
 
     @Override
     public void onDestroy() {
-        notificationManager.cancel(42);
+        notificationManager.cancel(NOTIFICATION_ID);
 
         ((MovementDetector)listener).destroy();
         cancelRingtone();

@@ -44,7 +44,7 @@ public class MovementDetector extends AbstractMovementDetector {
         long currentTime = System.currentTimeMillis();
 
         //return if the service is younger than 5 seconds
-        if ((currentTime - creationTime) < msUntilAlarmGoesOff) return false;
+        if ((currentTime - creationTime) < msUntilAlarmGoesOff || context == null) return false;
 
         int sensitivity = Settings.sensitivity;
 

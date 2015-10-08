@@ -11,7 +11,6 @@
         android:summary="@string/settings_summary_sens"
         android:text="@string/settings_unit_prozent"
         android:persistent="true"
-        android:defaultValue="50"
         android:max="100"
         />
 
@@ -24,7 +23,6 @@
         android:summary="@string/settings_summary_time"
         android:text="@string/settings_unit_sek"
         android:persistent="true"
-        android:defaultValue="20"
         android:max="100"
         />
 

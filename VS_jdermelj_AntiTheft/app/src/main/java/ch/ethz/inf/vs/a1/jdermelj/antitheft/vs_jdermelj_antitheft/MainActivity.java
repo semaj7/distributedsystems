@@ -14,14 +14,20 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int RESULT_SETTINGS = 1;
     Intent intentToStartAntiTheftService;
-    ToggleButton toggle;
+    ToggleButton toggleButton;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
+
         setContentView(R.layout.activity_main);
+
+        if (Settings.sensitivity == -1) Settings.sensitivity = Settings.SENSITIVITY_DEFAULT;
+
+        if (Settings.timeout == -1) Settings.timeout = Settings.TIMEOUT_DEFAULT;
 
         toggleButtonCreation();
 
@@ -44,11 +50,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
 
         Intent callingIntent = getIntent();
-        if(callingIntent.getBooleanExtra(AntiTheftServiceImpl.DEACTIVATION_SOURCE, false))
-        {
-            if(toggle.isChecked()) {
 
-                toggle.setChecked(false);
+        //check if activity was started by clicking on Notification, which includes the deactivation_code
+        if(callingIntent.getBooleanExtra(AntiTheftServiceImpl.DEACTIVATION_CODE, false))
+        {
+            if(toggleButton.isChecked()) {
+
+                toggleButton.setChecked(false);
             }
             else {
                 deactivateAlarm();
@@ -59,13 +67,13 @@ public class MainActivity extends AppCompatActivity {
 
     public void toggleButtonCreation() {
 
-        toggle = (ToggleButton) findViewById(R.id.toggleButton);
+        toggleButton = (ToggleButton) findViewById(R.id.toggleButton);
 
-        toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
                 if (isChecked) {
-                    // The toggle is set to On
+                    // The toggleButton is set to On
 
                     Toast.makeText(MainActivity.this, getString(R.string.alarm_activated), Toast.LENGTH_SHORT).show();
 
