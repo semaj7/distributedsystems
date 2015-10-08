@@ -48,11 +48,12 @@ public class MovementDetector extends AbstractMovementDetector {
 
     @Override
     protected boolean doAlarmLogic(float[] values) {
+
         Log.d("doAlarmLogic",String.valueOf(values[0])+" " +String.valueOf(values[1])+" " +String.valueOf(values[2]));
         long currentTime = System.currentTimeMillis();
 
-        times.addLast(currentTime);
-        data.addLast(values);
+        //times.addLast(currentTime);
+        //data.addLast(values);
 
         //return if the service is younger than 5 seconds
         if ((currentTime - creationTime) < msUntilAlarmGoesOff || context == null) return false;
@@ -63,7 +64,7 @@ public class MovementDetector extends AbstractMovementDetector {
         //if (sensitivity > 50)
 
         //activates alarm if movement is bigger than 12
-        return (values[0]+values[1]+values[2])>12;
+        return (values[0]+values[1]+values[2])>16;
 
         //delete everything in the times and data array that is not from the last 5 sec
         //while(false);

@@ -137,10 +137,10 @@ public class AntiTheftServiceImpl extends AbstractAntiTheftService {
         standardVolume = audioManager.getStreamVolume(AudioManager.STREAM_RING);
 
         //Dreh das Volume VOLL ume!
-        audioManager.setStreamVolume(AudioManager.STREAM_RING,
+        /*audioManager.setStreamVolume(AudioManager.STREAM_RING,
                 audioManager.getStreamMaxVolume(AudioManager.STREAM_RING), //<- this is the interisting part
                 audioManager.FLAG_ALLOW_RINGER_MODES | audioManager.FLAG_PLAY_SOUND);
-
+        */
         //start the ringtone
         ringTone.play();
         ringToneRunning = true;
