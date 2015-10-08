@@ -16,17 +16,13 @@ public class MainActivity extends AppCompatActivity {
     Intent intentToStartAntiTheftService;
     ToggleButton toggleButton;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
-
         setContentView(R.layout.activity_main);
 
         if (Settings.sensitivity == -1) Settings.sensitivity = Settings.SENSITIVITY_DEFAULT;
-
         if (Settings.timeout == -1) Settings.timeout = Settings.TIMEOUT_DEFAULT;
 
         toggleButtonCreation();
@@ -40,8 +36,6 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
-
-
         return true;
     }
 
@@ -49,12 +43,13 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onStart() {
-
+        Log.d("asdf","MainActivity was started");
         Intent callingIntent = getIntent();
 
         //check if activity was started by clicking on Notification, which includes the deactivation_code
         if(callingIntent.getBooleanExtra(AntiTheftServiceImpl.DEACTIVATION_CODE, false))
         {
+            Log.d("asdf","got deactivation code");
             if(toggleButton.isChecked()) {
 
                 toggleButton.setChecked(false);

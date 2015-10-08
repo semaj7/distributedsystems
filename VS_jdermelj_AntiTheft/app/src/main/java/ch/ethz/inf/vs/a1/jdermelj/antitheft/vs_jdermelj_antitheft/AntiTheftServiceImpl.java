@@ -101,14 +101,14 @@ public class AntiTheftServiceImpl extends AbstractAntiTheftService {
 
     @Override
     public void startAlarm() {
-
+        Log.d("asdf", "startAlarm()");
         makeNotification(this.getApplicationContext());
 
      
         int defuseTime = Settings.timeout; //in seconds
 
         defuseTime = 1000 * defuseTime;
-
+        Log.d("asdf","defusetime = "+String.valueOf(defuseTime));
         countDownTimer = new CountDownTimer(defuseTime, 1) {
             @Override
             public void onTick(long millisUntilFinished) {
@@ -117,7 +117,7 @@ public class AntiTheftServiceImpl extends AbstractAntiTheftService {
 
             @Override
             public void onFinish() {
-
+                Log.d("asdf","activateRingtone()");
                 activateRingtone();
 
             }
@@ -128,18 +128,20 @@ public class AntiTheftServiceImpl extends AbstractAntiTheftService {
     }
 
     private void activateRingtone() {
-
-        if (ringTone.isPlaying() || countDownTimer != null) return;
+        Log.d("asdf","sooon we should hear tha soouuund :)");
+        if (ringTone.isPlaying() || countDownTimer == null) return;
 
         //save the current volume
         standardVolume = audioManager.getStreamVolume(AudioManager.STREAM_RING);
 
+        /*
         //Dreh das Volume VOLL ume!
-        /*audioManager.setStreamVolume(AudioManager.STREAM_RING,
+        audioManager.setStreamVolume(AudioManager.STREAM_RING,
                 audioManager.getStreamMaxVolume(AudioManager.STREAM_RING), //<- this is the interisting part
                 audioManager.FLAG_ALLOW_RINGER_MODES | audioManager.FLAG_PLAY_SOUND);
         */
         //start the ringtone
+        Log.d("asdf","now we should hear tha soouuund :)");
         ringTone.play();
 
     }
