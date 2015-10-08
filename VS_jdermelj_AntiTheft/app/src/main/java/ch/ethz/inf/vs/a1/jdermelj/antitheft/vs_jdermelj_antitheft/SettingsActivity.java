@@ -68,7 +68,7 @@ public class SettingsActivity extends PreferenceActivity {
 
 
             time = PreferenceManager.getDefaultSharedPreferences(this.getActivity()).getInt("TIMEKEY", 50);
-            _seekBarTimeout.setSummary(this.getString(R.string.settings_summary_sens).replace("$1", "" + time));
+            _seekBarTimeout.setSummary(this.getString(R.string.settings_summary_time).replace("$1", "" + time));
 
             Settings.timeout = time;
         }
