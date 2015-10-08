@@ -3,6 +3,7 @@ package ch.ethz.inf.vs.a1.jdermelj.antitheft.vs_jdermelj_antitheft;
 import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
+import android.util.Log;
 
 import java.util.Random;
 
@@ -18,6 +19,7 @@ public class MovementDetector extends AbstractMovementDetector {
 
     private SensorManager sensorManager;
     private Sensor accelerometerSensor;
+
 
     public MovementDetector() {
         context = null;
@@ -46,6 +48,8 @@ public class MovementDetector extends AbstractMovementDetector {
         x = rand.nextBoolean();
 
         int sensitivity = Settings.sensitivity;
+
+        Log.d("asdf", "in do alarmlogic");
 
         //just to test
         if (sensitivity > 50)

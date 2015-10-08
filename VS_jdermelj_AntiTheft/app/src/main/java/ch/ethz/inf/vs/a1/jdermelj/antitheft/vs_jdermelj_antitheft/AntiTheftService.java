@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.CountDownTimer;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 /**
  * Created by Andres on 06.10.15.
@@ -34,13 +35,19 @@ public class AntiTheftService extends AbstractAntiTheftService {
 
     @Override
     public void onCreate() {
+
+        //creates a MovementDetector called listener (without context)
         super.onCreate();
 
+        //set the context of the listener
        ((MovementDetector)listener).setContext(this);
 
         audioManager = (AudioManager)getSystemService(AUDIO_SERVICE);
 
         ringTone = getDefaultRingtone();
+
+        Log.d("asdf","created antitheftservice");
+
 
     }
 
@@ -59,7 +66,11 @@ public class AntiTheftService extends AbstractAntiTheftService {
                 //hope, that the user has at least one default notficiation, otherwise we have a problem
             }
         }
+        Log.d("asdf","got a ringtone");
+
         return RingtoneManager.getRingtone(getApplicationContext(), alert);
+
+
     }
 
     private void makeNotification(Context context) {
@@ -94,7 +105,7 @@ public class AntiTheftService extends AbstractAntiTheftService {
 
      
         int defuseTime = Settings.timeout; //in seconds
-        
+
         defuseTime = 1000 * defuseTime;
 
         countDownTimer = new CountDownTimer(defuseTime, 1) {

@@ -3,6 +3,7 @@ package ch.ethz.inf.vs.a1.jdermelj.antitheft.vs_jdermelj_antitheft;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.CompoundButton;
@@ -14,7 +15,6 @@ public class MainActivity extends AppCompatActivity {
     private static final int RESULT_SETTINGS = 1;
     Intent intentToStartAntiTheftService;
     ToggleButton toggle;
-    //TODO: use a Switch for nicer GUI
 
 
     @Override
@@ -23,6 +23,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         toggleButtonCreation();
+
+        intentToStartAntiTheftService = new Intent(this, AntiTheftService.class);
 
 
     }
@@ -37,8 +39,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    //onStart is called when the app is openend by an intent
-    //this means we can check if the Intent comes from the notification that wants to stop the alarm
+
     @Override
     protected void onStart() {
 
@@ -46,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
         if(callingIntent.getBooleanExtra(AntiTheftService.DEACTIVATION_SOURCE, false))
         {
             if(toggle.isChecked()) {
+
                 toggle.setChecked(false);
             }
             else {
@@ -65,16 +67,20 @@ public class MainActivity extends AppCompatActivity {
                 //TODO: these two might be switched in the layout, laut Jimmy
 
                 if (isChecked) {
-                    //button is now set to Off
-                    Toast.makeText(MainActivity.this, getString(R.string.alarm_deactivated), Toast.LENGTH_SHORT).show();
+                    // The toggle is set to On
+
+                    Toast.makeText(MainActivity.this, getString(R.string.alarm_activated), Toast.LENGTH_SHORT).show();
 
                     activateAlarm();
 
+
                 } else {
-                    // The toggle is set to On
-                    Toast.makeText(MainActivity.this, getString(R.string.alarm_activated), Toast.LENGTH_SHORT).show();
+
+                    //button is now set to Off
+                    Toast.makeText(MainActivity.this, getString(R.string.alarm_deactivated), Toast.LENGTH_SHORT).show();
 
                     deactivateAlarm();
+
                 }
             }
         });
@@ -84,14 +90,16 @@ public class MainActivity extends AppCompatActivity {
 
     public void activateAlarm() {
 
-        intentToStartAntiTheftService = new Intent(this, AntiTheftService.class);
+        Log.d("asdf", "starting service");
+
         startService(intentToStartAntiTheftService);
 
     }
 
     public void deactivateAlarm() {
 
-        intentToStartAntiTheftService = new Intent(this, AntiTheftService.class);
+        Log.d("asdf", "ending service");
+
         stopService(intentToStartAntiTheftService);
 
     }

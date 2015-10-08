@@ -3,8 +3,8 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-    <string name="toggle_turn_on">Ein</string>
-    <string name="toggle_turn_off">Aus</string>
+    <string name="toggle_turn_on">Alarm entschärfen</string>
+    <string name="toggle_turn_off">Ultimativer Anti-Dieb-Modus an!</string>
     <string name="alarm_activated">Alarm scharf!</string>
     <string name="alarm_deactivated">Alarm entschärft.</string>
     <string name="description">Schalten Sie hier den Alarm ein oder aus.</string>
