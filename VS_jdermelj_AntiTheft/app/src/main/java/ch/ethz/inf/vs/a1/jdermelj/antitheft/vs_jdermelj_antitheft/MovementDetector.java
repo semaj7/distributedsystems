@@ -17,13 +17,19 @@ public class MovementDetector extends AbstractMovementDetector {
 
     private final int msUntilAlarmGoesOff = 5000;
 
+    private long creationTime;
+
     private SensorManager sensorManager;
     private Sensor accelerometerSensor;
 
 
     public MovementDetector() {
+
         context = null;
+        creationTime = System.currentTimeMillis();
+
     }
+
 
     public void setContext(Context c) {
 
@@ -38,6 +44,10 @@ public class MovementDetector extends AbstractMovementDetector {
     @Override
     protected boolean doAlarmLogic(float[] values) {
 
+        long currentTime = System.currentTimeMillis();
+
+        //return if the service is younger than 5 seconds
+        if ((currentTime - creationTime) < msUntilAlarmGoesOff) return false;
 
         //just to test
         Boolean x;
