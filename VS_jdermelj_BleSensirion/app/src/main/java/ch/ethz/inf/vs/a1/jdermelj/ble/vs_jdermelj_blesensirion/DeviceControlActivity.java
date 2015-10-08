@@ -112,13 +112,13 @@ public class DeviceControlActivity extends Activity {
                 clearUI();
             } else if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
                 // Show all the supported services and characteristics on the user interface.
-                //TODO: Only show needed data
-                //should later be: displayDesiredData(
 
+                System.out.println("Are we here?");
+                //TODO: Problem lies here.. function below is not enough.
+                //we need to build bridge from characteristic to the data-field
                 displayGattServices(mBluetoothLeService.getSupportedGattServices());
 
             } else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
-                //TODO: where the magic happens
                 displayData(intent.getStringExtra(BluetoothLeService.EXTRA_DATA));
             }
         }
@@ -326,7 +326,8 @@ public class DeviceControlActivity extends Activity {
         for (BluetoothGattService gattService : gattServices) {
             HashMap<String, String> currentServiceData = new HashMap<String, String>();
             uuid = gattService.getUuid().toString();
-            if (uuid == UUID_RHT_TEMPERATUREHUMIDITY) { //if true, We found the right service
+
+            if (UUID_RHT_TEMPERATUREHUMIDITY.equals(uuid)) { //if true, We found the right service
                 System.out.println("found the right service!!");
                 currentServiceData.put(LIST_NAME, SampleGattAttributes.lookup(uuid, unknownServiceString));
                 currentServiceData.put(LIST_UUID, uuid);
