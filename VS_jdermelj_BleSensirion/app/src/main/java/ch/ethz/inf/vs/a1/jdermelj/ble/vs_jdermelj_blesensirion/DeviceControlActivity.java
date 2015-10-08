@@ -264,7 +264,7 @@ public class DeviceControlActivity extends Activity {
             currentServiceData.put(
                     LIST_NAME, SampleGattAttributes.lookup(uuid, unknownServiceString));
             currentServiceData.put(LIST_UUID, uuid);
-            System.out.println(uuid);
+            System.out.println("------------------------------------------------------------" + uuid);
             //TODO: Debug
             if(uuid == "0000aa20-0000-1000-8000-00805f9b34fb")
                 gattServiceData.add(currentServiceData);
