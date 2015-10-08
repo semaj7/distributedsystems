@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
         toggleButtonCreation();
 
         intentToStartAntiTheftService = new Intent(this, AntiTheftService.class);
-
+        activateAlarm();
 
     }
 
