@@ -9,6 +9,7 @@ import android.util.Log;
 import java.util.Random;
 import java.util.concurrent.LinkedBlockingQueue;
 
+
 /**
  * Created by Andres on 06.10.15.
  */
@@ -54,19 +55,9 @@ public class MovementDetector extends AbstractMovementDetector {
         data.addLast(values);
 
         //return if the service is younger than 5 seconds
-        if ((currentTime - creationTime) < msUntilAlarmGoesOff) return false;
-
-        //just to test
-        Boolean x;
-
-        Random rand = new Random();
-        rand.setSeed(System.currentTimeMillis());
-
-        x = rand.nextBoolean();
+        if ((currentTime - creationTime) < msUntilAlarmGoesOff || context == null) return false;
 
         int sensitivity = Settings.sensitivity;
-
-        Log.d("asdf", "in do alarmlogic");
 
         //just to test
         //if (sensitivity > 50)
@@ -77,8 +68,6 @@ public class MovementDetector extends AbstractMovementDetector {
         //delete everything in the times and data array that is not from the last 5 sec
         //while(false);
 
-
-        //TODO: do fancy stuff with the accelerometerSensor
     }
 
     public void destroy() {

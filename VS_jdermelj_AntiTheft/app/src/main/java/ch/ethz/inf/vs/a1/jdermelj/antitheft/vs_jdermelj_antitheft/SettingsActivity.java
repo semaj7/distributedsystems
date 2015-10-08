@@ -45,15 +45,15 @@ public class SettingsActivity extends PreferenceActivity {
             getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
 
             // Set seekbar summary :
-            sens = PreferenceManager.getDefaultSharedPreferences(this.getActivity()).getInt("SENSKEY", 50);
+            sens = Settings.sensitivity;
+            sens = PreferenceManager.getDefaultSharedPreferences(this.getActivity()).getInt("SENSKEY", sens);
             _seekBarSensitivity.setSummary(getString(R.string.settings_summary_sens).replace("$1", "" + sens));
 
-            Settings.sensitivity = sens;
 
-            time = PreferenceManager.getDefaultSharedPreferences(this.getActivity()).getInt("TIMEKEY", 50);
+            time = Settings.timeout;
+            time = PreferenceManager.getDefaultSharedPreferences(this.getActivity()).getInt("TIMEKEY", time);
             _seekBarTimeout.setSummary(getString(R.string.settings_summary_time).replace("$1", "" + time));
 
-            Settings.timeout = time;
         }
 
         @Override
