@@ -20,12 +20,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
 
         toggleButtonCreation();
 
-        intentToStartAntiTheftService = new Intent(this, AntiTheftService.class);
-
+        intentToStartAntiTheftService = new Intent(this, AntiTheftServiceImpl.class);
 
     }
 
@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
 
         Intent callingIntent = getIntent();
-        if(callingIntent.getBooleanExtra(AntiTheftService.DEACTIVATION_SOURCE, false))
+        if(callingIntent.getBooleanExtra(AntiTheftServiceImpl.DEACTIVATION_SOURCE, false))
         {
             if(toggle.isChecked()) {
 
@@ -63,8 +63,6 @@ public class MainActivity extends AppCompatActivity {
 
         toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-                //TODO: these two might be switched in the layout, laut Jimmy
 
                 if (isChecked) {
                     // The toggle is set to On

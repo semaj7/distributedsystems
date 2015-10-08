@@ -3,9 +3,6 @@ package ch.ethz.inf.vs.a1.jdermelj.antitheft.vs_jdermelj_antitheft;
 import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
-import android.util.Log;
-
-import java.util.Random;
 
 /**
  * Created by Andres on 06.10.15.
@@ -49,17 +46,7 @@ public class MovementDetector extends AbstractMovementDetector {
         //return if the service is younger than 5 seconds
         if ((currentTime - creationTime) < msUntilAlarmGoesOff) return false;
 
-        //just to test
-        Boolean x;
-
-        Random rand = new Random();
-        rand.setSeed(System.currentTimeMillis());
-
-        x = rand.nextBoolean();
-
         int sensitivity = Settings.sensitivity;
-
-        Log.d("asdf", "in do alarmlogic");
 
         //just to test
         if (sensitivity > 50)
@@ -70,8 +57,6 @@ public class MovementDetector extends AbstractMovementDetector {
         else return false;
 
 
-
-        //TODO: do fancy stuff with the accelerometerSensor
     }
 
     public void destroy() {

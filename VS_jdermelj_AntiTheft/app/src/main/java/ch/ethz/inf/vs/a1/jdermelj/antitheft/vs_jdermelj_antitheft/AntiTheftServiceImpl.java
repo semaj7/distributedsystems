@@ -18,7 +18,7 @@ import android.util.Log;
 /**
  * Created by Andres on 06.10.15.
  */
-public class AntiTheftService extends AbstractAntiTheftService {
+public class AntiTheftServiceImpl extends AbstractAntiTheftService {
 
     private NotificationManager notificationManager;
     public static final String DEACTIVATION_SOURCE = "ch.ethz.inf.vs.a1.jdermelj.antitheft.stop";
