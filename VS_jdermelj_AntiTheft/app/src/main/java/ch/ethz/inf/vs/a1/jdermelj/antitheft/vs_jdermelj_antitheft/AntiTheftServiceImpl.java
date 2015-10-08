@@ -12,7 +12,6 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.CountDownTimer;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
 import android.util.Log;
 
 /**
@@ -134,12 +133,12 @@ public class AntiTheftServiceImpl extends AbstractAntiTheftService {
         //save the current volume
         standardVolume = audioManager.getStreamVolume(AudioManager.STREAM_RING);
 
-        /*
+
         //Dreh das Volume VOLL ume!
         audioManager.setStreamVolume(AudioManager.STREAM_RING,
                 audioManager.getStreamMaxVolume(AudioManager.STREAM_RING), //<- this is the interisting part
                 audioManager.FLAG_ALLOW_RINGER_MODES | audioManager.FLAG_PLAY_SOUND);
-        */
+
         //start the ringtone
         Log.d("asdf","now we should hear tha soouuund :)");
         ringTone.play();
@@ -175,7 +174,6 @@ public class AntiTheftServiceImpl extends AbstractAntiTheftService {
         super.onDestroy();
     }
 
-    @Nullable
     @Override
     public IBinder onBind(Intent intent) {
         return null;

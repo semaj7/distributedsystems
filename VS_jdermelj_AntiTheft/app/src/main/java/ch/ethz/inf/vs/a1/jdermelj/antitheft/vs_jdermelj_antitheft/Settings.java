@@ -5,7 +5,7 @@ public class Settings {
 	public static final String SETTINGS_FILENAME = "AntiTheftSettings";
 
 	public static final boolean ACTIVATE_DEFAULT = false;
-	public static final int SENSITIVITY_DEFAULT = 100;
+	public static final int SENSITIVITY_DEFAULT = 90;
 	public static final int TIMEOUT_DEFAULT = 10;
 
 	public static int sensitivity = -1;

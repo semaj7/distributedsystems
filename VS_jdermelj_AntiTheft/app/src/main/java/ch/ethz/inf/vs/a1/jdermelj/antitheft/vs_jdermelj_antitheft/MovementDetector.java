@@ -3,9 +3,11 @@ package ch.ethz.inf.vs.a1.jdermelj.antitheft.vs_jdermelj_antitheft;
 import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
-import android.support.v4.util.CircularArray;
 import android.util.Log;
+import android.util.Pair;
 
+import java.util.Queue;
+import java.util.Iterator;
 import java.util.Random;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -26,8 +28,8 @@ public class MovementDetector extends AbstractMovementDetector {
     private SensorManager sensorManager;
     private Sensor accelerometerSensor;
 
-    private CircularArray<Long> times;
-    private CircularArray<float[]> data;
+    private Queue<Pair<Long, Double>> data = new LinkedBlockingQueue<Pair<Long, Double>>();
+
     public MovementDetector() {
 
         context = null;
@@ -49,29 +51,53 @@ public class MovementDetector extends AbstractMovementDetector {
     @Override
     protected boolean doAlarmLogic(float[] values) {
 
-        Log.d("doAlarmLogic",String.valueOf(values[0])+" " +String.valueOf(values[1])+" " +String.valueOf(values[2]));
+        Log.d("doAlarmLogic", String.valueOf(values[0]) + " " + String.valueOf(values[1]) + " " + String.valueOf(values[2]));
         long currentTime = System.currentTimeMillis();
 
-        //times.addLast(currentTime);
-        //data.addLast(values);
+        Pair<Long, Double> nw = new Pair<Long, Double>(currentTime, Math.max(abs(values) - 9.8, 0));
+        data.add(nw);
+
 
         //return if the service is younger than 5 seconds
         if ((currentTime - creationTime) < msUntilAlarmGoesOff || context == null) return false;
 
-        int sensitivity = Settings.sensitivity;
 
         //just to test
         //if (sensitivity > 50)
 
-        //activates alarm if movement is bigger than 12
-        return (values[0]+values[1]+values[2])>16;
+        long t0 = currentTime - 5000;
+        Iterator<Pair<Long, Double>> iter = data.iterator();
 
-        //delete everything in the times and data array that is not from the last 5 sec
-        //while(false);
+        //sum and counter are needed to calculate the average
+        double sum = 0;
+        int counter = 0;
+
+        while(iter.hasNext()){
+            Pair<Long, Double> i = iter.next();
+            if(i.first < t0){
+                iter.remove();
+            }
+            else{
+                sum+= i.second;
+                counter++;
+            }
+        }
+        int sensitivity = Settings.sensitivity; //default is recommended
+        System.out.println(sensitivity);
+        double thresh = 3-(sensitivity * 29 / 1000); //Threshold (chosen empirically), ranges from 0.2 to 3.2
+        if( Math.ceil(sum) / counter < thresh)
+            return false;
+        else
+            return true;
 
     }
 
     public void destroy() {
         sensorManager.unregisterListener(this);
     }
+
+    private double abs(float[] values){ //Calculates the absolute acceleration
+        return (Math.sqrt((double)(values[1]*values[1]) + (double)(values[2]*values[2]) + (double)(values[0]*values[0])));
+    }
+
 }
