@@ -89,8 +89,8 @@ public class AntiTheftService extends AbstractAntiTheftService {
 
         makeNotification(this.getApplicationContext());
 
-        //TODO: get defusetime from the settingsactivity
-        int defuseTime = 200;
+     
+        int defuseTime = Settings.timeout;
 
         //TODO: make a countdown that delays the activation of the ringtone
         activateRingtone();

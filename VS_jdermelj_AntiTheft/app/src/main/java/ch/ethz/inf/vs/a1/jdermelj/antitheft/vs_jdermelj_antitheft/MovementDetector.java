@@ -24,7 +24,9 @@ public class MovementDetector extends AbstractMovementDetector {
     }
 
     public void setContext(Context c) {
+
         context = c;
+
         sensorManager = (SensorManager)c.getSystemService(c.SENSOR_SERVICE);
         accelerometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         sensorManager.registerListener(this, accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
@@ -43,10 +45,14 @@ public class MovementDetector extends AbstractMovementDetector {
 
         x = rand.nextBoolean();
 
+        int sensitivity = Settings.sensitivity;
+
         //return x;
         return true;
 
-        //TODO: get sensitivity value (which is from 0 to 100) from the SettingsActivity
+
+
+
 
         //TODO: do fancy stuff with the accelerometerSensor
     }

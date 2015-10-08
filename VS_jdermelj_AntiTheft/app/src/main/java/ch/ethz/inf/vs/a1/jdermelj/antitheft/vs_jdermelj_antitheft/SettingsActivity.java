@@ -25,8 +25,8 @@ public class SettingsActivity extends PreferenceActivity {
         private SeekBarPreference _seekBarSensitivity;
         private SeekBarPreference _seekBarTimeout;
 
-        public int sens; //access this field to get the sensitivity that was set
-        public int time; //access this field to get the timeout that was set
+        private int sens; //access this field to get the sensitivity that was set
+        private int time; //access this field to get the timeout that was set
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -48,8 +48,12 @@ public class SettingsActivity extends PreferenceActivity {
             sens = PreferenceManager.getDefaultSharedPreferences(this.getActivity()).getInt("SENSKEY", 50);
             _seekBarSensitivity.setSummary(getString(R.string.settings_summary_sens).replace("$1", "" + sens));
 
+            Settings.sensitivity = sens;
+
             time = PreferenceManager.getDefaultSharedPreferences(this.getActivity()).getInt("TIMEKEY", 50);
             _seekBarTimeout.setSummary(getString(R.string.settings_summary_time).replace("$1", "" + time));
+
+            Settings.timeout = time;
         }
 
         @Override
@@ -59,8 +63,14 @@ public class SettingsActivity extends PreferenceActivity {
             sens = PreferenceManager.getDefaultSharedPreferences(this.getActivity()).getInt("SENSKEY", 50);
             _seekBarSensitivity.setSummary(this.getString(R.string.settings_summary_sens).replace("$1", "" + sens));
 
+            Settings.sensitivity = sens;
+
+
+
             time = PreferenceManager.getDefaultSharedPreferences(this.getActivity()).getInt("TIMEKEY", 50);
             _seekBarTimeout.setSummary(this.getString(R.string.settings_summary_sens).replace("$1", "" + time));
+
+            Settings.timeout = time;
         }
     }
 }
