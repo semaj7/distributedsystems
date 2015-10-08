@@ -47,10 +47,13 @@ public class MovementDetector extends AbstractMovementDetector {
 
         int sensitivity = Settings.sensitivity;
 
+        //just to test
+        if (sensitivity > 50)
+
         //return x;
         return true;
 
-
+        else return false;
 
 
 

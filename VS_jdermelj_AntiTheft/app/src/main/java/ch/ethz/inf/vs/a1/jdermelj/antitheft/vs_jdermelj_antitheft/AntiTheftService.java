@@ -10,6 +10,7 @@ import android.media.AudioManager;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.CountDownTimer;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
@@ -27,6 +28,8 @@ public class AntiTheftService extends AbstractAntiTheftService {
     private int standardVolume;
 
     private boolean ringToneRunning = false;
+
+    private CountDownTimer countDownTimer;
 
 
     @Override
@@ -90,16 +93,31 @@ public class AntiTheftService extends AbstractAntiTheftService {
         makeNotification(this.getApplicationContext());
 
      
-        int defuseTime = Settings.timeout;
+        int defuseTime = Settings.timeout; //in seconds
+        
+        defuseTime = 1000 * defuseTime;
 
-        //TODO: make a countdown that delays the activation of the ringtone
-        activateRingtone();
+        countDownTimer = new CountDownTimer(defuseTime, 1) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+
+            }
+
+            @Override
+            public void onFinish() {
+
+                activateRingtone();
+
+            }
+        };
+
+        countDownTimer.start();
 
     }
 
     private void activateRingtone() {
 
-        if (ringToneRunning) return;
+        if (ringToneRunning || countDownTimer != null) return;
 
         //save the current volume
         standardVolume = audioManager.getStreamVolume(AudioManager.STREAM_RING);
@@ -117,6 +135,11 @@ public class AntiTheftService extends AbstractAntiTheftService {
 
     private void cancelRingtone() {
 
+        if (countDownTimer != null) {
+            countDownTimer.cancel();
+            countDownTimer = null;
+        }
+
         if (ringTone.isPlaying()) {
 
             ringTone.stop();
@@ -127,8 +150,6 @@ public class AntiTheftService extends AbstractAntiTheftService {
                     audioManager.FLAG_ALLOW_RINGER_MODES | audioManager.FLAG_PLAY_SOUND);
 
         }
-
-
 
     }
 
