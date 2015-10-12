@@ -1,12 +1,5 @@
 package ch.ethz.inf.vs.a2.sensor;
 
-import ch.ethz.inf.vs.a2.solution.sensor.HtmlSensor;
-import ch.ethz.inf.vs.a2.solution.sensor.JsonSensor;
-import ch.ethz.inf.vs.a2.solution.sensor.RawHttpSensor;
-import ch.ethz.inf.vs.a2.solution.sensor.SoapSensor;
-import ch.ethz.inf.vs.a2.solution.sensor.XmlSensor;
-
-
 public abstract class SensorFactory {
 	public static Sensor getInstance(Type type) {
 		switch (type) {

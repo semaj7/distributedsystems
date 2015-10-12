@@ -1,7 +1,7 @@
 package ch.ethz.inf.vs.a2.http;
 
-import ch.ethz.inf.vs.a2.solution.http.LibHttpClient;
-import ch.ethz.inf.vs.a2.solution.http.RawHttpClient;
+import ch.ethz.inf.vs.a2.http.LibHttpClient;
+import ch.ethz.inf.vs.a2.http.RawHttpClient;
 
 /**
  * Created by leynas on 25.09.15.

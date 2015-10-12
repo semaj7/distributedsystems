@@ -40,5 +40,5 @@ public class Activity_1 extends AppCompatActivity implements ch.ethz.inf.vs.a2.s
 
     }
 
-    
+
 }
