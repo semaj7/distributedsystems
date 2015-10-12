@@ -1,0 +1,27 @@
+<resources>
+
+    <!-- Strings für ganze App -->
+    <string name="app_name">VS_jdermelj_Webservices</string>
+    <string name="action_settings">Settings</string>
+    <string name="welcome">Willkommen! Das hier ist das App für Assignment 2 von der Gruppe jdermelj.</string>
+    <string name="button_start_activity_1">REST Webservices Task 1</string>
+    <string name="button_start_activity_2">WS-* Web-Services Task 2</string>
+    <string name="button_start_activity_3">Phone as Server Task 3</string>
+
+    <!-- Strings für Task 1 -->
+    <string name="title_activity_activity_1">Activity_1</string>
+    <string name="welcome_task1">Get temperature values with REST</string>
+    <string name="title_activity_activity_2">Activity_2</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_activity_3">Activity_3</string>
+
+
+    <!-- Strings für Task 2 -->
+
+
+    <!-- Strings für Task 3 -->
+
+
+
+</resources>
