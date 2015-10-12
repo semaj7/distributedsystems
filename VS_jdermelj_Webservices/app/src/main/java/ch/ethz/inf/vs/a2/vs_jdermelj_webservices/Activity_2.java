@@ -1,12 +1,11 @@
 package ch.ethz.inf.vs.a2.vs_jdermelj_webservices;
 
-import android.hardware.SensorListener;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class Activity_2 extends AppCompatActivity implements SensorListener{
+public class Activity_2 extends AppCompatActivity implements ch.ethz.inf.vs.a2.sensor.SensorListener{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,13 +30,14 @@ public class Activity_2 extends AppCompatActivity implements SensorListener{
         return super.onOptionsItemSelected(item);
     }
 
+
     @Override
-    public void onSensorChanged(int sensor, float[] values) {
+    public void onReceiveDouble(double value) {
 
     }
 
     @Override
-    public void onAccuracyChanged(int sensor, int accuracy) {
+    public void onReceiveString(String message) {
 
     }
 }

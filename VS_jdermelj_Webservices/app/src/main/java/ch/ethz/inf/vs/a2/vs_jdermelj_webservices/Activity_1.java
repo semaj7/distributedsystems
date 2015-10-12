@@ -1,14 +1,11 @@
 package ch.ethz.inf.vs.a2.vs_jdermelj_webservices;
 
-import android.hardware.SensorListener;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import ch.ethz.inf.vs.a2.http.HttpRawRequest;
-
-public class Activity_1 extends AppCompatActivity implements SensorListener {
+public class Activity_1 extends AppCompatActivity implements ch.ethz.inf.vs.a2.sensor.SensorListener{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,31 +31,14 @@ public class Activity_1 extends AppCompatActivity implements SensorListener {
     }
 
     @Override
-    public void onSensorChanged(int sensor, float[] values) {
+    public void onReceiveDouble(double value) {
 
     }
 
     @Override
-    public void onAccuracyChanged(int sensor, int accuracy) {
+    public void onReceiveString(String message) {
 
     }
 
-    public class Spot1HTTPRequest implements HttpRawRequest {
-
-
-        @Override
-        public String generateRequest() {
-            return null;
-        }
-
-        @Override
-        public String getHost() {
-            return null;
-        }
-
-        @Override
-        public int getPort() {
-            return 0;
-        }
-    }
+    
 }
