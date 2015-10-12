@@ -43,5 +43,22 @@ public class Activity_1 extends AppCompatActivity implements SensorListener {
 
     }
 
-    public class c1 implements HttpRawRequest
+    public class Spot1HTTPRequest implements HttpRawRequest {
+
+
+        @Override
+        public String generateRequest() {
+            return null;
+        }
+
+        @Override
+        public String getHost() {
+            return null;
+        }
+
+        @Override
+        public int getPort() {
+            return 0;
+        }
+    }
 }
