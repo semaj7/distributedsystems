@@ -1,10 +1,12 @@
 package ch.ethz.inf.vs.a2.vs_jdermelj_webservices;
 
 import android.hardware.SensorListener;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import ch.ethz.inf.vs.a2.http.HttpRawRequest;
 
 public class Activity_1 extends AppCompatActivity implements SensorListener {
 
@@ -40,4 +42,6 @@ public class Activity_1 extends AppCompatActivity implements SensorListener {
     public void onAccuracyChanged(int sensor, int accuracy) {
 
     }
+
+    public class c1 implements HttpRawRequest
 }
