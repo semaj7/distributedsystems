@@ -1,16 +1,23 @@
 package ch.ethz.inf.vs.a2.vs_jdermelj_webservices;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 public class Activity_3 extends AppCompatActivity {
+
+    Intent server_intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_3);
+
+        server_intent=new Intent(this, ServerService.class);
     }
 
     @Override
@@ -30,4 +37,16 @@ public class Activity_3 extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    public void start_server(View view){
+        if(server_intent==null)
+            Log.d("debugging", "intent is null");
+        Log.d("debugging", "about to start intent");
+        startService(server_intent);
+    }
+
+    public void stop_server(View view){
+        stopService(server_intent);
+    }
+
 }
