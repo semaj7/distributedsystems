@@ -5,6 +5,8 @@ import android.util.Log;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import ch.ethz.inf.vs.a2.http.RemoteServerConfiguration;
+
 /**
  * Created by Andres on 13.10.15.
  */
@@ -28,7 +30,7 @@ public class ResponseParserImpl implements ResponseParser {
         }
 
         Log.d("debug", "Response is not in the expected format!");
-        return 0;
+        return RemoteServerConfiguration.ERROR_TEMPERATURE;
 
 
     }

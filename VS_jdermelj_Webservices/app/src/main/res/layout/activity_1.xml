@@ -11,6 +11,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/button_raw_temperature"
+        android:onClick="getRawTemperature" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/button_html_temperature"
+        android:onClick="getHtmlTemperature" />
+
     <TextView android:text="@string/nothing_received"
         android:id="@+id/TEMPVALTXT"
         android:layout_width="wrap_content"

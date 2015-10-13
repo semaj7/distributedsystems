@@ -4,8 +4,10 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
+import ch.ethz.inf.vs.a2.http.RemoteServerConfiguration;
 import ch.ethz.inf.vs.a2.sensor.Sensor;
 import ch.ethz.inf.vs.a2.sensor.SensorFactory;
 
@@ -21,13 +23,6 @@ public class Activity_1 extends AppCompatActivity implements ch.ethz.inf.vs.a2.s
         setContentView(R.layout.activity_1);
 
         tempValTextView = (TextView) findViewById(R.id.TEMPVALTXT);
-
-
-        //rawTempSensor = SensorFactory.getInstance(SensorFactory.Type.RAW_HTTP);
-    //    rawTempSensor.registerListener(this);
-
-        simpleTempSensor = SensorFactory.getInstance(SensorFactory.Type.HTML);
-        simpleTempSensor.registerListener(this);
 
     }
 
@@ -48,10 +43,38 @@ public class Activity_1 extends AppCompatActivity implements ch.ethz.inf.vs.a2.s
         return super.onOptionsItemSelected(item);
     }
 
+    public void getRawTemperature(View view) {
+
+        rawTempSensor = SensorFactory.getInstance(SensorFactory.Type.RAW_HTTP);
+        rawTempSensor.registerListener(this);
+
+    }
+
+    public void getHtmlTemperature(View view) {
+
+        simpleTempSensor = SensorFactory.getInstance(SensorFactory.Type.HTML);
+        simpleTempSensor.registerListener(this);
+
+    }
+
+
+
     @Override
     public void onReceiveDouble(double value) {
 
-        tempValTextView.setText(getString(R.string.temperatureIs) + String.valueOf(value));
+        if (value == RemoteServerConfiguration.ERROR_TEMPERATURE) {
+
+            tempValTextView.setText(getString(R.string.invalid_temperature) + String.valueOf(value));
+
+        }
+
+        else {
+
+            tempValTextView.setText(getString(R.string.temperatureIs) + String.valueOf(value));
+
+        }
+
+
     }
 
     @Override

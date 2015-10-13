@@ -12,4 +12,5 @@ public interface RemoteServerConfiguration {
 	public static final int REST_PORT = 8081;
 	public static final int SOAP_PORT = 8080;
 	public static final String PATH_TO_SPOT1_TEMPERATURE = "/sunspots/Spot1/sensors/temperature";
+	public static final double ERROR_TEMPERATURE = -1000; //it shouldn't get this cold ;P
 }

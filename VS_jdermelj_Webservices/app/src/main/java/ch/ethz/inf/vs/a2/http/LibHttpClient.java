@@ -24,8 +24,6 @@ public class LibHttpClient implements SimpleHttpClient {
         HttpGet getRequest = (HttpGet) request;
 
         HttpClient httpClient = new DefaultHttpClient();
-
-        getRequest = new HttpGet("http://localhost/");
         // add request header
       //  getRequest.addHeader("User-Agent", ""); //TODO: get real User-Agent through context or whatever
 

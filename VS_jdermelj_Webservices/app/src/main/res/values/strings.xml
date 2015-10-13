@@ -28,5 +28,8 @@
     <string name="stop_btn">Stop Server</string>
     <string name="ip_address">IP Address: ...</string>
     <string name="port_nr">Port Number: ...</string>
+    <string name="button_raw_temperature">Roh</string>
+    <string name="button_html_temperature">Html</string>
+    <string name="invalid_temperature">Die Temperatur konnte nicht richtig aufgerufen werden.</string>
 
 </resources>
