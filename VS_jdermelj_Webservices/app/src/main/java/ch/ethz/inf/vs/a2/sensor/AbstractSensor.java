@@ -1,9 +1,10 @@
 package ch.ethz.inf.vs.a2.sensor;
 
+import android.os.AsyncTask;
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import android.os.AsyncTask;
 
 import ch.ethz.inf.vs.a2.http.SimpleHttpClient;
 
@@ -22,7 +23,9 @@ public abstract class AbstractSensor implements Sensor, ResponseParser {
     protected SimpleHttpClient httpClient = null;
 
     public AbstractSensor() {
+        Log.d("debug", "Generated an Abstract Sensor");
         setHttpClient();
+        getTemperature();
     }
 
     /**
