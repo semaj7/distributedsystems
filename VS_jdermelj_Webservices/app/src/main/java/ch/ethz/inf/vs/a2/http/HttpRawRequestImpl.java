@@ -7,7 +7,10 @@ public class HttpRawRequestImpl implements HttpRawRequest{
 
     private String host;
     private int port;
+    //should be 8081
+
     private String path;
+    //should be /sunspots/Spot1/sensors/temperature
 
     public HttpRawRequestImpl(String h, int p, String pa) {
 
@@ -18,7 +21,14 @@ public class HttpRawRequestImpl implements HttpRawRequest{
     }
     @Override
     public String generateRequest() {
-        return null;
+
+
+        String firstline = "GET " + path + " HTTP/1.1\r\n";
+        String secondline = "Host: " + host + "\r\n";
+        String thirdline = "Connection: close\r\n\r\n";
+
+        return firstline + secondline + thirdline;
+
     }
 
     @Override

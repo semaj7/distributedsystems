@@ -6,7 +6,7 @@ package ch.ethz.inf.vs.a2.sensor;
 public class HtmlSensor implements Sensor {
     @Override
     public void getTemperature() throws NullPointerException {
-        
+
     }
 
     @Override
