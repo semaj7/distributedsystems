@@ -12,6 +12,7 @@ import ch.ethz.inf.vs.a2.sensor.SensorFactory;
 public class Activity_1 extends AppCompatActivity implements ch.ethz.inf.vs.a2.sensor.SensorListener{
 
     Sensor rawTempSensor;
+    Sensor simpleTempSensor;
     TextView tempValTextView;
 
     @Override
@@ -21,8 +22,12 @@ public class Activity_1 extends AppCompatActivity implements ch.ethz.inf.vs.a2.s
 
         tempValTextView = (TextView) findViewById(R.id.TEMPVALTXT);
 
-        rawTempSensor = SensorFactory.getInstance(SensorFactory.Type.RAW_HTTP);
-        rawTempSensor.registerListener(this);
+
+        //rawTempSensor = SensorFactory.getInstance(SensorFactory.Type.RAW_HTTP);
+    //    rawTempSensor.registerListener(this);
+
+        simpleTempSensor = SensorFactory.getInstance(SensorFactory.Type.HTML);
+        simpleTempSensor.registerListener(this);
 
     }
 

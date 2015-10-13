@@ -16,7 +16,7 @@ public class RawHttpClient implements SimpleHttpClient {
     //expects request to be an instance of HttpRawRequestImpl
     public String execute(Object request) {
 
-        Log.d("debug", "Executing a request");
+        Log.d("debug", "Executing a request the raw way");
 
         //return if the request is not an instance of HttpRawRequestImpl
         if (!(request instanceof HttpRawRequestImpl)) return null;
@@ -66,7 +66,7 @@ public class RawHttpClient implements SimpleHttpClient {
         }
         catch(Exception e) {
 
-            System.err.println("Something went wrong while connecting to host : " + host + " with port " + port);
+            System.err.println("Something went wrong while raw connecting to host : " + host + " with port " + port);
             System.err.println(e.toString());
 
             return null;
