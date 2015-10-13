@@ -48,7 +48,6 @@ public class RawHttpClient implements SimpleHttpClient {
             message_out = new PrintWriter( socket.getOutputStream(), true);
 
             message_out.print(sendString);
-
             message_out.flush();
 
             InputStream inStream = socket.getInputStream( );
