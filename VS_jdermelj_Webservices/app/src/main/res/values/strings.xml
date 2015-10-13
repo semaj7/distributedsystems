@@ -9,27 +9,26 @@
     <string name="button_start_activity_3">Phone as Server Task 3</string>
 
     <!-- Strings für Task 1 -->
-    <string name="title_activity_activity_1">Activity_1</string>
-    <string name="welcome_task1">Get temperature values with REST</string>
-    <string name="title_activity_activity_2">Activity_2</string>
-
-    <string name="title_activity_activity_3">Activity_3</string>
+    <string name="title_activity_activity_1">Task 1</string>
+    <string name="welcome_task1">Hol die Temperatur mit REST. Wähle mit den Buttons die Übertragungsart.</string>
     <string name="temperatureIs">Die Temperatur ist:\t</string>
     <string name="nothing_received">Es wurde noch nichts empfangen.</string>
-
+    <string name="button_raw_temperature">Roh</string>
+    <string name="button_html_temperature">Html</string>
+    <string name="invalid_temperature">Die Temperatur konnte nicht richtig aufgerufen werden.</string>
+    <string name="button_json_temperature">JSON</string>
 
     <!-- Strings für Task 2 -->
-
-
+    <string name="title_activity_activity_2">Task 2</string>
     <string name="hello_world">Hello world!</string>
 
     <!-- Strings für Task 3 -->
+    <string name="title_activity_activity_3">Task 3</string>
     <string name="start_btn">Start Server</string>
     <string name="stop_btn">Stop Server</string>
     <string name="ip_address">IP Address: ...</string>
     <string name="port_nr">Port Number: ...</string>
-    <string name="button_raw_temperature">Roh</string>
-    <string name="button_html_temperature">Html</string>
-    <string name="invalid_temperature">Die Temperatur konnte nicht richtig aufgerufen werden.</string>
+
+
 
 </resources>

@@ -15,6 +15,7 @@ public class Activity_1 extends AppCompatActivity implements ch.ethz.inf.vs.a2.s
 
     Sensor rawTempSensor;
     Sensor simpleTempSensor;
+    Sensor simpleJsonSensor;
     TextView tempValTextView;
 
     @Override
@@ -54,6 +55,13 @@ public class Activity_1 extends AppCompatActivity implements ch.ethz.inf.vs.a2.s
 
         simpleTempSensor = SensorFactory.getInstance(SensorFactory.Type.HTML);
         simpleTempSensor.registerListener(this);
+
+    }
+
+    public void getJsonTemperature(View view) {
+
+        simpleJsonSensor = SensorFactory.getInstance(SensorFactory.Type.JSON);
+        simpleJsonSensor.registerListener(this);
 
     }
 
