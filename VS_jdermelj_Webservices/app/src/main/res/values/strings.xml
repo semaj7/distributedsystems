@@ -21,7 +21,9 @@
 
 
     <!-- Strings für Task 3 -->
-
-
+    <string name="start_btn">Start Server</string>
+    <string name="stop_btn">Stop Server</string>
+    <string name="ip_address">IP Address: ...</string>
+    <string name="port_nr">Port Number: ...</string>
 
 </resources>
