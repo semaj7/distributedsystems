@@ -11,4 +11,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
+    <TextView android:text="@string/nothing_received"
+        android:id="@+id/TEMPVALTXT"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
 </LinearLayout>

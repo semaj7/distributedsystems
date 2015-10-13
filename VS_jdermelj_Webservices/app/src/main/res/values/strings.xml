@@ -13,12 +13,15 @@
     <string name="welcome_task1">Get temperature values with REST</string>
     <string name="title_activity_activity_2">Activity_2</string>
 
-    <string name="hello_world">Hello world!</string>
     <string name="title_activity_activity_3">Activity_3</string>
+    <string name="temperatureIs">Die Temperatur ist:</string>
+    <string name="nothing_received">Es wurde noch nichts empfangen.</string>
 
 
     <!-- Strings für Task 2 -->
 
+
+    <string name="hello_world">Hello world!</string>
 
     <!-- Strings für Task 3 -->
 

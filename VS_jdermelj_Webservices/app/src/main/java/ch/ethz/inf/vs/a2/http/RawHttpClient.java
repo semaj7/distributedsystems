@@ -1,10 +1,11 @@
 package ch.ethz.inf.vs.a2.http;
 
+import android.util.Log;
+
 import java.io.BufferedReader;
-import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.InetSocketAddress;
 import java.net.Socket;
 
 /**
@@ -15,49 +16,65 @@ public class RawHttpClient implements SimpleHttpClient {
     //expects request to be an instance of HttpRawRequestImpl
     public String execute(Object request) {
 
+        Log.d("debug", "Executing a request");
+
         //return if the request is not an instance of HttpRawRequestImpl
         if (!(request instanceof HttpRawRequestImpl)) return null;
         HttpRawRequest r = (HttpRawRequestImpl) request;
 
         PrintWriter message_out = null;
         BufferedReader message_in = null;
+        String response = "";
 
         String host = r.getHost();
+
+        Log.d("debug", "Host: " + host);
+
         int port = r.getPort();
         if (host == null) return null;
 
+        Log.d("debug", "Port: " + String.valueOf(port));
+
         try {
-            Socket socket = new Socket();
-            socket.connect(new InetSocketAddress(host, port));
+            Socket socket = new Socket(host, port);
+
+
+            Log.d("debug", "Created a socket.");
+         //   socket.connect(new InetSocketAddress(host, port));
+
+            Log.d("debug", "Connected with a socket.");
+
+            String sendString = r.generateRequest();
+
+            Log.d("debug", "Sending: " + sendString);
 
             message_out = new PrintWriter( socket.getOutputStream(), true);
 
-            //reader for socket
-            message_in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            message_out.print(sendString);
+
+            message_out.flush();
+
+            InputStream inStream = socket.getInputStream( );
+            BufferedReader rd = new BufferedReader(
+                    new InputStreamReader(inStream));
+            String line;
+            while ((line = rd.readLine()) != null) {
+                response = response + line;
+            }
+
+
+
 
         }
         catch(Exception e) {
 
-            System.err.println("Something went wrong while connecting to host : " + host +" with port" + port);
-            System.exit(1);
+            System.err.println("Something went wrong while connecting to host : " + host + " with port " + port);
+
+            return null;
 
         }
 
-        String sendString = r.generateRequest();
-        message_out.println(sendString);
-        message_out.flush();
 
-        String response = null;
-
-        try {
-            while ((response = message_in.readLine()) != null) {
-                System.out.println(response);
-            }
-        }
-        catch (IOException e) {
-            System.err.println("Something went wrong while receiving response from the host : " + host);
-            System.exit(1);
-        }
         return response;
     }
 }

@@ -1,5 +1,7 @@
 package ch.ethz.inf.vs.a2.http;
 
+import android.util.Log;
+
 /**
  * Created by Andres on 12.10.15.
  */
@@ -7,16 +9,15 @@ public class HttpRawRequestImpl implements HttpRawRequest{
 
     private String host;
     private int port;
-    //should be 8081
-
     private String path;
-    //should be /sunspots/Spot1/sensors/temperature
 
-    public HttpRawRequestImpl(String h, int p, String pa) {
+    public HttpRawRequestImpl(String new_host, int new_port, String new_path) {
 
-        host = h;
-        port = p;
-        path = pa;
+        host = new_host;
+        port = new_port;
+        path = new_path;
+
+        Log.d("debug", "Made a new HttpRawRequestImpl");
 
     }
     @Override
@@ -27,12 +28,16 @@ public class HttpRawRequestImpl implements HttpRawRequest{
         String secondline = "Host: " + host + "\r\n";
         String thirdline = "Connection: close\r\n\r\n";
 
+        Log.d("debug", "Generating request");
+
         return firstline + secondline + thirdline;
+
 
     }
 
     @Override
     public String getHost() {
+
         return host;
     }
 
