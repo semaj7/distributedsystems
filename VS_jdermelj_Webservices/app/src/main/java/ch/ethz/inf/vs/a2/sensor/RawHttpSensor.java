@@ -26,7 +26,8 @@ public class RawHttpSensor extends AbstractSensor {
 
         Log.d("debug", "Set up RawHttpClient");
 
-        worker = new AsyncWorker();
+
+
 
 
     }
@@ -34,22 +35,18 @@ public class RawHttpSensor extends AbstractSensor {
     @Override
     public double parseResponse(String response) {
         Log.d("debug", "Trying to parse");
-        return 1.0;
+
+        ResponseParserImpl responseParser = new ResponseParserImpl();
+        return responseParser.parseResponse(response);
+
     }
 
     @Override
     public void getTemperature() throws NullPointerException {
 
-        //may throw NullPointerException, if requester is still null
-        //always invoke setHttpClient before invoking getTemperature() (this is done in the abstract class)
-        String response = worker.doInBackground(requester);
+        worker = new AsyncWorker();
 
-        if (response != null) Log.d("debug", response);
-
-        worker.onPostExecute(response);
-
-      //  double temp = parseResponse(response);
-
+        worker.execute(requester);
 
     }
 }

@@ -14,7 +14,7 @@
     <string name="title_activity_activity_2">Activity_2</string>
 
     <string name="title_activity_activity_3">Activity_3</string>
-    <string name="temperatureIs">Die Temperatur ist:</string>
+    <string name="temperatureIs">Die Temperatur ist: </string>
     <string name="nothing_received">Es wurde noch nichts empfangen.</string>
 
 

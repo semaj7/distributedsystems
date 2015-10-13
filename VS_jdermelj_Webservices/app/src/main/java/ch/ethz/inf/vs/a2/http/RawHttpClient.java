@@ -39,9 +39,6 @@ public class RawHttpClient implements SimpleHttpClient {
             Socket socket = new Socket(host, port);
 
 
-            Log.d("debug", "Created a socket.");
-         //   socket.connect(new InetSocketAddress(host, port));
-
             Log.d("debug", "Connected with a socket.");
 
             String sendString = r.generateRequest();
@@ -63,12 +60,15 @@ public class RawHttpClient implements SimpleHttpClient {
             }
 
 
+            Log.d("debug", "Got message: " + response);
+
 
 
         }
         catch(Exception e) {
 
             System.err.println("Something went wrong while connecting to host : " + host + " with port " + port);
+            System.err.println(e.toString());
 
             return null;
 

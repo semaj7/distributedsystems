@@ -46,7 +46,7 @@ public class Activity_1 extends AppCompatActivity implements ch.ethz.inf.vs.a2.s
     @Override
     public void onReceiveDouble(double value) {
 
-        tempValTextView.setText(R.string.temperatureIs + String.valueOf(value));
+        tempValTextView.setText(getString(R.string.temperatureIs) + String.valueOf(value));
     }
 
     @Override
