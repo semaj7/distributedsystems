@@ -1,11 +1,29 @@
 package ch.ethz.inf.vs.a2.sensor;
 
+import org.apache.http.HttpHost;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.DefaultClientConnection;
+import org.apache.http.params.HttpParams;
+import org.apache.http.protocol.HttpContext;
 import org.ksoap2.serialization.PropertyInfo;
 import org.ksoap2.serialization.SoapObject;
+import org.ksoap2.transport.HttpsTransportSE;
+import org.ksoap2.transport.HttpTransportSE;
+
+
+import java.io.IOException;
 import java.lang.Exception;
 import java.util.InputMismatchException;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.SoapEnvelope;
+import org.ksoap2.serialization.SoapPrimitive;
 
 public class SoapSensor extends ch.ethz.inf.vs.a2.sensor.AbstractSensor{
 
@@ -32,6 +50,12 @@ public class SoapSensor extends ch.ethz.inf.vs.a2.sensor.AbstractSensor{
 
     @Override
     protected void setHttpClient() {
+        String url = "http://webservices.vslecture.vs.inf.ethz.ch/";
+
+//        HttpContext context = new DefaultClientConnection()
+//
+//        HttpClient cl = new DefaultHttpClient();
+//        cl.execute(url, url, )
 
     }
 
@@ -47,24 +71,6 @@ public class SoapSensor extends ch.ethz.inf.vs.a2.sensor.AbstractSensor{
 
         temperature = 2;
 
-    }
-
-    @Override
-    public double parseResponse(String response) {
-        return 0;
-    }
-
-    public void sendGetTemp(int i){
-        if(i==3 || i==4){
-            getTemperature();
-        }
-        else{
-            throw new InputMismatchException("Argument must be 4 or 3! ");
-        }
-    }
-
-
-    public int GetInteger2() throws IOException, XmlPullParserException {
         SoapObject request = new SoapObject(NAMESPACE, METHOD_NAME);
 
         PropertyInfo pi = new PropertyInfo();
@@ -72,14 +78,44 @@ public class SoapSensor extends ch.ethz.inf.vs.a2.sensor.AbstractSensor{
         pi.setValue(123);
         request.addProperty(pi);
 
-        SoapSerializationEnvelope envelope =
-                new SoapSerializationEnvelope(SoapEnvelope.VER11);
+        SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
         envelope.dotNet = true;
         envelope.setOutputSoapObject(request);
 
-        AndroidHttpTransport androidHttpTransport = new AndroidHttpTransport(URL);
+        HttpsTransportSE htse = new HttpsTransportSE(URL);
+
+        htse.call(SOAP_ACTION, envelope);
+        SoapObject response = (SoapObject)envelope.getResponse();
+        C.CategoryId =  Integer.parseInt(response.getProperty(0).toString());
+        C.Name =  response.getProperty(1).toString();
+        C.Description = (String) response.getProperty(2).toString();
+
+
+
+
+
+
+        HttpTransportSE androidHttpTransport = new AndroidHttpTransportSE(URL);
         androidHttpTransport.call(SOAP_ACTION, envelope);
 
         SoapPrimitive result = (SoapPrimitive)envelope.getResponse();
         return Integer.parseInt(result.toString());
+
+    }
+
+    @Override
+    public double parseResponse(String response) {
+        ResponseParserImpl responseParser = new ResponseParserImpl();
+        return responseParser.parseResponse(response);
+    }
+
+//    public void sendGetTemp(int i){
+//        if(i==3 || i==4){
+//            getTemperature();
+//        }
+//        else{
+//            throw new InputMismatchException("Argument must be 4 or 3! ");
+//        }
+//    }
+
 }

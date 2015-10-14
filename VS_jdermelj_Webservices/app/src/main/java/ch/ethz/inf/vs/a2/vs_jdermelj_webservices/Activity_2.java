@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import org.ksoap2.serialization.SoapObject;
 
+import ch.ethz.inf.vs.a2.http.RemoteServerConfiguration;
 import ch.ethz.inf.vs.a2.sensor.SensorFactory;
 import ch.ethz.inf.vs.a2.sensor.Sensor;
 import ch.ethz.inf.vs.a2.sensor.XmlSensor;
@@ -59,6 +60,14 @@ public class Activity_2 extends AppCompatActivity implements ch.ethz.inf.vs.a2.s
 
     @Override
     public void onReceiveDouble(double value) {
+
+        if (value == RemoteServerConfiguration.ERROR_TEMPERATURE) {
+
+            tempValTextView.setText(getString(R.string.invalid_temperature) + String.valueOf(value));
+        }
+        else {
+            tempValTextView.setText(getString(R.string.temperatureIs) + String.valueOf(value));
+        }
 
     }
 
