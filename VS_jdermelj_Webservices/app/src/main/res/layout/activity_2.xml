@@ -7,7 +7,24 @@
     android:orientation="vertical"
     tools:context="ch.ethz.inf.vs.a2.vs_jdermelj_webservices.Activity_2">
 
-    <TextView android:text="@string/hello_world"
+    <TextView android:text="@string/welcome_task2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/button_manual"
+        android:onClick="getManualTemperature" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/button_ksoap2"
+        android:onClick="getLibTemperature" />
+
+    <TextView android:text="@string/nothing_received"
+        android:id="@+id/TEMPVALTXT"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 

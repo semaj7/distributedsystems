@@ -21,6 +21,11 @@
     <!-- Strings für Task 2 -->
     <string name="title_activity_activity_2">Task 2</string>
     <string name="hello_world">Hello world!</string>
+    <string name="welcome_task2">Hol die Temperatur mit SOAP (XML-WebService). Wähle mit den Buttons die Übertragungsart.</string>
+    <string name="button_manual">Manuell</string>
+    <string name="button_ksoap2">KSOAP2-Bibliothek</string>
+        //name = nothing_received
+
 
     <!-- Strings für Task 3 -->
     <string name="title_activity_activity_3">Task 3</string>
