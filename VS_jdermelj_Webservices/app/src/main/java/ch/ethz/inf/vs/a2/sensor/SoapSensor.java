@@ -6,12 +6,14 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.DefaultClientConnection;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HttpContext;
+import org.ksoap2.SoapFault;
 import org.ksoap2.serialization.PropertyInfo;
 import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.transport.HttpsTransportSE;
@@ -24,11 +26,14 @@ import java.util.InputMismatchException;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.SoapEnvelope;
 import org.ksoap2.serialization.SoapPrimitive;
+import org.xmlpull.v1.XmlPullParserException;
 
 public class SoapSensor extends ch.ethz.inf.vs.a2.sensor.AbstractSensor{
 
     private Integer spot;
     private Integer temperature; //Modified by 'getTemperature()', used by 'measureTemperature()'
+    private HttpGet getRequest;
+    private AsyncWorker worker;
 
 
     //Fields used for the SOAP request
@@ -39,13 +44,6 @@ public class SoapSensor extends ch.ethz.inf.vs.a2.sensor.AbstractSensor{
 
 
     public SoapSensor(){
-        spot = 3;
-    }
-
-
-    public double measureTemperature(){
-        sendGetTemp(spot);
-        return temperature;
     }
 
     @Override
@@ -68,38 +66,56 @@ public class SoapSensor extends ch.ethz.inf.vs.a2.sensor.AbstractSensor{
         System.out.println(sobj.toString());
         sobj.addProperty("id", "Spot " + spot);
         System.out.println(sobj.toString());
+        System.out.println("-----------------------------------------");
 
         temperature = 2;
 
+        //SOAP Object
         SoapObject request = new SoapObject(NAMESPACE, METHOD_NAME);
 
+        //SOAP Properties
         PropertyInfo pi = new PropertyInfo();
         pi.setName("i");
         pi.setValue(123);
         request.addProperty(pi);
 
+        //SOAP Envelope
         SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
         envelope.dotNet = true;
         envelope.setOutputSoapObject(request);
 
-        HttpsTransportSE htse = new HttpsTransportSE(URL);
+        //HTTP Send
+        HttpTransportSE htse = new HttpTransportSE(URL);
+        try {
+            htse.call(SOAP_ACTION, envelope);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (XmlPullParserException e) {
+            e.printStackTrace();
+        }
+        worker = new AsyncWorker();
+        worker.execute(htse);
 
-        htse.call(SOAP_ACTION, envelope);
-        SoapObject response = (SoapObject)envelope.getResponse();
-        C.CategoryId =  Integer.parseInt(response.getProperty(0).toString());
-        C.Name =  response.getProperty(1).toString();
-        C.Description = (String) response.getProperty(2).toString();
+        //HTTP receive
+        SoapObject response = null;
+        try {
+            response = (SoapObject) envelope.getResponse();
+        } catch (SoapFault soapFault) {
+            soapFault.printStackTrace();
+        }
+        String s = response.toString();
+        System.out.println("Whole response: " + s);
+        String k = response.getProperty(0).toString();
+        System.out.println("Property 0: " + k);
 
 
-
-
-
-
-        HttpTransportSE androidHttpTransport = new AndroidHttpTransportSE(URL);
-        androidHttpTransport.call(SOAP_ACTION, envelope);
-
-        SoapPrimitive result = (SoapPrimitive)envelope.getResponse();
-        return Integer.parseInt(result.toString());
+//        C.CategoryId =  Integer.parseInt(response.getProperty(0).toString());
+//        C.Name =  response.getProperty(1).toString();
+//        C.Description = (String) response.getProperty(2).toString();
+//
+//
+//        SoapPrimitive result = (SoapPrimitive)envelope.getResponse();
+//        return Integer.parseInt(result.toString());
 
     }
 

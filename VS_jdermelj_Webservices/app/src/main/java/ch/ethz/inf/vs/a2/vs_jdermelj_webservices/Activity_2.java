@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 import org.ksoap2.serialization.SoapObject;
@@ -47,13 +48,13 @@ public class Activity_2 extends AppCompatActivity implements ch.ethz.inf.vs.a2.s
 
 
     //Get the temperature by manually invoking the SOAP request
-    public void getManualTemperature(){
+    public void getManualTemperature(View view){
         xmlSensor= SensorFactory.getInstance(SensorFactory.Type.XML);
         xmlSensor.registerListener(this);
     }
 
     //Get the temperature by invoking the SOAP request with the KSOAP2-Library
-    public void getLibTemperature(){
+    public void getLibTemperature(View view){
         soapSensor = SensorFactory.getInstance(SensorFactory.Type.SOAP);
         soapSensor.registerListener(this);
     }

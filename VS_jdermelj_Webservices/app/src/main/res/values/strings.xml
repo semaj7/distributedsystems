@@ -11,7 +11,7 @@
     <!-- Strings für Task 1 -->
     <string name="title_activity_activity_1">Task 1</string>
     <string name="welcome_task1">Hol die Temperatur mit REST. Wähle mit den Buttons die Übertragungsart.</string>
-    <string name="temperatureIs">Die Temperatur ist:\t</string>
+    <string name="temperatureIs">Die Temperatur ist: \t</string>
     <string name="nothing_received">Es wurde noch nichts empfangen.</string>
     <string name="button_raw_temperature">Roh</string>
     <string name="button_html_temperature">Html</string>
@@ -24,7 +24,7 @@
     <string name="welcome_task2">Hol die Temperatur mit SOAP (XML-WebService). Wähle mit den Buttons die Übertragungsart.</string>
     <string name="button_manual">Manuell</string>
     <string name="button_ksoap2">KSOAP2-Bibliothek</string>
-        //name = nothing_received
+    //name = nothing_received
 
 
     <!-- Strings für Task 3 -->

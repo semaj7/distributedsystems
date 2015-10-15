@@ -3,6 +3,9 @@ package ch.ethz.inf.vs.a2.sensor;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +28,13 @@ public abstract class AbstractSensor implements Sensor, ResponseParser {
     public AbstractSensor() {
         Log.d("debug", "Generated an Abstract Sensor");
         setHttpClient();
-        getTemperature();
+        try {
+            getTemperature();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (XmlPullParserException e) {
+            e.printStackTrace();
+        }
     }
 
     /**

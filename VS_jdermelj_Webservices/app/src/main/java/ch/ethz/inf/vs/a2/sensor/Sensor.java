@@ -1,5 +1,9 @@
 package ch.ethz.inf.vs.a2.sensor;
 
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
+
 /**
  * A sensor representation that provides temperature measurements. 
  * 
@@ -13,7 +17,7 @@ public interface Sensor {
 	 * 
 	 * @throws NullPointerException If name has not been set yet
 	 */
-	public void getTemperature() throws NullPointerException;
+	public void getTemperature() throws NullPointerException, IOException, XmlPullParserException;
 	
 	
 	/**
