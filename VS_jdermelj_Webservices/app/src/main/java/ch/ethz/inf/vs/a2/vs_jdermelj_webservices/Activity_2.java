@@ -2,6 +2,7 @@ package ch.ethz.inf.vs.a2.vs_jdermelj_webservices;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -48,13 +49,33 @@ public class Activity_2 extends AppCompatActivity implements ch.ethz.inf.vs.a2.s
 
 
     //Get the temperature by manually invoking the SOAP request
-    public void getManualTemperature(View view){
-        xmlSensor= SensorFactory.getInstance(SensorFactory.Type.XML);
-        xmlSensor.registerListener(this);
+    public void getXMLTemperature(View view){
+        Log.d("debug", "button xml clicked");
+
+
+        soapSensor = SensorFactory.getInstance(SensorFactory.Type.XML);
+        soapSensor.registerListener(this);
+    }
+    public void onClick(View view){
+        switch (view.getId()) {
+            case R.id.MANBUTT:
+                Log.d("debug", "button xml clicked");
+                xmlSensor= SensorFactory.getInstance(SensorFactory.Type.XML);
+                xmlSensor.registerListener(this);
+                break;
+
+            case R.id.SOAPBUTT:
+                Log.d("debug", "button soap clicked");
+                xmlSensor= SensorFactory.getInstance(SensorFactory.Type.SOAP);
+                xmlSensor.registerListener(this);
+                break;
+        }
     }
 
     //Get the temperature by invoking the SOAP request with the KSOAP2-Library
-    public void getLibTemperature(View view){
+    public void getSoapTemperature(View view){
+        Log.d("debug", "button soap clicked");
+
         soapSensor = SensorFactory.getInstance(SensorFactory.Type.SOAP);
         soapSensor.registerListener(this);
     }

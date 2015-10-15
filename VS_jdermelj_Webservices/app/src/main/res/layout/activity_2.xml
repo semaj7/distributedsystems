@@ -15,13 +15,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/button_manual"
-        android:onClick="getManualTemperature" />
+        android:id="@+id/MANBUTT"
+        android:onClick="getXMLTemperature" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/button_ksoap2"
-        android:onClick="getLibTemperature" />
+        android:id="@+id/SOAPBUTT"
+        android:onClick="getSoapTemperature" />
+
 
     <TextView android:text="@string/nothing_received"
         android:id="@+id/TEMPVALTXT"

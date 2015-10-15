@@ -28,92 +28,70 @@ import org.ksoap2.SoapEnvelope;
 import org.ksoap2.serialization.SoapPrimitive;
 import org.xmlpull.v1.XmlPullParserException;
 
+import ch.ethz.inf.vs.a2.http.SimpleHttpClientFactory;
+
 public class SoapSensor extends ch.ethz.inf.vs.a2.sensor.AbstractSensor{
 
-    private Integer spot;
-    private Integer temperature; //Modified by 'getTemperature()', used by 'measureTemperature()'
-    private HttpGet getRequest;
-    private AsyncWorker worker;
+    public HttpGet getRequest;
+    public AsyncWorker worker;
+    public SoapObject sobj;
+    public SoapSerializationEnvelope envelope;
 
 
     //Fields used for the SOAP request
-    private static final String SOAP_ACTION = "http://tempuri.org/GetInteger2";
-    private static final String METHOD_NAME = "GetInteger2";
-    private static final String NAMESPACE = "http://tempuri.org/";
-    private static final String URL = "http://10.0.22:4711/Service1.asmx";
+    private static final String SOAP_ACTION = "";
+    private static final String METHOD_NAME = "getSpot";
+    private static final String NAMESPACE = "http://webservices.vslecture.vs.inf.ethz.ch/";
+    private static final String URL = "http://vslab.inf.ethz.ch:8080/SunSPOTWebServices/SunSPOTWebservice";
+    private static final String SCHEMA = "http://schemas.xmlsoap.org/soap/envelope/";
 
 
     public SoapSensor(){
     }
 
     @Override
-    protected void setHttpClient() {
-        String url = "http://webservices.vslecture.vs.inf.ethz.ch/";
+    protected void setHttpClient() { //Is actually not HTTP Client,
 
-//        HttpContext context = new DefaultClientConnection()
-//
-//        HttpClient cl = new DefaultHttpClient();
-//        cl.execute(url, url, )
-
-    }
-
-    @Override
-    public void getTemperature() throws NullPointerException {
-        
-
-        SoapObject sobj = new SoapObject("http://webservices.vslecture.vs.inf.ethz.ch/", "getSpot");
-        System.out.println("-----------------------------------------");
-        System.out.println(sobj.toString());
-        sobj.addProperty("id", "Spot " + spot);
-        System.out.println(sobj.toString());
-        System.out.println("-----------------------------------------");
-
-        temperature = 2;
+        String url = "http://vslab.inf.ethz.ch:8080/SunSPOTWebServices/SunSPOTWebservice";
 
         //SOAP Object
         SoapObject request = new SoapObject(NAMESPACE, METHOD_NAME);
 
         //SOAP Properties
-        PropertyInfo pi = new PropertyInfo();
-        pi.setName("i");
-        pi.setValue(123);
-        request.addProperty(pi);
+        request.addProperty("id", "Spot 3");
 
         //SOAP Envelope
-        SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
-        envelope.dotNet = true;
+        envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
+        envelope.dotNet = true; //?
         envelope.setOutputSoapObject(request);
+    }
+
+    @Override
+    public void getTemperature() throws NullPointerException {
 
         //HTTP Send
         HttpTransportSE htse = new HttpTransportSE(URL);
         try {
             htse.call(SOAP_ACTION, envelope);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (XmlPullParserException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        worker = new AsyncWorker();
-        worker.execute(htse);
 
         //HTTP receive
         SoapObject response = null;
         try {
             response = (SoapObject) envelope.getResponse();
-        } catch (SoapFault soapFault) {
-            soapFault.printStackTrace();
+        } catch (SoapFault s) {
+            s.printStackTrace();
         }
+
         String s = response.toString();
         System.out.println("Whole response: " + s);
         String k = response.getProperty(0).toString();
         System.out.println("Property 0: " + k);
 
-
-//        C.CategoryId =  Integer.parseInt(response.getProperty(0).toString());
-//        C.Name =  response.getProperty(1).toString();
-//        C.Description = (String) response.getProperty(2).toString();
-//
-//
+//        worker = new AsyncWorker();
+//        worker.execute(htse);
 //        SoapPrimitive result = (SoapPrimitive)envelope.getResponse();
 //        return Integer.parseInt(result.toString());
 
@@ -124,14 +102,5 @@ public class SoapSensor extends ch.ethz.inf.vs.a2.sensor.AbstractSensor{
         ResponseParserImpl responseParser = new ResponseParserImpl();
         return responseParser.parseResponse(response);
     }
-
-//    public void sendGetTemp(int i){
-//        if(i==3 || i==4){
-//            getTemperature();
-//        }
-//        else{
-//            throw new InputMismatchException("Argument must be 4 or 3! ");
-//        }
-//    }
 
 }
