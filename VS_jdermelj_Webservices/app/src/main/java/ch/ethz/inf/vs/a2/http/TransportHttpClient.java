@@ -28,21 +28,14 @@ public class TransportHttpClient implements SimpleHttpClient {
             HttpEntity response = cl.execute(post).getEntity();
             if (response != null) {
                 String ret = EntityUtils.toString(response);
-//                InputStream instream = response.getContent();
-//                BufferedReader rd = new BufferedReader(
-//                        new InputStreamReader(instream));
-               // try {
-                    System.out.println("we got a return!: " + ret);
+                    System.out.println("we got a return!: " + ret); //TODO: Maybe here lies the error? Wrong HttpClient?
                     return ret;
-//                } finally {
-//                    instream.close();
-//                }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return "" + RemoteServerConfiguration.ERROR_TEMPERATURE;
+        return null;
 
     }
 }

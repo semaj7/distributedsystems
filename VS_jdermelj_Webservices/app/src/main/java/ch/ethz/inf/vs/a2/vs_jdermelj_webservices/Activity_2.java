@@ -69,8 +69,6 @@ public class Activity_2 extends AppCompatActivity implements ch.ethz.inf.vs.a2.s
                 xmlSensor= SensorFactory.getInstance(SensorFactory.Type.SOAP);
                 xmlSensor.registerListener(this);
                 break;
-            case R.id.TEST:
-                
         }
     }
 

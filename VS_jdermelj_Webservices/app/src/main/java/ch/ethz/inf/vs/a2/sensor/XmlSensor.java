@@ -30,17 +30,19 @@ import ch.ethz.inf.vs.a2.http.SimpleHttpClientFactory;
 
 
 public class XmlSensor extends ch.ethz.inf.vs.a2.sensor.AbstractSensor{
-
     private final String URL = "http://vslab.inf.ethz.ch:8080/SunSPOTWebServices/SunSPOTWebservice";
+    private final String URL2 = "http://vslab.inf.ethz.ch:8080"; //this one  gives a response
+
     HttpPost postRequest;
     AsyncWorker worker;
+
+    //TODO: Currently, we get no response. Connection is established, though (host-url gives response). XML-String should also be fine, since i copied it from tester. I don't know where the error is..
 
     @Override
     protected void setHttpClient() {
         postRequest = new HttpPost(URL);
         //String uriString = "http://" + RemoteServerConfiguration.HOST + ":" + RemoteServerConfiguration.SOAP_PORT + RemoteServerConfiguration.;
         String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\"><S:Header/><S:Body><ns2:getSpot xmlns:ns2=\"http://webservices.vslecture.vs.inf.ethz.ch/\"><id>Spot3</id></ns2:getSpot></S:Body></S:Envelope>\"";
-
 // Request parameters and other properties.
         List<NameValuePair> params = new ArrayList<NameValuePair>(2);
          params.add(new BasicNameValuePair("param-1", xml));
@@ -93,7 +95,9 @@ public class XmlSensor extends ch.ethz.inf.vs.a2.sensor.AbstractSensor{
     // Parse the HTTP response and extract the temperature value.
     @Override
     public double parseResponse(String response) {
-        // use xmlpullparser
+
+        //TODO: implement it,  using xmlpullparser
+        Log.d("debug", response);
         double val = 10;
         Log.d("debug", "val: " + val );
         return val;
