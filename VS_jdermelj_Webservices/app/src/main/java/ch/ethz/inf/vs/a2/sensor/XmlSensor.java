@@ -2,6 +2,8 @@ package ch.ethz.inf.vs.a2.sensor;
 
 import android.util.Log;
 
+import org.apache.http.Header;
+import org.apache.http.HeaderElement;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -12,6 +14,8 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
+import org.kxml2.io.KXmlParser;
+import org.xmlpull.v1.XmlPullParser;
 
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -41,6 +45,8 @@ public class XmlSensor extends ch.ethz.inf.vs.a2.sensor.AbstractSensor{
     @Override
     protected void setHttpClient() {
         postRequest = new HttpPost(URL);
+        Header hd = 
+        postRequest.addHeader(new HeaderElement("Connection: close"));
         //String uriString = "http://" + RemoteServerConfiguration.HOST + ":" + RemoteServerConfiguration.SOAP_PORT + RemoteServerConfiguration.;
         String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\"><S:Header/><S:Body><ns2:getSpot xmlns:ns2=\"http://webservices.vslecture.vs.inf.ethz.ch/\"><id>Spot3</id></ns2:getSpot></S:Body></S:Envelope>\"";
 // Request parameters and other properties.
@@ -59,7 +65,6 @@ public class XmlSensor extends ch.ethz.inf.vs.a2.sensor.AbstractSensor{
 
         //Setting HTML client
         httpClient = SimpleHttpClientFactory.getInstance(SimpleHttpClientFactory.Type.TRANS);
-
         System.out.println(postRequest);
             //Execute and get the response.
 
@@ -96,7 +101,8 @@ public class XmlSensor extends ch.ethz.inf.vs.a2.sensor.AbstractSensor{
     @Override
     public double parseResponse(String response) {
 
-        //TODO: implement it,  using xmlpullparser
+        //TODO: implement it,  using xml pull parser
+        XmlPullParser xpp = new KXmlParser();
         Log.d("debug", response);
         double val = 10;
         Log.d("debug", "val: " + val );

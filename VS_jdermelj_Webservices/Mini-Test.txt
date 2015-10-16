@@ -1,0 +1,34 @@
+Webservices Mini-Test
+
+1
+
+a)
+
+Request-Line has the Structure:
+	'Method SP Request-URI SP HTTP-Version CRLF'
+
+
+
+
+4 WS-* Services
+
+a)
+
+The 'Webservice Description Language' (WSDL)-File Defines a Webservice. In case of SunSPOTWebservice the WSDL is stored at
+'http://vslab.inf.ethz.ch:8080/SunSPOTWebServices/SunSPOTWebservice?wsdl'
+
+b)
+
+The typedefinitions are imported form schema at 'http://vslab.inf.ethz.ch:8080/SunSPOTWebServices/SunSPOTWebservice?xsd=1' where
+	'getSpotResponse' is further defined as type 'sunSpot' which eventually consists of: 
+		3 Strings, 2 Switches (String and Boolean), 1 Tilt (3 Doubles).
+	'getSpot' consists of a String.
+
+
+c)
+
+We would use the binding-tag, to bind a porttype to the SMTP-protocol. The SMTP-protocol would be represented by a URI which links to it. The service-address would not have to be changed.
+
+5
+
+
