@@ -77,8 +77,6 @@ public abstract class AbstractSensor implements Sensor, ResponseParser {
 
         @Override
         protected void onPostExecute(String result) {
-            Log.d("debug", "in onPostExecute of AsynchWorker");
-
             super.onPostExecute(result);
             double value = parseResponse(result);
             if (value != Double.NaN) {

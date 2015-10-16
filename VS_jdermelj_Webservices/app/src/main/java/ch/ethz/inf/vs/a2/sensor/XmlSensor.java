@@ -31,13 +31,13 @@ import ch.ethz.inf.vs.a2.http.SimpleHttpClientFactory;
 
 public class XmlSensor extends ch.ethz.inf.vs.a2.sensor.AbstractSensor{
 
-
+    private final String URL = "http://vslab.inf.ethz.ch:8080/SunSPOTWebServices/SunSPOTWebservice";
     HttpPost postRequest;
     AsyncWorker worker;
 
     @Override
     protected void setHttpClient() {
-        postRequest = new HttpPost("http://vslab.inf.ethz.ch:8080/SunSPOTWebServices/SunSPOTWebservice");
+        postRequest = new HttpPost(URL);
         //String uriString = "http://" + RemoteServerConfiguration.HOST + ":" + RemoteServerConfiguration.SOAP_PORT + RemoteServerConfiguration.;
         String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\"><S:Header/><S:Body><ns2:getSpot xmlns:ns2=\"http://webservices.vslecture.vs.inf.ethz.ch/\"><id>Spot3</id></ns2:getSpot></S:Body></S:Envelope>\"";
 
@@ -56,7 +56,7 @@ public class XmlSensor extends ch.ethz.inf.vs.a2.sensor.AbstractSensor{
             Log.d("debug", "post created");
 
         //Setting HTML client
-        httpClient = SimpleHttpClientFactory.getInstance(SimpleHttpClientFactory.Type.RAW);
+        httpClient = SimpleHttpClientFactory.getInstance(SimpleHttpClientFactory.Type.TRANS);
 
         System.out.println(postRequest);
             //Execute and get the response.

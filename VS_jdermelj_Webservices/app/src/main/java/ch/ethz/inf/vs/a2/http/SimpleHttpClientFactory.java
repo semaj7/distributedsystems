@@ -10,12 +10,14 @@ public abstract class SimpleHttpClientFactory {
                 return new RawHttpClient();
             case LIB:
                 return new LibHttpClient();
+            case TRANS:
+                return new TransportHttpClient();
             default:
                 return null;
         }
     }
 
     public enum Type {
-        RAW, LIB;
+        RAW, LIB, TRANS;
     }
 }
