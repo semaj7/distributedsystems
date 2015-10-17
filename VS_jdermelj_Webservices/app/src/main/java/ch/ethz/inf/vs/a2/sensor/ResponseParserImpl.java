@@ -14,7 +14,6 @@ import ch.ethz.inf.vs.a2.http.RemoteServerConfiguration;
 public class ResponseParserImpl implements ResponseParser {
 
     private static final String REGULAR_EXPRESSION = "<span class=\"getterValue\">(\\S+)</span>";
-
     @Override
     public double parseResponse(String response) {
 

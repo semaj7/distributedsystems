@@ -54,14 +54,13 @@ public class SoapSensor extends ch.ethz.inf.vs.a2.sensor.AbstractSensor{
     private static final String URL = "http://vslab.inf.ethz.ch:8080/SunSPOTWebServices/SunSPOTWebservice";
     private static final String SCHEMA = "http://schemas.xmlsoap.org/soap/envelope/";
 
-
     public SoapSensor(){
     }
 
     @Override
     protected void setHttpClient() { //Is actually not HTTP Client,
 
-        httpClient = SimpleHttpClientFactory.getInstance(SimpleHttpClientFactory.Type.LIB);
+       /* httpClient = SimpleHttpClientFactory.getInstance(SimpleHttpClientFactory.Type.LIB);
         post = new HttpPost(URL);
 
         //SOAP Object
@@ -73,7 +72,7 @@ public class SoapSensor extends ch.ethz.inf.vs.a2.sensor.AbstractSensor{
         //SOAP Envelope
         envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
         envelope.dotNet = true; //?
-        envelope.setOutputSoapObject(request);
+        envelope.setOutputSoapObject(request);*/
 /*        try {
             envelope.write(new KXmlSerializer());
         } catch (IOException e) {
@@ -85,7 +84,8 @@ public class SoapSensor extends ch.ethz.inf.vs.a2.sensor.AbstractSensor{
 
     @Override
     public void getTemperature() throws NullPointerException {
-       //Experiment
+
+
         AsyncCallWS task = new AsyncCallWS();
         task.execute();
 
