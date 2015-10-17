@@ -60,7 +60,7 @@ public class SoapSensor extends ch.ethz.inf.vs.a2.sensor.AbstractSensor{
     @Override
     protected void setHttpClient() { //Is actually not HTTP Client,
 
-       /* httpClient = SimpleHttpClientFactory.getInstance(SimpleHttpClientFactory.Type.LIB);
+        httpClient = SimpleHttpClientFactory.getInstance(SimpleHttpClientFactory.Type.LIB);
         post = new HttpPost(URL);
 
         //SOAP Object
@@ -72,12 +72,12 @@ public class SoapSensor extends ch.ethz.inf.vs.a2.sensor.AbstractSensor{
         //SOAP Envelope
         envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
         envelope.dotNet = true; //?
-        envelope.setOutputSoapObject(request);*/
-/*        try {
+        envelope.setOutputSoapObject(request);
+/       try {
             envelope.write(new KXmlSerializer());
         } catch (IOException e) {
             e.printStackTrace();
-        }*/
+        }
 
 
     }
@@ -160,7 +160,7 @@ public class SoapSensor extends ch.ethz.inf.vs.a2.sensor.AbstractSensor{
         Log.i("debug", response);
 
         //TODO: implement it
-        return -20;
+        return -2000;
     }
     private String TAG ="Vik";
 

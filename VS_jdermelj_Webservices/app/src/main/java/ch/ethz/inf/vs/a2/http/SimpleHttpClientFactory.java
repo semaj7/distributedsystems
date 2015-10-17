@@ -12,12 +12,14 @@ public abstract class SimpleHttpClientFactory {
                 return new LibHttpClient();
             case TRANS:
                 return new TransportHttpClient();
+            case SOAP:
+                return new SoapClient();
             default:
                 return null;
         }
     }
 
     public enum Type {
-        RAW, LIB, TRANS;
+        RAW, LIB, TRANS, SOAP;
     }
 }
