@@ -58,28 +58,21 @@ public class SoapSensor extends ch.ethz.inf.vs.a2.sensor.AbstractSensor{
     }
 
     @Override
-    protected void setHttpClient() { //Is actually not HTTP Client,
+    protected void setHttpClient() { //Is actually not HTTP Client, we just
 
-        httpClient = SimpleHttpClientFactory.getInstance(SimpleHttpClientFactory.Type.LIB);
-        post = new HttpPost(URL);
-
-        //SOAP Object
-        SoapObject request = new SoapObject(NAMESPACE, METHOD_NAME);
-
-        //SOAP Properties
-        request.addProperty("id", "Spot3");
-
-        //SOAP Envelope
-        envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
-        envelope.dotNet = true; //?
-        envelope.setOutputSoapObject(request);
-/       try {
-            envelope.write(new KXmlSerializer());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
+//        httpClient = SimpleHttpClientFactory.getInstance(SimpleHttpClientFactory.Type.LIB);
+//        post = new HttpPost(URL);
+//
+//        //SOAP Object
+//        SoapObject request = new SoapObject(NAMESPACE, METHOD_NAME);
+//
+//        //SOAP Properties
+//        request.addProperty("id", "Spot3");
+//
+//        //SOAP Envelope
+//        envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
+//        envelope.dotNet = true;
+//        envelope.setOutputSoapObject(request);
     }
 
     @Override
@@ -192,27 +185,27 @@ public class SoapSensor extends ch.ethz.inf.vs.a2.sensor.AbstractSensor{
     }
 
     public void calculate() {
-         final String SOAP_ACTION = "getSpot";
+         final String SOAP_ACTION = "";
          final String METHOD_NAME = "getSpot";
          final String NAMESPACE = "http://webservices.vslecture.vs.inf.ethz.ch/";
-        final String URL = "http://vslab.inf.ethz.ch:8080";
+        final String URL = "http://vslab.inf.ethz.ch:8080/SunSPOTWebServices/SunSPOTWebservice";
 
         try {
-            SoapObject Request = new SoapObject(NAMESPACE, METHOD_NAME);
-            Request.addProperty("id", "Spot3");
+            SoapObject request = new SoapObject(NAMESPACE, METHOD_NAME);
+            request.addProperty("id", "Spot3");
 
             SoapSerializationEnvelope soapEnvelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
             soapEnvelope.dotNet = true;
-            soapEnvelope.setOutputSoapObject(Request);
+            soapEnvelope.setOutputSoapObject(request);
 
             HttpTransportSE transport = new HttpTransportSE(URL);
 
-            transport.call(SOAP_ACTION, soapEnvelope); //TODO: exception happens here
+            transport.call(SOAP_ACTION, soapEnvelope);
 
             SoapPrimitive resultString = (SoapPrimitive) soapEnvelope.getResponse();
 
             Log.i(TAG, "Result Celsius: " + resultString);
-        } catch (Exception ex) { //TODO: we always reach this exception... i don't know why.
+        } catch (Exception ex) {
             Log.e(TAG, "Error: " + ex.getMessage());
         }
 
