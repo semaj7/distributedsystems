@@ -13,7 +13,7 @@ public abstract class SimpleHttpClientFactory {
             case TRANS:
                 return new TransportHttpClient();
             case SOAP:
-                return new SoapClient();
+                return new SoapHttpClient();
             default:
                 return null;
         }

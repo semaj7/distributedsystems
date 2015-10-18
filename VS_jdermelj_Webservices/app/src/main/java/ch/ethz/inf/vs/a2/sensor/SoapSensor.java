@@ -42,9 +42,6 @@ import ch.ethz.inf.vs.a2.http.SimpleHttpClientFactory;
 public class SoapSensor extends ch.ethz.inf.vs.a2.sensor.AbstractSensor{
 
     public AsyncWorker worker;
-    public SoapObject sobj;
-    public SoapSerializationEnvelope envelope;
-    public HttpPost post;
 
 
     //Fields used for the SOAP request
@@ -60,36 +57,15 @@ public class SoapSensor extends ch.ethz.inf.vs.a2.sensor.AbstractSensor{
     @Override
     protected void setHttpClient() { //Is actually not HTTP Client,
 
-        httpClient = SimpleHttpClientFactory.getInstance(SimpleHttpClientFactory.Type.LIB);
-        post = new HttpPost(URL);
-
-        //SOAP Object
-        SoapObject request = new SoapObject(NAMESPACE, METHOD_NAME);
-
-        //SOAP Properties
-        request.addProperty("id", "Spot3");
-
-        //SOAP Envelope
-        envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
-        envelope.dotNet = true; //?
-        envelope.setOutputSoapObject(request);
-/       try {
-            envelope.write(new KXmlSerializer());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+        httpClient = SimpleHttpClientFactory.getInstance(SimpleHttpClientFactory.Type.SOAP);
 
     }
 
     @Override
     public void getTemperature() throws NullPointerException {
 
-
-        AsyncCallWS task = new AsyncCallWS();
-        task.execute();
-
-
+        worker = new AsyncWorker();
+        worker.execute();
 //        //HTTP Send
 //        HttpTransportSE trans = new HttpTransportSE(URL);
 //        try {
@@ -158,6 +134,7 @@ public class SoapSensor extends ch.ethz.inf.vs.a2.sensor.AbstractSensor{
     @Override
     public double parseResponse(String response) {
         Log.i("debug", response);
+       // return Integer.parseInt(response);
 
         //TODO: implement it
         return -2000;
@@ -195,7 +172,7 @@ public class SoapSensor extends ch.ethz.inf.vs.a2.sensor.AbstractSensor{
          final String SOAP_ACTION = "getSpot";
          final String METHOD_NAME = "getSpot";
          final String NAMESPACE = "http://webservices.vslecture.vs.inf.ethz.ch/";
-        final String URL = "http://vslab.inf.ethz.ch:8080";
+        final String URL = "http://vslab.inf.ethz.ch:8080/WebServices/Webservice";
 
         try {
             SoapObject Request = new SoapObject(NAMESPACE, METHOD_NAME);
