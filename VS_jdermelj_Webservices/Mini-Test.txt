@@ -7,6 +7,21 @@ a)
 Request-Line has the Structure:
 	'Method SP Request-URI SP HTTP-Version CRLF'
 
+b) GET HTTP 1.1 \r\n Host: 192.168.1.1:8080 \r\n Connection: close \r\n\r\n
+
+c) 
+
+2
+
+3 a) Wrong. REST is not a protocol but is a software architectural style to design distributed systems.
+
+b) Wrong. What is described is stateful. Stateless means that the serves does not store client-context.
+
+c) Right.
+
+d) 
+
+
 
 
 
