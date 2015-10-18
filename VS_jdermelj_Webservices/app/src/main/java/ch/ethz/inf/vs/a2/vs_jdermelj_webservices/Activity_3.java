@@ -7,17 +7,36 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
+
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.Enumeration;
 
 public class Activity_3 extends AppCompatActivity {
 
     Intent server_intent;
+    final int port = 8088;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_3);
 
+        TextView textViewIpAddress= (TextView) findViewById(R.id.ip_address);
+        TextView textViewPort= (TextView) findViewById(R.id.port_nr);
+
+        InetAddress localIpAddress=getLocalIpAddress();
+        if(localIpAddress!=null)
+        {
+
+            //textViewIpAddress.setText("IP Address: " + localIpAddress.getHostAddress().toString().substring(0, localIpAddress.getHostAddress().indexOf("%")));
+            textViewIpAddress.setText("IP Address: " + localIpAddress.getHostAddress().toString());
+            textViewPort.setText("Posrt: " + String.valueOf(port));
+        }
         server_intent=new Intent(this, ServerService.class);
+        server_intent.putExtra("PORT",port);
     }
 
     @Override
@@ -49,4 +68,23 @@ public class Activity_3 extends AppCompatActivity {
         stopService(server_intent);
     }
 
+    // GETS THE IP ADDRESS OF YOUR PHONE'S NETWORK
+    private InetAddress getLocalIpAddress() {
+        try {
+            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
+                NetworkInterface intf = en.nextElement();
+                Log.d("debug","interface found: "+intf.getDisplayName());
+                if(intf.getDisplayName().equals("wlan0")) {
+                    for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements(); ) {
+                        InetAddress inetAddress = enumIpAddr.nextElement();
+                            return inetAddress;
+                    }
+                }
+            }
+        } catch (SocketException ex) {
+            Log.e("ServerActivity", ex.toString());
+        }
+        Log.d("debug","no wlan found");
+        return null;
+    }
 }
