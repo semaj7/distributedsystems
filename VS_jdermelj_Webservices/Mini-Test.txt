@@ -19,9 +19,7 @@ b) Wrong. What is described is stateful. Stateless means that the serves does no
 
 c) Right.
 
-d) 
-
-
+d) Wrong. JSON can be a data representation of REST but HTML and XML are allowed as well.
 
 
 
