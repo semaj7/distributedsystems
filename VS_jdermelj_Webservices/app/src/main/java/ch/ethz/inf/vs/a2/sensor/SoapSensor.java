@@ -37,42 +37,21 @@ import org.kxml2.io.KXmlSerializer;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlSerializer;
 
+import ch.ethz.inf.vs.a2.http.RemoteServerConfiguration;
 import ch.ethz.inf.vs.a2.http.SimpleHttpClientFactory;
+import ch.ethz.inf.vs.a2.http.SoapHttpClient;
 
 public class SoapSensor extends ch.ethz.inf.vs.a2.sensor.AbstractSensor{
 
     public AsyncWorker worker;
-    public SoapObject sobj;
-    public SoapSerializationEnvelope envelope;
-    public HttpPost post;
-
-
-    //Fields used for the SOAP request
-    private static final String SOAP_ACTION = "getSpot";
-    private static final String METHOD_NAME = "getSpot";
-    private static final String NAMESPACE = "http://webservices.vslecture.vs.inf.ethz.ch/";
-    private static final String URL = "http://vslab.inf.ethz.ch:8080/SunSPOTWebServices/SunSPOTWebservice";
-    private static final String SCHEMA = "http://schemas.xmlsoap.org/soap/envelope/";
+    public SoapObject request;
 
     public SoapSensor(){
     }
 
     @Override
-    protected void setHttpClient() { //Is actually not HTTP Client, we just
-
-//        httpClient = SimpleHttpClientFactory.getInstance(SimpleHttpClientFactory.Type.LIB);
-//        post = new HttpPost(URL);
-//
-//        //SOAP Object
-//        SoapObject request = new SoapObject(NAMESPACE, METHOD_NAME);
-//
-//        //SOAP Properties
-//        request.addProperty("id", "Spot3");
-//
-//        //SOAP Envelope
-//        envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
-//        envelope.dotNet = true;
-//        envelope.setOutputSoapObject(request);
+    protected void setHttpClient() {
+        httpClient = SimpleHttpClientFactory.getInstance(SimpleHttpClientFactory.Type.TRANS);
     }
 
     @Override
@@ -83,68 +62,6 @@ public class SoapSensor extends ch.ethz.inf.vs.a2.sensor.AbstractSensor{
         task.execute();
 
 
-//        //HTTP Send
-//        HttpTransportSE trans = new HttpTransportSE(URL);
-//        try {
-//            trans.call(SOAP_ACTION, envelope);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//            try {
-//                new AsyncTask<SoapSerializationEnvelope, Void, Void>() {
-//                    @Override
-//                    protected Void doInBackground(SoapSerializationEnvelope... params) {
-//                        SoapSerializationEnvelope e = params[0];
-//                        try {
-//                            e.getResponse();
-//                        } catch (SoapFault soapFault) {
-//                            soapFault.printStackTrace();
-//                        }
-//                        return null;
-//                    }
-//                }.execute(envelope).get();
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            } catch (ExecutionException e) {
-//                e.printStackTrace();
-//            }
-//            System.out.println();
-//            //envelope.getResponse();
-//                //} catch (SoapFault soapFault) {
-//                  //  soapFault.printStackTrace();
-//                //}
-////        Runnable task = new Runnable() {
-////            @Override
-////            public void run() {
-////                try {
-////                    envelope.getResponse();
-////                } catch (SoapFault soapFault) {
-////                    soapFault.printStackTrace();
-////                }
-////            }
-////        };
-//
-////        worker = new AsyncWorker();
-////        worker.execute(post);
-//
-//      //  worker.execute((Runnable) envelope.getResponse()); //SOmething like that would be awesome
-//
-//        //HTTP receive
-////        SoapObject response = null;
-////        try {
-////            response = (SoapObject) envelope.getResponse();
-////        } catch (SoapFault s) {
-////            s.printStackTrace();
-////        }
-////
-////        String s = response.toString();
-////        System.out.println("Whole response: " + s);
-////        String k = response.getProperty(0).toString();
-////
-////        System.out.println("Property 0: " + k);
-//
-////        SoapPrimitive result = (SoapPrimitive)envelope.getResponse();
-////        return Integer.parseInt(result.toString());
 
     }
 
@@ -153,7 +70,7 @@ public class SoapSensor extends ch.ethz.inf.vs.a2.sensor.AbstractSensor{
         Log.i("debug", response);
 
         //TODO: implement it
-        return -2000;
+        return RemoteServerConfiguration.ERROR_TEMPERATURE;
     }
     private String TAG ="Vik";
 
@@ -185,29 +102,27 @@ public class SoapSensor extends ch.ethz.inf.vs.a2.sensor.AbstractSensor{
     }
 
     public void calculate() {
-         final String SOAP_ACTION = "";
-         final String METHOD_NAME = "getSpot";
-         final String NAMESPACE = "http://webservices.vslecture.vs.inf.ethz.ch/";
-        final String URL = "http://vslab.inf.ethz.ch:8080/SunSPOTWebServices/SunSPOTWebservice";
 
         try {
-            SoapObject request = new SoapObject(NAMESPACE, METHOD_NAME);
+            SoapObject request = new SoapObject(RemoteServerConfiguration.SOAP_NAMESPACE, RemoteServerConfiguration.METHOD_NAME);
             request.addProperty("id", "Spot3");
 
             SoapSerializationEnvelope soapEnvelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
             soapEnvelope.dotNet = true;
             soapEnvelope.setOutputSoapObject(request);
 
-            HttpTransportSE transport = new HttpTransportSE(URL);
+            HttpTransportSE transport = new HttpTransportSE(RemoteServerConfiguration.SOAP_HOST);
+            transport.setXmlVersionTag(RemoteServerConfiguration.XML_VERSION_TAG);
 
-            transport.call(SOAP_ACTION, soapEnvelope);
+            transport.call(RemoteServerConfiguration.SOAP_ACTION, soapEnvelope);
 
             SoapPrimitive resultString = (SoapPrimitive) soapEnvelope.getResponse();
 
             Log.i(TAG, "Result Celsius: " + resultString);
         } catch (Exception ex) {
-            Log.e(TAG, "Error: " + ex.getMessage());
+            Log.e(TAG, "Error: " + ex.getMessage()); //TODO: we always catch this exception. HTTP Status 500
         }
+
 
     }
 

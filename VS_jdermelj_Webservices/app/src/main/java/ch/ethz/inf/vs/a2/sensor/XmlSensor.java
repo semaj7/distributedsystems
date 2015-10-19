@@ -2,6 +2,8 @@ package ch.ethz.inf.vs.a2.sensor;
 
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
+
+import ch.ethz.inf.vs.a2.http.RemoteServerConfiguration;
 import ch.ethz.inf.vs.a2.http.SimpleHttpClientFactory;
 
 /**
@@ -20,13 +22,11 @@ public class XmlSensor extends ch.ethz.inf.vs.a2.sensor.AbstractSensor{
     protected void setHttpClient() {
 
         //Creating XML-Request
-        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\"><S:Header/><S:Body><ns2:getSpot xmlns:ns2=\"http://webservices.vslecture.vs.inf.ethz.ch/\"><id>Spot3</id></ns2:getSpot></S:Body></S:Envelope>";
-        StringEntity ent = new StringEntity(xml, "UTF-8");
+        StringEntity ent = new StringEntity(RemoteServerConfiguration.XML_REQUEST, "UTF-8");
         ent.setContentType("text/xml");
 
         //Creating HTTP Post-Request
-        String url = "http://vslab.inf.ethz.ch:8080/SunSPOTWebServices/SunSPOTWebservice";
-        postRequest = new HttpPost(url);
+        postRequest = new HttpPost(RemoteServerConfiguration.SOAP_HOST);
         postRequest.addHeader("Connection", "close"); //Header added, as advised by slides
         postRequest.setEntity(ent);
 

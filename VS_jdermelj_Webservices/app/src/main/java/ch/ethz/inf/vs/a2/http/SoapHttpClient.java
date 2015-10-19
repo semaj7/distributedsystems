@@ -20,17 +20,13 @@ import java.net.Socket;
 public class SoapHttpClient implements SimpleHttpClient {
 
     private SoapSerializationEnvelope envelope;
-    private String URL = "http://vslab.inf.ethz.ch:8080/SunSPOTWebServices/SunSPOTWebservice";
-
     SoapHttpClient(){
 
-        String namespace = "http://webservices.vslecture.vs.inf.ethz.ch/";
-        SoapObject request = new SoapObject(namespace, "getSpot");
-        request.addProperty("id", "Spot3");
+        SoapObject request = new SoapObject(RemoteServerConfiguration.SOAP_NAMESPACE, RemoteServerConfiguration.METHOD_NAME);
+        request.addProperty("id", RemoteServerConfiguration.SPOT);
 
         envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
         envelope.dotNet = true;
-        envelope.setOutputSoapObject(request);
 
     }
 
@@ -39,14 +35,11 @@ public class SoapHttpClient implements SimpleHttpClient {
     @Override
     public String execute(Object request) {
 
-//        AndroidHttpTransport androidHttpTransport = new AndroidHttpTransport(URL);
-//        androidHttpTransport.call(SOAP_ACTION, envelope);
-//
-//        SoapPrimitive result = (SoapPrimitive)envelope.getResponse();
-        HttpTransportSE transport = new HttpTransportSE(URL);
+        HttpTransportSE transport = new HttpTransportSE(RemoteServerConfiguration.SOAP_HOST);
+        transport.setXmlVersionTag(RemoteServerConfiguration.XML_VERSION_TAG);
 
         try {
-            transport.call("", envelope); //TODO: exception happens here
+            transport.call(RemoteServerConfiguration.SOAP_ACTION, envelope); //TODO: exception happens here
             SoapPrimitive resultString = (SoapPrimitive) envelope.getResponse();
             return resultString.toString();
 
