@@ -48,5 +48,11 @@ c)
 We would use the binding-tag, to bind a porttype to the SMTP-protocol. The SMTP-protocol would be represented by a URI which links to it. The service-address would not have to be changed.
 
 5
+a) 127.0.0.1 or localhost
+ 
+b) to the device itself, it’s its own loopback-interface
 
+c) 10.0.2.2
+
+d) 
 

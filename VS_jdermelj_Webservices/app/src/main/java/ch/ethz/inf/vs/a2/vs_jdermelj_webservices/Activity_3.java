@@ -33,7 +33,7 @@ public class Activity_3 extends AppCompatActivity {
 
             //textViewIpAddress.setText("IP Address: " + localIpAddress.getHostAddress().toString().substring(0, localIpAddress.getHostAddress().indexOf("%")));
             textViewIpAddress.setText("IP Address: " + localIpAddress.getHostAddress().toString());
-            textViewPort.setText("Posrt: " + String.valueOf(port));
+            textViewPort.setText("Port: " + String.valueOf(port));
         }
         server_intent=new Intent(this, ServerService.class);
         server_intent.putExtra("PORT",port);
