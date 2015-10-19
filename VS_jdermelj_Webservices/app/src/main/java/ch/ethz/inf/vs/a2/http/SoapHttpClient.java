@@ -19,31 +19,34 @@ import java.net.Socket;
 
 public class SoapHttpClient implements SimpleHttpClient {
 
-    private SoapSerializationEnvelope envelope;
     SoapHttpClient(){
 
-        SoapObject request = new SoapObject(RemoteServerConfiguration.SOAP_NAMESPACE, RemoteServerConfiguration.METHOD_NAME);
-        request.addProperty("id", RemoteServerConfiguration.SPOT);
-
-        envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
-        envelope.dotNet = true;
-
     }
-
-
 
     @Override
     public String execute(Object request) {
 
+        //Create Envelope
+        SoapSerializationEnvelope soapEnvelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
+        soapEnvelope.dotNet = true;
+
+        //Add request to envelope
+        SoapObject soapRequest = (SoapObject) request;
+        soapEnvelope.setOutputSoapObject(soapRequest);
+
+        //Create transport object
         HttpTransportSE transport = new HttpTransportSE(RemoteServerConfiguration.SOAP_HOST);
         transport.setXmlVersionTag(RemoteServerConfiguration.XML_VERSION_TAG);
+        transport.debug = true;
 
-        try {
-            transport.call(RemoteServerConfiguration.SOAP_ACTION, envelope); //TODO: exception happens here
-            SoapPrimitive resultString = (SoapPrimitive) envelope.getResponse();
-            return resultString.toString();
+        try { //Execute transport //TODO: exception happens here. no idea why
+            transport.call("", soapEnvelope); //first argument is the soap action. i think this should be empty. but i tried many other inputs, none of them worked.
+            SoapObject result = (SoapObject) soapEnvelope.getResponse();
+            return result.toString();
 
         } catch (Exception e) {
+            Log.i("ERROR", "we reached an exception in soapClient execute");
+
             e.printStackTrace();
         }
         return null;

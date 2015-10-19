@@ -19,7 +19,6 @@ public interface RemoteServerConfiguration {
 	public static final String XML_REQUEST = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><S:Envelope xmlns:S=\"http://schemas.xmlsoap.org/soap/envelope/\"><S:Header/><S:Body><ns2:getSpot xmlns:ns2=\"http://webservices.vslecture.vs.inf.ethz.ch/\"><id>Spot3</id></ns2:getSpot></S:Body></S:Envelope>";
 	public static final String SOAP_SCHEMA = "http://schemas.xmlsoap.org/soap/envelope/";
 	public static final String METHOD_NAME = "getSpot";
-	public static final String SOAP_ACTION = "";
 	public static final String XML_VERSION_TAG = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 	public static final String SPOT = "Spot3";
 
