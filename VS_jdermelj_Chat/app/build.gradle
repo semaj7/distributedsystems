@@ -5,7 +5,7 @@ android {
     buildToolsVersion "23.0.1"
 
     defaultConfig {
-        applicationId "ch.ethz.inf.vs.a2.vs_jdermelj_webservices"
+        applicationId "ch.ethz.inf.vs.a3"
         minSdkVersion 18
         targetSdkVersion 23
         versionCode 1
@@ -17,19 +17,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-
-    packagingOptions {
-        exclude 'META-INF/DEPENDENCIES'
-        exclude 'META-INF/LICENSE'
-        exclude 'META-INF/NOTICE'
-    }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:23.0.1'
-    compile files('src/main/libs/ksoap2-android-assembly-3.0.0-jar-with-dependencies.jar')
-    compile files('src/main/libs/httpcore-4.4.3.jar')
-    compile files('src/main/libs/httpclient-4.5.1.jar')
-    compile files('testlibs/json-20150729.jar')
 }
