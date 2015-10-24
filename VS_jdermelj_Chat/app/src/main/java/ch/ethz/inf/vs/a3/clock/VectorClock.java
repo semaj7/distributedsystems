@@ -12,7 +12,6 @@ public class VectorClock implements Clock {
 	public VectorClock() {
 
 		vector = new HashMap<Integer, Integer>();
-
 	}
 
 
@@ -53,43 +52,56 @@ public class VectorClock implements Clock {
 	@Override
 	public void setClockFromString(String clock) {
 
-		vector = new HashMap<Integer, Integer>();
-
 		String withoutWhiteSpace = clock.replaceAll("\\s+","");
 
-		String cleanClockString = withoutWhiteSpace.replace("{", "").replace("}", "");
+		String regex = "\\{((\"[0-9]+\":[0-9]+)(,\"[0-9]+\":[0-9]+)*)?\\}";
 
-		if (cleanClockString.length() > 2 && cleanClockString.contains(",")) {
+		if (withoutWhiteSpace.matches(regex)) {
 
-			String[] kvPairs = cleanClockString.split(",");
+			vector = new HashMap<Integer, Integer>();
+			String cleanClockString = withoutWhiteSpace.replace("{", "").replace("}", "").replace("\"", "");
 
-			for (String kvPair : kvPairs) {
-				String[] kv = kvPair.split(":");
-				String key = kv[0];
-				String value = kv[1];
+			if (cleanClockString.length() > 2 && cleanClockString.contains(",")) {
 
-				if (key.matches("[0-9]+") && value.matches("[0-9]+")) {
+				String[] kvPairs = cleanClockString.split(",");
+
+				for (String kvPair : kvPairs) {
+					String[] kv = kvPair.split(":");
+					String key = kv[0];
+					String value = kv[1];
 
 					addProcess(Integer.valueOf(key), Integer.valueOf(value));
 
-				}
+					}
 
-			}
+				}
 		}
+
 
 	}
 
 	@Override
 	public String toString(){
 
-		String ret = "{";
 
+		StringBuilder stringBuilder = new StringBuilder("{");
+		boolean first = true;
 		for (Map.Entry<Integer, Integer> entry : vector.entrySet()) {
-			ret += String.valueOf(entry.getKey()) + ": ";
-			ret += String.valueOf(entry.getValue()) + ",";
+
+			if (!first) stringBuilder.append(",");
+			else first = false;
+
+			stringBuilder.append("\"");
+			stringBuilder.append(entry.getKey());
+			stringBuilder.append("\"");
+			stringBuilder.append(":");
+
+			stringBuilder.append(String.valueOf(entry.getValue()));
+
 		}
 
-		return ret + "}";
+		stringBuilder.append("}");
+		return stringBuilder.toString();
 	}
 
 	// return the current clock for the given process id
