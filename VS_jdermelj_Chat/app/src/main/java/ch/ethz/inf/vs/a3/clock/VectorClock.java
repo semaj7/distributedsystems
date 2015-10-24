@@ -4,27 +4,50 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+
+
 public class VectorClock implements Clock {
 
 	// For each process id associate a logical time
+
 	private Map<Integer, Integer> vector;
 
 	public VectorClock() {
-
 		vector = new HashMap<Integer, Integer>();
 	}
 
+	//better than doing toString() and setClockFromString() or changing vector to public
+	public Map<Integer, Integer> getVector() {
+		return vector;
+	}
 
 	@Override
 	public void update(Clock other) {
 
 		if (other instanceof VectorClock) {
 
-			VectorClock otherV = (VectorClock) other;
+			VectorClock otherClock = (VectorClock) other;
+			Map<Integer, Integer> otherVector = otherClock.getVector();
 
-			Iterator it = vector.entrySet().iterator();
+			Iterator it = otherVector.entrySet().iterator();
+			while (it.hasNext()) {
+				Map.Entry pair = (Map.Entry)it.next();
 
-			//TODO: Implement this
+				int pid = (int) pair.getKey();
+				int otherval = (int) pair.getValue();
+
+				if (vector.containsKey(pid)) {
+					int val = vector.get(pid);
+					if (otherval > val) {
+						vector.put(pid, otherval);
+					}
+				}
+				else {
+					addProcess(pid, otherval);
+				}
+
+				it.remove(); // avoids a ConcurrentModificationException
+			}
 
 		}
 
@@ -33,7 +56,9 @@ public class VectorClock implements Clock {
 	@Override
 	public void setClock(Clock other) {
 
-		//TODO: Implement this
+		if (other instanceof VectorClock) {
+			setClockFromString(other.toString());
+		}
 
 	}
 
@@ -63,7 +88,7 @@ public class VectorClock implements Clock {
 		if (withoutWhiteSpace.matches(regex)) {
 
 			vector = new HashMap<Integer, Integer>();
-			String cleanClockString = withoutWhiteSpace.replace("{", "").replace("}", "").replace("\"","");
+			String cleanClockString = withoutWhiteSpace.replace("{", "").replace("}", "").replace("\"", "");
 
 			if (cleanClockString.length() > 2) {
 
@@ -83,7 +108,7 @@ public class VectorClock implements Clock {
 
 	@Override
 	public String toString(){
-		
+
 		StringBuilder stringBuilder = new StringBuilder("{");
 		boolean first = true;
 		for (Map.Entry<Integer, Integer> entry : vector.entrySet()) {
