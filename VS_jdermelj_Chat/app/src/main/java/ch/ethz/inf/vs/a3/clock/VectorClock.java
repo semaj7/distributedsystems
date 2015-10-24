@@ -73,15 +73,42 @@ public class VectorClock implements Clock {
 	@Override
 	public boolean happenedBefore(Clock other) {
 
-		//TODO: Implement this
+		if (other instanceof VectorClock) {
 
-		return false;
+			if (other.equals(this)) return false;
+
+			VectorClock otherClock = (VectorClock) other;
+			Map<Integer, Integer> otherVector = otherClock.getVector();
+
+			Iterator it = vector.entrySet().iterator();
+			while (it.hasNext()) {
+				Map.Entry pair = (Map.Entry) it.next();
+
+				int pid = (int) pair.getKey();
+				int val = (int) pair.getValue();
+
+				if (otherVector.containsKey(pid)) {
+					int otherval = otherVector.get(pid);
+					if (val > otherval) {
+						return false;
+					}
+				}
+
+				it.remove(); // avoids a ConcurrentModificationException
+			}
+
+			return true;
+
+		}
+		else return false;
+
+
 	}
 
 	@Override
 	public void setClockFromString(String clock) {
 
-		String withoutWhiteSpace = clock.replaceAll("\\s+","");
+		String withoutWhiteSpace = clock.replaceAll("\\s+", "");
 
 		String regex = "\\{((\"[0-9]+\":[0-9]+)(,\"[0-9]+\":[0-9]+)*)?\\}";
 
