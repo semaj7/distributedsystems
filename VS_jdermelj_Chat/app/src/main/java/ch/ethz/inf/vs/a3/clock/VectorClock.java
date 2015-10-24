@@ -24,7 +24,7 @@ public class VectorClock implements Clock {
 
 			Iterator it = vector.entrySet().iterator();
 
-
+			//TODO: Implement this
 
 		}
 
@@ -33,6 +33,7 @@ public class VectorClock implements Clock {
 	@Override
 	public void setClock(Clock other) {
 
+		//TODO: Implement this
 
 	}
 
@@ -46,6 +47,9 @@ public class VectorClock implements Clock {
 
 	@Override
 	public boolean happenedBefore(Clock other) {
+
+		//TODO: Implement this
+
 		return false;
 	}
 
@@ -59,9 +63,9 @@ public class VectorClock implements Clock {
 		if (withoutWhiteSpace.matches(regex)) {
 
 			vector = new HashMap<Integer, Integer>();
-			String cleanClockString = withoutWhiteSpace.replace("{", "").replace("}", "").replace("\"", "");
+			String cleanClockString = withoutWhiteSpace.replace("{", "").replace("}", "").replace("\"","");
 
-			if (cleanClockString.length() > 2 && cleanClockString.contains(",")) {
+			if (cleanClockString.length() > 2) {
 
 				String[] kvPairs = cleanClockString.split(",");
 
@@ -72,18 +76,14 @@ public class VectorClock implements Clock {
 
 					addProcess(Integer.valueOf(key), Integer.valueOf(value));
 
-					}
-
 				}
+			}
 		}
-
-
 	}
 
 	@Override
 	public String toString(){
-
-
+		
 		StringBuilder stringBuilder = new StringBuilder("{");
 		boolean first = true;
 		for (Map.Entry<Integer, Integer> entry : vector.entrySet()) {
@@ -95,7 +95,6 @@ public class VectorClock implements Clock {
 			stringBuilder.append(entry.getKey());
 			stringBuilder.append("\"");
 			stringBuilder.append(":");
-
 			stringBuilder.append(String.valueOf(entry.getValue()));
 
 		}
@@ -109,7 +108,6 @@ public class VectorClock implements Clock {
 
 		if (vector.containsKey(pid)) return vector.get(pid);
 		else return 0;
-
 
 	}
 
