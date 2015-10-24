@@ -9,7 +9,6 @@ public class LamportClock implements Clock {
 	public void update(Clock other) {
 
 		if (happenedBefore(other)) setClock(other);
-		//tick(null);
 
 	}
 
