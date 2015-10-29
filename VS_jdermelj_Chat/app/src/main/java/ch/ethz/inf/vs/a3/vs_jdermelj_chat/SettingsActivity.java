@@ -32,11 +32,21 @@ import ch.ethz.inf.vs.a3.R;
 public class SettingsActivity extends AppCompatActivity{
 
 
+    private EditText addressEdit;
+    private EditText portEdit;
+    private TextView settingView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings_activity);
 
+        //Set the Views
+        addressEdit = (EditText) findViewById(R.id.editAddress);
+        portEdit = (EditText) findViewById(R.id.editPort);
+        settingView  = (TextView) findViewById(R.id.settingView);
+
+        showSettings();
     }
 
     @Override
@@ -57,12 +67,27 @@ public class SettingsActivity extends AppCompatActivity{
     }
 
     public void onClickSave(View view){
-        EditText addressEdit = (EditText) findViewById(R.id.editAddress);
-        setAddress(this,addressEdit.getText().toString());
 
-        EditText portEdit = (EditText) findViewById(R.id.editPort);
-        setPort(this,portEdit.getText().toString());
+        //Store Address
+        String address = addressEdit.getText().toString();
+        setAddress(this, address);
+
+        //Store Port
+        String port = portEdit.getText().toString();
+        setPort(this, port);
+
+        showSettings();
     }
+
+    //Displays current settings on the textviews
+    public void showSettings(){
+        String address = getAddress(this);
+        String port = getPort(this);
+        addressEdit.setText(address);
+        portEdit.setText(port);
+        settingView.setText("Current settings:\nURL: " + address + "\nPort: " + port);
+    }
+
 
     // Stores the currently entered username in sharedPreferences (from stackoverflow)
     public static void setAddress(Context context, String address) {
@@ -71,10 +96,23 @@ public class SettingsActivity extends AppCompatActivity{
         editor.putString("address", address);
         editor.commit();
     }
+    // Stores the currently entered port in sharedPreferences (from stackoverflow)
     public static void setPort(Context context, String port) {
         SharedPreferences prefs = context.getSharedPreferences("myAppPackage", 0);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString("port", port);
         editor.commit();
     }
+    // Gets the address stored in sharedPreferences (from stackoverflow)
+    public static String getAddress(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences("myAppPackage", 0);
+        return prefs.getString("address", "");
+    }
+    // Gets the port stored in sharedPreferences (from stackoverflow)
+    public static String getPort(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences("myAppPackage", 0);
+        return prefs.getString("port", "");
+    }
+
+
 }

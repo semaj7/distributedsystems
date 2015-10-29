@@ -7,19 +7,23 @@
     android:orientation="vertical"
     tools:context="ch.ethz.inf.vs.a2.vs_jdermelj_chat.ChatActivity">
 
-    <TextView android:text="@string/welcome_settings"
+    <TextView
+        android:text="@string/welcome_settings"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
     <EditText
+        android:hint="url"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:ems="10"
         android:id="@+id/editAddress" />
 
     <EditText
+        android:hint="port"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:ems="5"
+        android:ems="4"
         android:id="@+id/editPort" />
 
     <Button
@@ -28,9 +32,10 @@
         android:text="@string/button_save"
         android:onClick="onClickSave" />
 
-    <TextView android:text="@string/welcome_settings"
+    <TextView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:id="@+id/settingView" />
 
 
 </LinearLayout>
