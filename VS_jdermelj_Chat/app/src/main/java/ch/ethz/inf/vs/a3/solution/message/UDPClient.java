@@ -12,9 +12,11 @@ import java.net.SocketAddress;
  * Created by james on 30.10.15.
  */
 public class UDPClient {
+
     //PASCAL: @jimmy, i bruche es statisches attribut datagramSocket, damit i ir ChatActivity drmit cha schaffe!
     //ha iz mau es läärs gmacht, damiti scho druf cha zuegriffe :)
     public static DatagramSocket datagramSocket;
+
 
     private AsyncTask<Void, Void, Void> async_cient;
 
