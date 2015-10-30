@@ -6,6 +6,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+
+import java.net.DatagramSocket;
+import java.net.SocketException;
+
 import ch.ethz.inf.vs.a3.R;
 
 
@@ -17,6 +21,12 @@ public class ChatActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.chat_activity);
+
+        try {
+            Datagram Socket = new DatagramSocket();
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
 
     }
 
