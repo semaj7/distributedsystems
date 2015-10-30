@@ -22,11 +22,6 @@ public class ChatActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.chat_activity);
 
-        try {
-            Datagram Socket = new DatagramSocket();
-        } catch (SocketException e) {
-            e.printStackTrace();
-        }
 
     }
 
@@ -47,6 +42,18 @@ public class ChatActivity extends AppCompatActivity{
         return super.onOptionsItemSelected(item);
     }
 
+    public void retrieveChatLog(View v){
+        //send RETRIEVE_CHAT_LOG message to the server
+
+        //listen for messages and buffer them
+
+        //use a socket timeout (what's this?)
+
+        //sort messages
+
+        //display them
+
+    }
 
 
 

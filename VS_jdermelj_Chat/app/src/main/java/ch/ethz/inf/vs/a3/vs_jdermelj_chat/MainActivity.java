@@ -19,6 +19,7 @@ import java.util.UUID;
 import ch.ethz.inf.vs.a3.R;
 import ch.ethz.inf.vs.a3.message.MessageTypes;
 import ch.ethz.inf.vs.a3.solution.message.Message;
+import ch.ethz.inf.vs.a3.solution.message.UDPClient;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -101,19 +102,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void register(){
-        //Create a register-message
+        //Create a JSON-register-message
         String name = getUsername(this);
         String url = getSharedPreferences("myAppPackage", 0).getString("url", "");
         String port = getSharedPreferences("myAppPackage", 0).getString("port", "");
         Message m = new Message(name, url+port, null, MessageTypes.REGISTER, "");
 
-        //Create a JSON object
-        try {
-            JSONObject obj = new JSONObject(m.toString());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
         //Send JSON via UDP
+        UDPClient cl = new UDPClient();
+        cl.send(m.toString(), url, port);
     }
 }
