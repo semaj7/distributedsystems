@@ -1,0 +1,13 @@
+Answers HW3
+
+1. Vector Clocks are able to decide if events are causally dependent on another. We can not do this with Lamport timestamps, because Lamport timestamps enforce a total order for all events. In other words, Vector clocks satisfy the strong consistency condition, but Lamport timestamps do not.
+
+2. Clock C2 depends causally from C1 if C1 != C2 (elementwise comparison) and all values in C1 are smaller or equal to the corresponding values in C2.
+
+3. //TODO: for pascal or jdermelj, de schneller isch de gschwinder, de gschider git na, de esel blibt stah, es hett solangs hät!
+
+
+4. //TODO: insert png here
+
+
+5. The problem of using Vector clocks with a dynamic number of interacting processes is solved in this paper. 
