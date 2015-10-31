@@ -1,20 +1,16 @@
 package ch.ethz.inf.vs.a3.solution.message;
 
 import android.os.AsyncTask;
-import android.widget.TextView;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.Inet4Address;
 import java.net.InetAddress;
-import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.PriorityQueue;
 import java.util.concurrent.ExecutionException;
 
-import ch.ethz.inf.vs.a3.R;
 import ch.ethz.inf.vs.a3.message.MessageComparator;
 import ch.ethz.inf.vs.a3.udpclient.NetworkConsts;
 
@@ -64,9 +60,11 @@ public class UDPClient {
     //PASCAL: i do it the same way as jimmy does it in the method "send()", but i can't guarantee it works!
     public String retrieveLog(){
 
+        //i assume the third parameter is for the return-type, so i set it to String instead of Void
         AsyncTask<Void, Void, String> async_cient = new AsyncTask<Void, Void, String>() {
             @Override
             protected String doInBackground(Void... params) {
+                //this will be the one we display
                 String logString="";
 
                 //creating a priorityQueue with, say, at largest 50 messages.
@@ -91,11 +89,11 @@ public class UDPClient {
                             e.printStackTrace();
                         }
                         //add packet to the PriorityQueue
+                        //here i use the fantastic parser which is built into the constructor of the Message.class
                         priorityQueue.add(new Message(packet.getData().toString()));
                     }
 
-                    //display messages
-
+                    //extract the message in order from the priorityQueue and add them to the string, each on a new line.
                     while(!priorityQueue.isEmpty()) {
                         logString += "\n"+priorityQueue.poll().getContent();
                     }
