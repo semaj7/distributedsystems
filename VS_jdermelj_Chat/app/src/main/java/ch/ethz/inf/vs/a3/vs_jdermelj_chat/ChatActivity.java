@@ -1,5 +1,7 @@
 package ch.ethz.inf.vs.a3.vs_jdermelj_chat;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -7,14 +9,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import java.net.DatagramSocket;
-import java.net.SocketException;
-
 import ch.ethz.inf.vs.a3.R;
-
+import ch.ethz.inf.vs.a3.message.MessageTypes;
+import ch.ethz.inf.vs.a3.solution.message.Message;
+import ch.ethz.inf.vs.a3.solution.message.UDPClient;
 
 
 public class ChatActivity extends AppCompatActivity{
+
 
 
     @Override
@@ -43,18 +45,27 @@ public class ChatActivity extends AppCompatActivity{
     }
 
     public void retrieveChatLog(View v){
-        //send RETRIEVE_CHAT_LOG message to the server
 
-        //listen for messages and buffer them
+        //Create a RETRIEVE_CHAT_LOG-message
+        String name = getUsername(this);
+        String url = getSharedPreferences("myAppPackage", 0).getString("url", "");
+        String port = getSharedPreferences("myAppPackage", 0).getString("port", "");
+        Message m = new Message(name, url+port, null, MessageTypes.RETRIEVE_CHAT_LOG, "");
 
-        //use a socket timeout (what's this?)
+        //Send JSON via UDP
+        UDPClient cl = new UDPClient();
+        cl.send(m.toString(), url, port);
 
-        //sort messages
+        TextView logTextView = (TextView) findViewById(R.id.logTextView);
+        logTextView.setText(cl.retrieveLog());
 
-        //display them
 
     }
 
-
+    // Gets the currently username which is stored in sharedPreferences (from stackoverflow)
+    public String getUsername(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences("myAppPackage", 0);
+        return prefs.getString("username", "");
+    }
 
 }
