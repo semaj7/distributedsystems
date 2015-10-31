@@ -32,7 +32,6 @@ public class Message {
         this.content = content;
     }
 
-    //TODO PASCAL
     public Message(String toParse){
 
         this.username = extractFromString("username",toParse);
@@ -40,8 +39,7 @@ public class Message {
         this.timestamp = (new VectorClock());
         this.timestamp.setClockFromString(extractFromString("timestamp",toParse));
         this.type = extractFromString("type",toParse);
-        //TODO
-        this.content = extractFromString("",toParse);
+        this.content = extractFromString("body",toParse);
     }
 
     String extractFromString(String wanted,String toParse){
