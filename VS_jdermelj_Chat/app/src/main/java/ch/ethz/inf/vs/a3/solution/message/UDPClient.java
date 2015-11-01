@@ -1,6 +1,7 @@
 package ch.ethz.inf.vs.a3.solution.message;
 
 import android.os.AsyncTask;
+import android.provider.ContactsContract;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -19,40 +20,66 @@ import ch.ethz.inf.vs.a3.udpclient.NetworkConsts;
  */
 public class UDPClient {
 
-
-
+    public UDPClient(final String m, final String url, final String port) {
+        message = m;
+        this.url = url;
+        this.port = port;
+    }
+    public final String message;
+    public final String url;
+    public final String port;
+    public static DatagramSocket datagramSocket;
     private AsyncTask<Void, Void, Void> async_cient;
 
-    public void send(final String m, final String url, final String port) {
-        //PASCAL: what is a "cient"? -  must be something clever, i will call mine cient too! :)
+    public boolean send() {
         async_cient = new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
-                DatagramSocket ds = null;
-
 
                 try {
                     InetAddress iadr = InetAddress.getByName(url);
-                    ds = new DatagramSocket();
-                    DatagramPacket dp;
-                    dp = new DatagramPacket(m.getBytes(), m.length(), iadr, Integer.getInteger(port));
-                    ds.setBroadcast(true);
-                    ds.send(dp);
+                    datagramSocket = new DatagramSocket();
+                    DatagramPacket packet;
+                    packet = new DatagramPacket(message.getBytes(), message.length(), iadr, Integer.getInteger(port));
+                    datagramSocket.setBroadcast(true);
+                    datagramSocket.send(packet);
+                    int attempt = 0;
+                    //  DatagramPacket response = new DatagramPacket();
+                    while (attempt < 5) {
+                        try {
+                            datagramSocket.send(packet);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            return null;
+                        }
+                        try {
+                            // datagramSocket.receive(response);
+                            return null;
+                        } catch (Exception e) {
+                            attempt++;
+                            continue;
+                        }
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
+
                 } finally {
-                    if (ds != null) {
-                        ds.close();
+                    if (datagramSocket != null) {
+                        datagramSocket.close();
                     }
                 }
                 return null;
             }
+
             protected void onPostExecute(Void result) {
                 super.onPostExecute(result);
             }
         };
 
+        System.out.println("----registering: execute");
         async_cient.execute(); //If that doesn't work, try the one below
+        System.out.println("registered");
+        return true;
 
         // async_client.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
@@ -120,5 +147,4 @@ public class UDPClient {
         return ret;
         // async_client.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
-
 }
