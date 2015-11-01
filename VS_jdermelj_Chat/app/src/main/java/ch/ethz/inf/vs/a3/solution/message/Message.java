@@ -1,5 +1,8 @@
 package ch.ethz.inf.vs.a3.solution.message;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,7 +40,14 @@ public class Message {
         this.username = extractFromString("username",toParse);
         this.uuid = extractFromString("uuid", toParse);
         this.timestamp = (new VectorClock());
-        this.timestamp.setClockFromString(extractFromString("timestamp",toParse));
+        //would be better to do everything with JSON objects, but now that we already programmed it...
+        String s = null;
+        try {
+            s = new JSONObject(new JSONObject(toParse).get("header").toString()).getString("timestamp");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        this.timestamp.setClockFromString(s);
         this.type = extractFromString("type",toParse);
         this.content = extractFromString("body",toParse);
     }
