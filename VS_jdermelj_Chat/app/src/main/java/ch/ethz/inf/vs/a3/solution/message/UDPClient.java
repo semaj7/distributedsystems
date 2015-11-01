@@ -3,12 +3,14 @@ package ch.ethz.inf.vs.a3.solution.message;
 import android.os.AsyncTask;
 import android.provider.ContactsContract;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.util.Arrays;
 import java.util.PriorityQueue;
 import java.util.concurrent.ExecutionException;
 
@@ -29,33 +31,44 @@ public class UDPClient {
     public final String url;
     public final String port;
     public static DatagramSocket datagramSocket;
-    private AsyncTask<Void, Void, Void> async_cient;
+    private AsyncTask<Void, Void, Boolean> async_client;
 
-    public boolean send() {
-        async_cient = new AsyncTask<Void, Void, Void>() {
+    public boolean safeSend() { //With send until receiving ack
+        async_client = new AsyncTask<Void, Void, Boolean>() {
             @Override
-            protected Void doInBackground(Void... params) {
+            protected Boolean doInBackground(Void... params) {
 
                 try {
-                    InetAddress iadr = InetAddress.getByName(url);
+                    InetAddress iAdr = InetAddress.getByName(url);
                     datagramSocket = new DatagramSocket();
-                    DatagramPacket packet;
-                    packet = new DatagramPacket(message.getBytes(), message.length(), iadr, Integer.getInteger(port));
-                    datagramSocket.setBroadcast(true);
-                    datagramSocket.send(packet);
+                    datagramSocket.setSoTimeout(NetworkConsts.SOCKET_TIMEOUT);
+                    DatagramPacket packet = new DatagramPacket(message.getBytes(), message.length(), iAdr, Integer.getInteger(port));
+                    //datagramSocket.setBroadcast(true);
                     int attempt = 0;
-                    //  DatagramPacket response = new DatagramPacket();
-                    while (attempt < 5) {
+                    byte[] buffer = new byte[NetworkConsts.PAYLOAD_SIZE];
+                    DatagramPacket response = new DatagramPacket(buffer, buffer.length);
+
+                    while (attempt < 5) { // We attempt to register up to 5 times.
                         try {
                             datagramSocket.send(packet);
                         } catch (IOException e) {
+                            System.out.println("Error, couldn't send (in savesend). ");
                             e.printStackTrace();
-                            return null;
                         }
                         try {
-                            // datagramSocket.receive(response);
-                            return null;
+
+                            datagramSocket.receive(response);
+                            if  (Arrays.toString(response.getData()).equalsIgnoreCase("ack")){
+                                System.out.println("we got a response. it was an ack. ");
+                                return true; //if the message is ack, we succeeded
+                            }
+                            else{  //else, we continue
+                                System.out.println("we got a response, but it was not an ack ");
+                                attempt++;
+                                continue;
+                            }
                         } catch (Exception e) {
+                            System.out.println("we didn't get a response at all");
                             attempt++;
                             continue;
                         }
@@ -68,23 +81,64 @@ public class UDPClient {
                         datagramSocket.close();
                     }
                 }
-                return null;
+                return false;
             }
 
-            protected void onPostExecute(Void result) {
+            protected void onPostExecute(Boolean result) {
                 super.onPostExecute(result);
             }
         };
 
         System.out.println("----registering: execute");
-        async_cient.execute(); //If that doesn't work, try the one below
-        System.out.println("registered");
-        return true;
+        boolean ret = false;
+        try {
+            //TODO: is this really the way to do it? i read somewhere that .get() is blocking
+            ret =  async_client.execute().get();
+            // async_client.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        System.out.println("registering completed. success: " + ret);
+        return ret;
 
-        // async_client.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    //PASCAL: i do it the same way as jimmy does it in the method "send()", but i can't guarantee it works!
+    public void send() { //Just send, without waiting for ack. if internal errors -> exception
+        async_client = new AsyncTask<Void, Void, Boolean>() {
+            @Override
+            protected Boolean doInBackground(Void... params) {
+
+                try {
+                    InetAddress iAdr = InetAddress.getByName(url);
+                    datagramSocket = new DatagramSocket();
+                    datagramSocket.setSoTimeout(NetworkConsts.SOCKET_TIMEOUT);
+                    DatagramPacket packet = new DatagramPacket(message.getBytes(), message.length(), iAdr, Integer.getInteger(port));
+                    //datagramSocket.setBroadcast(true);
+                    datagramSocket.send(packet);
+                } catch (Exception e) {
+                    System.out.println("Error, couldn't send. ");
+                    e.printStackTrace();
+                } finally {
+                    if (datagramSocket != null) {
+                        datagramSocket.close();
+                    }
+                }
+                return true;
+            }
+
+            protected void onPostExecute(Boolean result) {
+                super.onPostExecute(result);
+            }
+        };
+
+        async_client.execute();
+        // async_client.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        System.out.println("sending completed");
+        return;
+    }
+
     public String retrieveLog(){
 
         //i assume the third parameter is for the return-type, so i set it to String instead of Void
@@ -94,7 +148,7 @@ public class UDPClient {
                 //this will be the one we display
                 String logString="";
 
-                //creating a priorityQueue with, say, at largest 50 messages.
+                //creating a priorityQueue with, say, at most 50 messages.
                 PriorityQueue<Message> priorityQueue;
                 priorityQueue=new PriorityQueue<Message>(50, new MessageComparator());
 
@@ -134,17 +188,16 @@ public class UDPClient {
                 super.onPostExecute(result);
             }
         };
-
         String ret="";
-        //If that doesn't work, try the one below
         try {
+            //TODO: is this really the way to do it? i read somewhere that .get() is blocking
             ret= async_cient.execute().get();
+            // async_client.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
         return ret;
-        // async_client.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 }
