@@ -3,6 +3,7 @@ package ch.ethz.inf.vs.a3.solution.message;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,6 +35,16 @@ public class Message {
         this.type = type;
         this.content = content;
     }
+
+    public Message(String username, Clock timestamp, String type, String content) {
+        this.username = username;
+        this.uuid = UUID.randomUUID().toString();
+        this.timestamp = timestamp;
+        this.type = type;
+        this.content = content;
+    }
+
+
 
     public Message(String toParse){
 
@@ -74,14 +85,16 @@ public class Message {
         else
             stamp = "\"timestamp\": \"{}\", ";
         String t = "\"type\": \"" + type + "\" ";
-        String header = "\"header\": { " + name + id + stamp + t + "} ";
+        String header = "\"header\": { " + "\n" + name + "\n" + id + "\n" + stamp + "\n" + t + "\n}, ";
         String cont;
         if(content != null)
             cont = "\"content\": \"" + content + "\"";
         else
             cont = "";
         String body = "\"body\": {" + cont + "} ";
-        return "{ " + header + body + "}";
+        String ret =  "{ \n" + header + "\n" + body + "\n}";
+        System.out.println("Message is: " + ret);
+        return ret;
     }
 
 

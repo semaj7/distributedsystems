@@ -14,11 +14,11 @@ import ch.ethz.inf.vs.a3.solution.message.Message;
 import ch.ethz.inf.vs.a3.solution.message.UDPClient;
 
 
-public class ChatActivity extends AppCompatActivity{
+public class ChatActivity extends AppCompatActivity {
 
-    private  String name;
-    private  String url;
-    private  String port;
+    private String name;
+    private String url;
+    private String port;
 
 
     @Override
@@ -51,14 +51,14 @@ public class ChatActivity extends AppCompatActivity{
         return super.onOptionsItemSelected(item);
     }
 
-    public void retrieveChatLog(View v){
+    public void retrieveChatLog(View v) {
 
         //Create a RETRIEVE_CHAT_LOG-message
-        Message m = new Message(name, url+port, null, MessageTypes.RETRIEVE_CHAT_LOG, "");
+        Message m = new Message(name, url + port, null, MessageTypes.RETRIEVE_CHAT_LOG, "");
 
         //Send JSON via UDP
-        UDPClient cl = new UDPClient(m.toString(), url, port);
-        cl.send();
+        UDPClient cl = new UDPClient();
+        //cl.send(m.toString(), url, port);
 
         TextView logTextView = (TextView) findViewById(R.id.logTextView);
         logTextView.setText(cl.retrieveLog());
@@ -66,26 +66,24 @@ public class ChatActivity extends AppCompatActivity{
 
     @Override
     public void onBackPressed() {
-        if (deregister()){
-            //toast:  deregistered
-            Toast toast = Toast.makeText(this, "deregistered successfully", Toast.LENGTH_SHORT);
-            toast.show();
-        }
-        else{
-            //toast:  did not deregister correctly //TODO: What do then?
-            Toast toast = Toast.makeText(this, "Unproper deregistration", Toast.LENGTH_SHORT);
-            toast.show();
-        }
+        deregister();
+//        if (deregister()){
+//            //toast:  deregistered
+//            Toast toast = Toast.makeText(this, "deregistered successfully", Toast.LENGTH_SHORT);
+//            toast.show();
+//        }
+//        else{
+//            //toast:  did not deregister correctly //TODO: What do then?
+//            Toast toast = Toast.makeText(this, "Unproper deregistration", Toast.LENGTH_SHORT);
+//            toast.show();
+//        }
         super.onBackPressed();
     }
 
-    public boolean deregister(){
-        Message m = new Message(name, url+port, null, MessageTypes.DEREGISTER, "");
+    public void deregister() {
+        Message m = new Message(name, url + port, null, MessageTypes.DEREGISTER, null);
         //Send JSON via UDP
-        UDPClient cl = new UDPClient(m.toString(), url, port);
-        if (cl.safeSend()){//send and wait for ack
-            return true;
-        }
-        return false;
+        UDPClient cl = new UDPClient();
+        cl.safeSend(m.toString(), url, port);
     }
 }
