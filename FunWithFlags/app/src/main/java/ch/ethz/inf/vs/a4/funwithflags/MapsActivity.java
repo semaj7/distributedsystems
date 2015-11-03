@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -122,11 +123,13 @@ public class MapsActivity extends FragmentActivity {
         GPSTracker gps = new GPSTracker(this);
         if(gps.canGetLocation()){
 
+            //TODO: this might also use outdated coordinates, check if they're old
             lat = gps.getLatitude(); // returns latitude
             lon = gps.getLongitude();
         }
 
         else {
+            gps.showSettingsAlert();
             lat = RandomFloat( -90, 90 );
             lon = RandomFloat( -180, 180 );
         }
@@ -134,6 +137,8 @@ public class MapsActivity extends FragmentActivity {
         Log.d("DEBUG", String.valueOf(lat));
         System.out.println("Lat:" + lat);
         System.out.println("Lon:" + lon);
+
+        Toast.makeText(this, "Set flag at Lat:" + lat + "Lon:" + lon, Toast.LENGTH_LONG).show();
 
         return new LatLng(lat, lon);
     }
