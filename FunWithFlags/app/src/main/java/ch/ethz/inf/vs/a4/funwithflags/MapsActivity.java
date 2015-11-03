@@ -113,12 +113,23 @@ public class MapsActivity extends FragmentActivity {
 
     public LatLng getCoordinates() {
 
-        float lon;
-        float lat;
+        double lon;
+        double lat;
 
         //TODO: change to something meaningful
-        lat = RandomFloat( -90, 90 );
-        lon = RandomFloat( -180, 180 );
+
+
+        GPSTracker gps = new GPSTracker(this);
+        if(gps.canGetLocation()){
+
+            lat = gps.getLatitude(); // returns latitude
+            lon = gps.getLongitude();
+        }
+
+        else {
+            lat = RandomFloat( -90, 90 );
+            lon = RandomFloat( -180, 180 );
+        }
 
         Log.d("DEBUG", String.valueOf(lat));
         System.out.println("Lat:" + lat);
