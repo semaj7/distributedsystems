@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">FunWithFlags</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="newFlagDialogTitle">Set your flag!</string>
+    <string name="newFlagDialogMessage">Enter your text:</string>
+    <string name="Profile">Profile</string>
+    <string name="title_activity_profile">ProfileActivity</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="ratingTextPlaceHolder">No ratings found.</string>
+    <string name="settedFlagsCountTextPlaceHolder">This user has not yet set any flags.</string>
+    <string name="ratingText">Your current rating is @rating. Good job!</string>
+    <string name="settedFlagsText">You have already set @count flags! That\'s fun!</string>
+    <string name="followedUser">You are now following @name. What a stalker!</string>
+</resources>
