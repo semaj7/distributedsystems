@@ -23,6 +23,7 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+
 import java.util.Random;
 
 public class MapsActivity extends FragmentActivity {
@@ -191,7 +192,6 @@ public class MapsActivity extends FragmentActivity {
 
         mMap.addMarker(new MarkerOptions().position(new LatLng(47.22, 8.33)).title("Höhö").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE)));
     }
-
 
     //PASCAL: ke ahnig wo dir dää code weit, aber i tues iz mau da ine.
     void getFlags(){
