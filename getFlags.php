@@ -1,15 +1,23 @@
 <?php
+<<<<<<< HEAD
 /*
 mysql_connect("localhost","distsys","intensiviLerngruppe");
 mysql_select_db("distsys");
  
 $q=mysql_query("SELECT * FROM Flags");
+=======
+mysql_connect("host","username","password");
+mysql_select_db("PeopleData");
+ 
+$q=mysql_query("SELECT * FROM people WHERE birthyear>'".$_REQUEST['year']."'");
+>>>>>>> origin/master
 while($e=mysql_fetch_assoc($q))
         $output[]=$e;
  
 print(json_encode($output));
  
 mysql_close();
+<<<<<<< HEAD
 */
 
 
@@ -54,4 +62,6 @@ if($_SERVER['REQUEST_METHOD']=='GET'){
 		
 }
 
+=======
+>>>>>>> origin/master
 ?>
