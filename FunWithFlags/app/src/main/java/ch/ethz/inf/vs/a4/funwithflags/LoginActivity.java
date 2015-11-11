@@ -27,11 +27,6 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-<<<<<<< HEAD
-import java.net.HttpURLConnection;
-
-=======
->>>>>>> origin/master
 /**
  * A login screen that offers login via email/password.
  */

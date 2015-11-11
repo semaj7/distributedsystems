@@ -26,15 +26,12 @@ import java.io.InputStreamReader;
 
 import java.util.Random;
 
-<<<<<<< HEAD
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
-=======
->>>>>>> origin/master
 public class MapsActivity extends FragmentActivity {
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
@@ -43,12 +40,9 @@ public class MapsActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-<<<<<<< HEAD
         //just testing the getFlags(). should print a flag in the terminal
         getFlags();
 
-=======
->>>>>>> origin/master
         setContentView(R.layout.activity_maps);
         setUpMapIfNeeded();
     }
@@ -210,7 +204,7 @@ public class MapsActivity extends FragmentActivity {
 
     //PASCAL: ke ahnig wo dir dää code weit, aber i tues iz mau da ine.
     void getFlags(){
-<<<<<<< HEAD
+
 
         /*
         String id = editTextId.getText().toString().trim();
@@ -267,8 +261,7 @@ public class MapsActivity extends FragmentActivity {
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(stringRequest);
 
-=======
->>>>>>> origin/master
+
 /*
         String result = "";
 
@@ -316,8 +309,5 @@ public class MapsActivity extends FragmentActivity {
         */
     }
 
-<<<<<<< HEAD
 
-=======
->>>>>>> origin/master
 }
