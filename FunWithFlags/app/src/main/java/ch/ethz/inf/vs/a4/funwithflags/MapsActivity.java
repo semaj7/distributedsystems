@@ -137,7 +137,10 @@ public class MapsActivity extends FragmentActivity {
 
         //TODO: implement this
 
-        return true;
+        float n = RandomFloat(0, 1);
+        if( n >= 0.5f)
+            return true;
+        return false;
     }
 
     public void setNewFlagClick(View v){
@@ -212,6 +215,7 @@ public class MapsActivity extends FragmentActivity {
         return new LatLng(lat, lon);
     }
 
+    // TODO: delete this method in the end, when we no longer need it
     float RandomFloat(int a, int b) {
         Random random = new Random(System.currentTimeMillis());
         double floatval = Math.random();

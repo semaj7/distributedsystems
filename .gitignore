@@ -10,3 +10,7 @@ FunWithFlags/.idea/misc.xml
 FunWithFlags/.idea/gradle.xml
 
 FunWithFlags/.idea/vcs.xml
+FunWithFlags/.idea/compiler.xml
+FunWithFlags/.idea/modules.xml
+FunWithFlags/app/app.iml
+FunWithFlags/FunWithFlags.iml
