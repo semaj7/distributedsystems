@@ -5,9 +5,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -35,6 +39,10 @@ import com.android.volley.toolbox.Volley;
 public class MapsActivity extends FragmentActivity {
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
+    private String slideMenuStrings[];
+    private DrawerLayout mDrawerLayout;
+    private ListView mDrawerList;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +53,26 @@ public class MapsActivity extends FragmentActivity {
 
         setContentView(R.layout.activity_maps);
         setUpMapIfNeeded();
+
+        slideMenuStrings = new String[]{"Search", "Favourites", "Filters","Ranking", "what's new","Settings"}; // TODO: do this nicer, with strings from resource files, ...
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerList = (ListView) findViewById(R.id.left_drawer);
+
+        // Set the adapter for the list view
+        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
+                R.layout.drawer_list_item, slideMenuStrings));
+        // Set the list's click listener
+        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
     }
+
+    private class DrawerItemClickListener implements ListView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView parent, View view, int position, long id) {
+            selectItem(position);
+        }
+    }
+
+
 
     @Override
     protected void onResume() {
@@ -80,6 +107,31 @@ public class MapsActivity extends FragmentActivity {
             }
         }
     }
+
+    // TODO: implement this method, and delete Toasts afterwards
+    private void selectItem(int position) {
+        switch (position) {
+            case 0: // Search
+                Toast.makeText(this, "Clicked " + slideMenuStrings[0] ,Toast.LENGTH_SHORT).show();
+                break;
+            case 1: // Favourites
+                Toast.makeText(this, "Clicked " + slideMenuStrings[1] ,Toast.LENGTH_SHORT).show();
+                break;
+            case 2: // Filters
+                Toast.makeText(this, "Clicked " + slideMenuStrings[2] ,Toast.LENGTH_SHORT).show();
+                break;
+            case 3: // Ranking
+                Toast.makeText(this, "Clicked " + slideMenuStrings[3] ,Toast.LENGTH_SHORT).show();
+                break;
+            case 4: // what's new
+                Toast.makeText(this, "Clicked " + slideMenuStrings[4] ,Toast.LENGTH_SHORT).show();
+                break;
+            default: // Settings
+                Toast.makeText(this, "Clicked " + slideMenuStrings[5] ,Toast.LENGTH_SHORT).show();
+                break;
+        }
+    }
+
 
     public boolean isLoggedIn() {
 
