@@ -163,6 +163,7 @@ public class MapsActivity extends FragmentActivity {
                     LatLng currentPosition = getCoordinates();
                     Flag f = new Flag(currentPosition, new SportsCategory(getResources()), inputText, getApplicationContext());
                     addFlag(f);
+                    displayFlag(f);
 
                 }
             });
@@ -253,15 +254,21 @@ public class MapsActivity extends FragmentActivity {
         //see other marker options: https://developers.google.com/maps/documentation/android-api/marker
 
         for (Flag f: Data.allFlags) {
-            addFlag(f);
+            displayFlag(f);
         }
         //LatLng in degrees, (double, double), ([-90,90],[-180,180])
 
     }
 
-    private void addFlag(Flag f) {
+    private void displayFlag(Flag f) {
 
         mMap.addMarker(new MarkerOptions().position(f.getLatLng()).title(f.getText()).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+
+    }
+
+    private void addFlag(Flag f) {
+
+
         Data.allFlags.add(f);
         Data.ownFlagsSet.add(f);
 
