@@ -16,12 +16,15 @@ public class Flag {
 
     private Category category;
 
+    private GPSTracker gpsTracker;
+
     public static String NOT_IN_RANGE_MESSAGE;
 
     public Flag(LatLng latLng, Category category, String text, Context context){
         this.latLng = latLng;
         this.category = category;
         this.text = text;
+        gpsTracker = new GPSTracker(context);
         if(NOT_IN_RANGE_MESSAGE == null) {
             NOT_IN_RANGE_MESSAGE = context.getString(R.string.not_in_range_message);
         }
@@ -53,8 +56,8 @@ public class Flag {
     }
 
     private boolean isInRange(){
-        LatLng phoneLatLong = new LatLng(33.3,33.3);    // todo: find a way to get actual phone coordinates in here
-
+        LatLng phoneLatLong = new LatLng(gpsTracker.getLatitude(),gpsTracker.getLongitude());
+        
         // this is an approximation of the distance that works best if close by, but since we want to only see close by flags, this should work just fine
         int R = 6371; // km
         double x = (getLatLng().longitude - phoneLatLong.longitude) * Math.cos((phoneLatLong.latitude + getLatLng().latitude) / 2);
