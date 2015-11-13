@@ -57,7 +57,7 @@ public class Flag {
 
     private boolean isInRange(){
         LatLng phoneLatLong = new LatLng(gpsTracker.getLatitude(),gpsTracker.getLongitude());
-        
+
         // this is an approximation of the distance that works best if close by, but since we want to only see close by flags, this should work just fine
         int R = 6371; // km
         double x = (getLatLng().longitude - phoneLatLong.longitude) * Math.cos((phoneLatLong.latitude + getLatLng().latitude) / 2);

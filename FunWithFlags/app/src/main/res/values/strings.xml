@@ -15,4 +15,5 @@
     <string name="followedUser">You are now following @name. What a stalker!</string>
     <string name="SportsName">Sports</string>
     <string name="not_in_range_message">You are not close enough to this flag</string>
+    <string name="choose_category">choose category</string>
 </resources>

@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Created by Andres on 13.11.15.
  */
-public class Data {
+public final class Data {
 
     private Data() {
         //since this class should be static, the constructor should not get invoked

@@ -3,15 +3,18 @@ package ch.ethz.inf.vs.a4.funwithflags;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
@@ -29,6 +32,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.List;
 import java.util.Random;
 
 public class MapsActivity extends FragmentActivity {
@@ -100,6 +104,7 @@ public class MapsActivity extends FragmentActivity {
                     .getMap();
             // Check if we were successful in obtaining the map.
             if (mMap != null) {
+                mMap.setMyLocationEnabled(true);
                 setUpMap();
             }
         }
@@ -115,7 +120,23 @@ public class MapsActivity extends FragmentActivity {
                 Toast.makeText(this, "Clicked " + slideMenuStrings[1] ,Toast.LENGTH_SHORT).show();
                 break;
             case 2: // Filters
-                Toast.makeText(this, "Clicked " + slideMenuStrings[2] ,Toast.LENGTH_SHORT).show();
+                AlertDialog.Builder b = new AlertDialog.Builder(this);
+                b.setTitle(R.string.choose_category);
+                List<String> types = Category.getallCategoryNames();
+                String[] cat_names = types.toArray(new String[types.size()]);
+                b.setItems(cat_names, new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        dialog.dismiss();
+                        filterByCategory(which);
+                    }
+
+                });
+
+                b.show();
+
                 break;
             case 3: // Ranking
                 Toast.makeText(this, "Clicked " + slideMenuStrings[3] ,Toast.LENGTH_SHORT).show();
@@ -126,6 +147,15 @@ public class MapsActivity extends FragmentActivity {
             default: // Settings
                 Toast.makeText(this, "Clicked " + slideMenuStrings[5] ,Toast.LENGTH_SHORT).show();
                 break;
+        }
+    }
+
+    private void filterByCategory(int whichCategory) {
+        mMap.clear();
+        Toast.makeText(this,"clicked on category nr " + whichCategory, Toast.LENGTH_SHORT).show();
+        for (Flag f: Data.allFlags) {
+            if(f.getCategory().id == whichCategory)
+            displayFlag(f);
         }
     }
 
