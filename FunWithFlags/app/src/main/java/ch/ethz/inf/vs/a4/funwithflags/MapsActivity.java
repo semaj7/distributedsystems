@@ -138,7 +138,6 @@ public class MapsActivity extends FragmentActivity {
         b.setTitle(R.string.choose_category);
         List<String> types = Category.getallCategoryNames();
 
-        //TODO: add a reset button that resets the filter
         String[] cat_names = types.toArray(new String[types.size()]);
         b.setItems(cat_names, new DialogInterface.OnClickListener() {
 
@@ -162,8 +161,10 @@ public class MapsActivity extends FragmentActivity {
     private List<Flag> filterFlagsByCategory(List<Flag> flagsToFilter, Category c) {
 
         Data.filteredCategories.removeAll(Data.filteredCategories);
-        Data.filteredCategories.add(c);
 
+        if (c == Category.DEFAULT) return flagsToFilter; //Do not filter if someone selects DEFAULT category
+
+        Data.filteredCategories.add(c);
         ArrayList<Flag> flagsThatAreInCategory = new ArrayList<Flag>();
 
         for (Flag f: flagsToFilter) {
