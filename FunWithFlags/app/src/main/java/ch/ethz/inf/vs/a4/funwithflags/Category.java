@@ -15,8 +15,8 @@ public enum Category {
     DEFAULT   ("No category", BitmapDescriptorFactory.HUE_ORANGE);
 
 
-    public final String name;   // in kilograms
-    public final float hue; // in meters
+    public final String name;
+    public final float hue;
     Category(String name, float hue) {
         this.name = name;
         this.hue = hue;
