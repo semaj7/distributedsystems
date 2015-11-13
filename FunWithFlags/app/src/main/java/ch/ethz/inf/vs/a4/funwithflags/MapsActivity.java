@@ -133,11 +133,13 @@ public class MapsActivity extends FragmentActivity {
     public boolean isLoggedIn() {
 
         //TODO: implement this
-
+/*
         float n = RandomFloat(0, 1);
         if( n >= 0.5f)
             return true;
-        return false;
+        return false; */
+
+        return true;
     }
 
     public void setNewFlagClick(View v){
@@ -159,8 +161,8 @@ public class MapsActivity extends FragmentActivity {
                     String inputText = input.getText().toString();
                     // Do something with value!
                     LatLng currentPosition = getCoordinates();
-                    //Flag f = new Flag(currentPosition, inputText);
-                    //addFlag(f);
+                    Flag f = new Flag(currentPosition, new SportsCategory(getResources()), inputText);
+                    addFlag(f);
 
                 }
             });
@@ -250,7 +252,7 @@ public class MapsActivity extends FragmentActivity {
     private void setUpMap() {
         //see other marker options: https://developers.google.com/maps/documentation/android-api/marker
 
-        for (Flag f: Data.flagsWithText) {
+        for (Flag f: Data.allFlags) {
             addFlag(f);
         }
         //LatLng in degrees, (double, double), ([-90,90],[-180,180])
@@ -260,7 +262,7 @@ public class MapsActivity extends FragmentActivity {
     private void addFlag(Flag f) {
 
         mMap.addMarker(new MarkerOptions().position(f.getLatLng()).title(f.getText()).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
-        Data.flagsWithText.add(f);
+        Data.allFlags.add(f);
         Data.ownFlagsSet.add(f);
 
 

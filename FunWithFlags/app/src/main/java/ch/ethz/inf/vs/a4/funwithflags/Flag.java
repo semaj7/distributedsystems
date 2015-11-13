@@ -1,7 +1,5 @@
 package ch.ethz.inf.vs.a4.funwithflags;
 
-import android.content.res.Resources;
-
 import com.google.android.gms.maps.model.LatLng;
 
 /**
@@ -23,8 +21,9 @@ public class Flag {
         this.category = category;
         this.text = text;
         if(NOT_IN_RANGE_MESSAGE == null) {
-            Resources res = Resources.getSystem();
-            NOT_IN_RANGE_MESSAGE = String.format(res.getString(R.string.not_in_range_message));
+        //    Resources res = Resources.getSystem();
+        //    NOT_IN_RANGE_MESSAGE = String.format(res.getString(R.string.not_in_range_message));
+            //TODO: this throws error!
         }
     }
 

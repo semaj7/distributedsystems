@@ -15,7 +15,6 @@ public class Data {
 
     public final static List<Flag> ownFlagsSet = new ArrayList<Flag>();
 
-    public final static List<Flag> flagsWithText = new ArrayList<Flag>();
+    public final static List<Flag> allFlags = new ArrayList<Flag>();
 
-    public final static List<Flag> flagsOutOfRange = new ArrayList<Flag>();
 }

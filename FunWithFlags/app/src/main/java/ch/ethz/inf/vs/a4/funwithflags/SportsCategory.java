@@ -9,8 +9,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
  */
 public class SportsCategory implements Category {
 
-    Resources res;
-
+    private Resources res;
     public SportsCategory(Resources res) {
         this.res = res;
     }
