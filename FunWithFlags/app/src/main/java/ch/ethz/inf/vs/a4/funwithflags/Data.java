@@ -13,9 +13,13 @@ public final class Data {
         throw new AssertionError();
     }
 
+
+
+    public final static List<Category> filteredCategories = new ArrayList<Category>();
+
     public final static String[] slideMenuStrings = new String[]{"Search", "Favourites", "Filters","Ranking", "What's new","Settings"};
 
-    public final static List<Flag> ownFlagsSet = new ArrayList<Flag>();
+    public final static List<Flag> flagsToShow = new ArrayList<Flag>();
 
     public final static List<Flag> allFlags = new ArrayList<Flag>();
 

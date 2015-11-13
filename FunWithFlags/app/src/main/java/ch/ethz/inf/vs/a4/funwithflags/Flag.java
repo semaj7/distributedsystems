@@ -47,6 +47,8 @@ public class Flag {
         }
     }
 
+    public boolean isOwner = false;
+
     public LatLng getLatLng() {
         return latLng;
     }

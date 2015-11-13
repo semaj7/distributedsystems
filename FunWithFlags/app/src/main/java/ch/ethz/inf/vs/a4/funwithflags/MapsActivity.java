@@ -3,18 +3,15 @@ package ch.ethz.inf.vs.a4.funwithflags;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
@@ -32,6 +29,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -42,7 +40,8 @@ public class MapsActivity extends FragmentActivity {
     private String slideMenuStrings[];
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
-    private Data d;
+
+    private int chosenCategoryIndex;
 
 
     @Override
@@ -55,7 +54,7 @@ public class MapsActivity extends FragmentActivity {
         setContentView(R.layout.activity_maps);
         setUpMapIfNeeded();
 
-        slideMenuStrings = d.slideMenuStrings; // have done this a bit nicer
+        slideMenuStrings = Data.slideMenuStrings; // have done this a bit nicer
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
@@ -105,7 +104,9 @@ public class MapsActivity extends FragmentActivity {
             // Check if we were successful in obtaining the map.
             if (mMap != null) {
                 mMap.setMyLocationEnabled(true);
+
                 setUpMap();
+
             }
         }
     }
@@ -120,22 +121,8 @@ public class MapsActivity extends FragmentActivity {
                 Toast.makeText(this, "Clicked " + slideMenuStrings[1] ,Toast.LENGTH_SHORT).show();
                 break;
             case 2: // Filters
-                AlertDialog.Builder b = new AlertDialog.Builder(this);
-                b.setTitle(R.string.choose_category);
-                List<String> types = Category.getallCategoryNames();
-                String[] cat_names = types.toArray(new String[types.size()]);
-                b.setItems(cat_names, new DialogInterface.OnClickListener() {
 
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                        dialog.dismiss();
-                        filterByCategory(which);
-                    }
-
-                });
-
-                b.show();
+                filterFlagsWithCategoryDialog(Data.allFlags);
 
                 break;
             case 3: // Ranking
@@ -150,13 +137,47 @@ public class MapsActivity extends FragmentActivity {
         }
     }
 
-    private void filterByCategory(int whichCategory) {
-        mMap.clear();
-        Toast.makeText(this,"clicked on category nr " + whichCategory, Toast.LENGTH_SHORT).show();
-        for (Flag f: Data.allFlags) {
-            if(f.getCategory().id == whichCategory)
-            displayFlag(f);
+    private void filterFlagsWithCategoryDialog(final List<Flag> flagsToFilter) {
+
+        AlertDialog.Builder b = new AlertDialog.Builder(this);
+        b.setTitle(R.string.choose_category);
+        List<String> types = Category.getallCategoryNames();
+
+        //TODO: add a reset button that resets the filter
+        String[] cat_names = types.toArray(new String[types.size()]);
+        b.setItems(cat_names, new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int whichCategory) {
+
+                List<Flag> filteredFlags = filterFlagsByCategory(flagsToFilter, Category.values()[whichCategory]);
+                Data.flagsToShow.removeAll(Data.flagsToShow);
+                Data.flagsToShow.addAll(filteredFlags);
+                setUpMap();
+                dialog.dismiss();
+
+            }
+
+        });
+
+        b.show();
+
+    }
+
+    private List<Flag> filterFlagsByCategory(List<Flag> flagsToFilter, Category c) {
+
+        Data.filteredCategories.removeAll(Data.filteredCategories);
+        Data.filteredCategories.add(c);
+
+        ArrayList<Flag> flagsThatAreInCategory = new ArrayList<Flag>();
+
+        for (Flag f: flagsToFilter) {
+            if(f.getCategory() == c)
+                flagsThatAreInCategory.add(f);
         }
+        return flagsThatAreInCategory;
+
+
     }
 
 
@@ -189,10 +210,12 @@ public class MapsActivity extends FragmentActivity {
             alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
                     String inputText = input.getText().toString();
-                    // Do something with value!
                     LatLng currentPosition = getCoordinates();
+
+                    //TODO: get the category here
                     Flag f = new Flag(currentPosition, Category.DEFAULT, inputText, getApplicationContext());
-                    addFlag(f);
+                    f.isOwner = true;
+                    Data.allFlags.add(f);
                     displayFlag(f);
 
                 }
@@ -282,10 +305,20 @@ public class MapsActivity extends FragmentActivity {
      */
     private void setUpMap() {
         //see other marker options: https://developers.google.com/maps/documentation/android-api/marker
+        mMap.clear();
 
-        for (Flag f: Data.allFlags) {
-            displayFlag(f);
+        if (Data.filteredCategories.size() > 0) { //we have already set a filter and keep it that way
+            for (Flag f: Data.flagsToShow) {
+                displayFlag(f);
+            }
         }
+        else { //we just started the App and have not yet set a filter
+            for (Flag f: Data.allFlags) {
+                displayFlag(f);
+            }
+        }
+
+
         //LatLng in degrees, (double, double), ([-90,90],[-180,180])
 
     }
@@ -296,18 +329,11 @@ public class MapsActivity extends FragmentActivity {
 
     }
 
-    private void addFlag(Flag f) {
-
-
-        Data.allFlags.add(f);
-        Data.ownFlagsSet.add(f);
-
-
-    }
-
     //PASCAL: ke ahnig wo dir dää code weit, aber i tues iz mau da ine.
+    //ANDRES: jo do isch es denkt :)
     void getFlags(){
 
+        //TODO: please add all the retrieved Flags into Data.allFlags()
 
         /*
         String id = editTextId.getText().toString().trim();
