@@ -41,9 +41,6 @@ public class MapsActivity extends FragmentActivity {
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
 
-    private int chosenCategoryIndex;
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -121,9 +118,7 @@ public class MapsActivity extends FragmentActivity {
                 Toast.makeText(this, "Clicked " + slideMenuStrings[1] ,Toast.LENGTH_SHORT).show();
                 break;
             case 2: // Filters
-
                 filterFlagsWithCategoryDialog(Data.allFlags);
-
                 break;
             case 3: // Ranking
                 Toast.makeText(this, "Clicked " + slideMenuStrings[3] ,Toast.LENGTH_SHORT).show();
