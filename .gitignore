@@ -18,3 +18,4 @@ FunWithFlags/FunWithFlags.iml
 FunWithFlags/app/app.iml
 
 FunWithFlags/app/src/debug/res/values/google_maps_api.xml
+FunWithFlags/app/src/main/res/values/google_maps_api.xml
