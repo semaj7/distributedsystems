@@ -1,5 +1,7 @@
 package ch.ethz.inf.vs.a4.funwithflags;
 
+import android.content.res.Resources;
+
 import com.google.android.gms.maps.model.LatLng;
 
 /**
@@ -8,28 +10,61 @@ import com.google.android.gms.maps.model.LatLng;
 public class Flag {
 
     private LatLng latLng;
-
     private String text;
 
     private long ID;
 
     private Category category;
 
-    public Flag(LatLng latLng, String t){
-        this.latLng = latLng;
-        this.text = t;
+    public static String NOT_IN_RANGE_MESSAGE;
 
+    public Flag(LatLng latLng, Category category, String text){
+        this.latLng = latLng;
+        this.category = category;
+        this.text = text;
+        if(NOT_IN_RANGE_MESSAGE == null) {
+            Resources res = Resources.getSystem();
+            NOT_IN_RANGE_MESSAGE = String.format(res.getString(R.string.not_in_range_message));
+        }
+    }
+
+    public void setLatLng(LatLng latLng){
+        this.latLng = latLng;
+    }
+    public void setCategory(Category category){
+        this.category = category;
+    }
+    public void setText(String text){
+        this.text = text;
+    }
+    public String getText(){
+        if (isInRange())
+            return text;
+        else {
+            return NOT_IN_RANGE_MESSAGE;
+        }
     }
 
     public LatLng getLatLng() {
         return latLng;
     }
 
-    public String getText() {
-        return text;
-    }
-
     public Category getCategory() {
         return category;
+    }
+
+    private boolean isInRange(){
+        LatLng phoneLatLong = new LatLng(33.3,33.3);    // todo: find a way to get actual phone coordinates in here
+
+        // this is an approximation of the distance that works best if close by, but since we want to only see close by flags, this should work just fine
+        int R = 6371; // km
+        double x = (getLatLng().longitude - phoneLatLong.longitude) * Math.cos((phoneLatLong.latitude + getLatLng().latitude) / 2);
+        double y = (getLatLng().latitude - phoneLatLong.latitude);
+        double distance = Math.sqrt(x * x + y * y) * R;
+
+        if (distance <= MapsActivity.MAX_FLAG_VISIBILITY_RANGE)
+            return true;
+        else
+            return false;
     }
 }

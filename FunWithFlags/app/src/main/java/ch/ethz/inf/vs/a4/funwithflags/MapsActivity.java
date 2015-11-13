@@ -33,6 +33,7 @@ import java.util.Random;
 
 public class MapsActivity extends FragmentActivity {
 
+    public static final double MAX_FLAG_VISIBILITY_RANGE = 10000; // i think this is in meters :)
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private String slideMenuStrings[];
     private DrawerLayout mDrawerLayout;
@@ -158,8 +159,8 @@ public class MapsActivity extends FragmentActivity {
                     String inputText = input.getText().toString();
                     // Do something with value!
                     LatLng currentPosition = getCoordinates();
-                    Flag f = new Flag(currentPosition, inputText);
-                    addFlag(f);
+                    //Flag f = new Flag(currentPosition, inputText);
+                    //addFlag(f);
 
                 }
             });
