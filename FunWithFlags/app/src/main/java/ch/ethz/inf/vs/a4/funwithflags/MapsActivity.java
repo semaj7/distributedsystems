@@ -155,11 +155,12 @@ public class MapsActivity extends FragmentActivity {
 
             alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
-                    String value = input.getText().toString();
+                    String inputText = input.getText().toString();
                     // Do something with value!
+                    LatLng currentPosition = getCoordinates();
+                    Flag f = new Flag(currentPosition, inputText);
+                    addFlag(f);
 
-                    //adding a yellow marker at current location
-                    mMap.addMarker(new MarkerOptions().position(getCoordinates()).title(value).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
                 }
             });
 
@@ -206,7 +207,7 @@ public class MapsActivity extends FragmentActivity {
         System.out.println("Lat:" + lat);
         System.out.println("Lon:" + lon);
 
-        Toast.makeText(this, "Set flag at Lat:" + lat + "Lon:" + lon, Toast.LENGTH_LONG).show();
+    //    Toast.makeText(this, "Set flag at Lat:" + lat + "Lon:" + lon, Toast.LENGTH_LONG).show();
 
         return new LatLng(lat, lon);
     }
@@ -248,10 +249,20 @@ public class MapsActivity extends FragmentActivity {
     private void setUpMap() {
         //see other marker options: https://developers.google.com/maps/documentation/android-api/marker
 
+        for (Flag f: Data.flagsWithText) {
+            addFlag(f);
+        }
         //LatLng in degrees, (double, double), ([-90,90],[-180,180])
-        mMap.addMarker(new MarkerOptions().position(new LatLng(47, 8)).title("Penis"));
 
-        mMap.addMarker(new MarkerOptions().position(new LatLng(47.22, 8.33)).title("Höhö").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE)));
+    }
+
+    private void addFlag(Flag f) {
+
+        mMap.addMarker(new MarkerOptions().position(f.getLatLng()).title(f.getText()).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+        Data.flagsWithText.add(f);
+        Data.ownFlagsSet.add(f);
+
+
     }
 
     //PASCAL: ke ahnig wo dir dää code weit, aber i tues iz mau da ine.

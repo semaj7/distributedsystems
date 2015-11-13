@@ -13,4 +13,5 @@
     <string name="ratingText">Your current rating is @rating. Good job!</string>
     <string name="settedFlagsText">You have already set @count flags! That\'s fun!</string>
     <string name="followedUser">You are now following @name. What a stalker!</string>
+    <string name="SportsName">Sports</string>
 </resources>

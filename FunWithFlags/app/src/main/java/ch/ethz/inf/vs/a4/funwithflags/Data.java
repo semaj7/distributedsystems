@@ -13,5 +13,9 @@ public class Data {
         throw new AssertionError();
     }
 
-    public final static List<Flag> flagListWithNames = new ArrayList<Flag>();
+    public final static List<Flag> ownFlagsSet = new ArrayList<Flag>();
+
+    public final static List<Flag> flagsWithText = new ArrayList<Flag>();
+
+    public final static List<Flag> flagsOutOfRange = new ArrayList<Flag>();
 }
