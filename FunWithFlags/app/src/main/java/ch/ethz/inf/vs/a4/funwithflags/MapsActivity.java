@@ -51,7 +51,7 @@ public class MapsActivity extends FragmentActivity {
         setContentView(R.layout.activity_maps);
         setUpMapIfNeeded();
 
-        slideMenuStrings = new String[]{"Search", "Favourites", "Filters","Ranking", "what's new","Settings"}; // TODO: do this nicer, with strings from resource files, ...
+        slideMenuStrings = d.slideMenuStrings; // have done this a bit nicer
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
@@ -161,7 +161,7 @@ public class MapsActivity extends FragmentActivity {
                     String inputText = input.getText().toString();
                     // Do something with value!
                     LatLng currentPosition = getCoordinates();
-                    Flag f = new Flag(currentPosition, new SportsCategory(getResources()), inputText, getApplicationContext());
+                    Flag f = new Flag(currentPosition, Category.DEFAULT, inputText, getApplicationContext());
                     addFlag(f);
                     displayFlag(f);
 
@@ -262,7 +262,7 @@ public class MapsActivity extends FragmentActivity {
 
     private void displayFlag(Flag f) {
 
-        mMap.addMarker(new MarkerOptions().position(f.getLatLng()).title(f.getText()).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+        mMap.addMarker(new MarkerOptions().position(f.getLatLng()).title(f.getText()).icon(BitmapDescriptorFactory.defaultMarker(f.getCategory().hue)));
 
     }
 

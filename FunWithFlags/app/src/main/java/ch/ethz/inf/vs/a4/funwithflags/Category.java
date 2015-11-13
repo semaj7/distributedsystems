@@ -1,12 +1,35 @@
 package ch.ethz.inf.vs.a4.funwithflags;
 
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by Andres on 13.11.15.
  */
-public interface Category {
+public enum Category {
 
-    public String getCategoryName();
+    ATTRACTION ("Attraction", BitmapDescriptorFactory.HUE_ROSE), //TODO: add all categories here
+    SPORT ("Sports", BitmapDescriptorFactory.HUE_GREEN),
+    DEFAULT   ("No category", BitmapDescriptorFactory.HUE_ORANGE);
 
-    public float getHue();
+
+    public final String name;   // in kilograms
+    public final float hue; // in meters
+    Category(String name, float hue) {
+        this.name = name;
+        this.hue = hue;
+    }
+
+
+    public List<String> getallCategoryNames() {
+
+        ArrayList<String> categoryNames = new ArrayList<String>();
+        for (Category c : Category.values()) {
+            categoryNames.add(c.name);
+        }
+        return categoryNames;
+    }
 
 }
