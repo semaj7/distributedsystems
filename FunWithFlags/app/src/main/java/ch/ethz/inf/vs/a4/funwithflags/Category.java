@@ -10,9 +10,14 @@ import java.util.List;
  */
 public enum Category {
 
-    ATTRACTION ("Attraction", BitmapDescriptorFactory.HUE_ROSE), //TODO: add all categories here
-    SPORT ("Sports", BitmapDescriptorFactory.HUE_GREEN),
-    DEFAULT   ("No category", BitmapDescriptorFactory.HUE_ORANGE);
+    DEFAULT   ("No category", BitmapDescriptorFactory.HUE_RED),
+    WORK ("Work", BitmapDescriptorFactory.HUE_VIOLET),
+    LANDSCAPE ("Landscape", BitmapDescriptorFactory.HUE_GREEN),
+    SPORT ("Sports", BitmapDescriptorFactory.HUE_ORANGE),
+    FOOD ("Food", BitmapDescriptorFactory.HUE_MAGENTA),
+    LIFESTYLE ("Lifestyle", BitmapDescriptorFactory.HUE_CYAN),
+    MYSTERY ("Mystery", BitmapDescriptorFactory.HUE_BLUE),
+    TOURISM ("Tourism", BitmapDescriptorFactory.HUE_YELLOW);
 
 
     public final String name;

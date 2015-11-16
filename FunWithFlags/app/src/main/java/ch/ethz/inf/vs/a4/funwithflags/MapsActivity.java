@@ -217,13 +217,28 @@ public class MapsActivity extends FragmentActivity {
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                     switch (position) {
                         case 0:
-                            cat[0] = Category.ATTRACTION;
+                            cat[0] = Category.DEFAULT;
                             break;
                         case 1:
-                            cat[0] = Category.SPORT;
+                            cat[0] = Category.WORK;
                             break;
                         case 2:
-                            cat[0] = Category.DEFAULT;
+                            cat[0] = Category.LANDSCAPE;
+                            break;
+                        case 3:
+                            cat[0] = Category.SPORT;
+                            break;
+                        case 4:
+                            cat[0] = Category.FOOD;
+                            break;
+                        case 5:
+                            cat[0] = Category.LIFESTYLE;
+                            break;
+                        case 6:
+                            cat[0] = Category.MYSTERY;
+                            break;
+                        case 7:
+                            cat[0] = Category.TOURISM;
                             break;
                         default:
                             cat[0] = Category.DEFAULT;
