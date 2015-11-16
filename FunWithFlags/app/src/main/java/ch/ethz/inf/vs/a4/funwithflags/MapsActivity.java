@@ -255,6 +255,7 @@ public class MapsActivity extends FragmentActivity {
             LinearLayout layout = new LinearLayout(getApplicationContext());
             layout.setOrientation(LinearLayout.VERTICAL);
             layout.addView(input);
+            //todo: add textview "set categorie"
             layout.addView(categorySpinner);
             alert.setView(layout);
 
