@@ -16,18 +16,6 @@
             android:layout_height="match_parent" android:id="@+id/map" tools:context=".MapsActivity"
             android:name="com.google.android.gms.maps.SupportMapFragment" />
 
-        <Button
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_gravity="right|bottom"
-            android:text="+"
-            android:onClick="setNewFlagClick"
-            android:padding="5dp"
-            android:layout_marginTop="20dp"
-            android:paddingRight="10dp"
-            android:background="@drawable/roundbutton"
-        />
-
 
         <Button
             android:layout_width="wrap_content"
@@ -39,6 +27,17 @@
             android:layout_marginTop="20dp"
             android:paddingLeft="10dp"/>
 
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|bottom"
+            android:onClick="setNewFlagClick"
+            android:padding="5dp"
+            android:layout_marginTop="20dp"
+            android:paddingBottom="10dp"
+            android:src="@drawable/ic_launcher"
+            android:background="@drawable/roundbutton"
+        />
 
 
     </FrameLayout>
