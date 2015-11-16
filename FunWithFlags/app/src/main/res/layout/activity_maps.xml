@@ -19,12 +19,13 @@
         <Button
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_gravity="right|top"
+            android:layout_gravity="right|bottom"
             android:text="+"
             android:onClick="setNewFlagClick"
             android:padding="5dp"
             android:layout_marginTop="20dp"
             android:paddingRight="10dp"
+            android:background="@drawable/roundbutton"
         />
 
 
