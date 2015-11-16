@@ -11,7 +11,9 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
@@ -201,15 +203,55 @@ public class MapsActivity extends FragmentActivity {
 
             // Set an EditText view to get user input
             final EditText input = new EditText(this);
-            alert.setView(input);
+            input.setHint(R.string.flag_text_hint);
+
+            final Spinner categorySpinner = new Spinner(this);
+            List<String> types = Category.getallCategoryNames();
+            String[] cat_names = types.toArray(new String[types.size()]);
+            ArrayAdapter<String> adapter =new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, cat_names);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            categorySpinner.setAdapter(adapter);
+            final Category[] cat = new Category[1];
+            categorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    switch (position) {
+                        case 0:
+                            cat[0] = Category.ATTRACTION;
+                            break;
+                        case 1:
+                            cat[0] = Category.SPORT;
+                            break;
+                        case 2:
+                            cat[0] = Category.DEFAULT;
+                            break;
+                        default:
+                            cat[0] = Category.DEFAULT;
+                            break;
+                    }
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+                    cat[0] = Category.DEFAULT;
+                }
+            });
+
+            LinearLayout layout = new LinearLayout(getApplicationContext());
+            layout.setOrientation(LinearLayout.VERTICAL);
+            layout.addView(input);
+            layout.addView(categorySpinner);
+            alert.setView(layout);
+
 
             alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
                     String inputText = input.getText().toString();
                     LatLng currentPosition = getCoordinates();
 
+
                     //TODO: get the category here
-                    Flag f = new Flag(currentPosition, Category.DEFAULT, inputText, getApplicationContext());
+                    Flag f = new Flag(currentPosition, cat[0], inputText, getApplicationContext());
                     f.isOwner = true;
                     Data.allFlags.add(f);
                     displayFlag(f);

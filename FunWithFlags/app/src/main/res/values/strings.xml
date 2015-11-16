@@ -16,4 +16,5 @@
     <string name="SportsName">Sports</string>
     <string name="not_in_range_message">You are not close enough to this flag</string>
     <string name="choose_category">choose category</string>
+    <string name="flag_text_hint">say something</string>
 </resources>
