@@ -268,7 +268,7 @@ public class MapsActivity extends FragmentActivity {
                     //TODO: get the category here
                     Flag f = new Flag(currentPosition, cat[0], inputText, getApplicationContext());
                     f.isOwner = true;
-                    Data.allFlags.add(f);
+                    addToData(f);
                     displayFlag(f);
 
                 }
@@ -374,6 +374,16 @@ public class MapsActivity extends FragmentActivity {
 
         //LatLng in degrees, (double, double), ([-90,90],[-180,180])
 
+    }
+
+    private void addToData(Flag f) {
+
+        Data.allFlags.add(f);
+        if (!Data.filteredCategories.isEmpty()) {
+            if (Data.filteredCategories.contains(f.getCategory())) {
+                Data.flagsToShow.add(f);
+            }
+        }
     }
 
     private void displayFlag(Flag f) {
