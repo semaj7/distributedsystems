@@ -26,6 +26,9 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.parse.Parse;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -49,6 +52,16 @@ public class MapsActivity extends FragmentActivity {
 
         //just testing the getFlags(). should print a flag in the terminal
         getFlags();
+
+        //PARSE.com-stuff! Don't know if I have to put it into every "onCreate()". Probably yes.
+        // Enable Local Datastore.
+        Parse.enableLocalDatastore(this);
+        Parse.initialize(this, "0tOkgHhdbWKjMHWtHlmnVEzFq83LoangMuIHIIG8", "t1apg1Ly1rHK6BhDZ5QloteIVFlNDcjbDuk9cz6c");
+
+        //testing
+        ParseObject testObject = new ParseObject("TestObject");
+        testObject.put("foo", "bar");
+        testObject.saveInBackground();
 
         setContentView(R.layout.activity_maps);
         setUpMapIfNeeded();
@@ -398,7 +411,9 @@ public class MapsActivity extends FragmentActivity {
     void getFlags(){
 
         //TODO: please add all the retrieved Flags into Data.allFlags()
+        ParseQuery
 
+        //stuff we would need if we weren't using parse
         /*
         String id = editTextId.getText().toString().trim();
         if (id.equals("")) {
@@ -409,6 +424,7 @@ public class MapsActivity extends FragmentActivity {
         */
 
         //String url = Config.DATA_URL+editTextId.getText().toString().trim();
+        /*
         String url="http://hochschultage.ch/getFlags.php";
 
         StringRequest stringRequest = new StringRequest(url, new Response.Listener<String>() {
@@ -500,6 +516,14 @@ public class MapsActivity extends FragmentActivity {
             Log.e("log_tag", "Error parsing data "+e.toString());
         }
         */
+    }
+
+    void submitFlag(Flag f){
+
+    }
+
+    void deleteFlag(Flag f){
+
     }
 
 
