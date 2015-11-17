@@ -4,10 +4,12 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.View;
+import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -25,6 +27,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.parse.Parse;
 import com.parse.ParseObject;
@@ -35,7 +38,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Random;
 
 public class MapsActivity extends FragmentActivity {
@@ -117,10 +123,64 @@ public class MapsActivity extends FragmentActivity {
             if (mMap != null) {
                 mMap.setMyLocationEnabled(true);
 
+                mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                    @Override
+                    public boolean onMarkerClick(Marker marker) {
+                        // get flags close to marker that got clicked
+                        LatLng markerPos = marker.getPosition();
+                        List<Flag> flagsAtApproxPosition = filterFlagsByApproximatePositions(Data.allFlags, markerPos);
+                        chooseFlagTextDialog(flagsAtApproxPosition);
+                        return true;
+                    }
+                });
+
                 setUpMap();
 
             }
         }
+    }
+
+    private void chooseFlagTextDialog(final List<Flag> closeByFlags) {
+
+        // Set up the array to display the flag texts
+        String[] flagEntries = new String[closeByFlags.size()];
+        for (int i = 0; i < closeByFlags.size(); i++) {
+            flagEntries[i] = closeByFlags.get(i).getText();
+        }
+
+        //build and show dialog
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle(R.string.closeByFlagsDialogTitle);
+
+        //alert.setMessage(R.string.closeByFlagsDialogMessage);
+        alert.setItems(flagEntries, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int whichEntry) {
+                System.out.println("DEBUG: markerListener, onClick: clicked entry nr: " + whichEntry);
+                // todo: do what ever we want to do with the clicked "flag"
+                dialog.dismiss();
+            }
+        });
+        alert.show();
+    }
+
+    private List<Flag> filterFlagsByApproximatePositions(List<Flag> InitialFlags, LatLng position) {
+        List<Flag> resultList = new ArrayList<Flag>();
+
+        for(Flag f : InitialFlags){
+            double flagLat = f.getLatLng().latitude;
+            double flagLon = f.getLatLng().longitude;
+            double posLat = position.latitude;
+            double posLon = position.longitude;
+
+            // flag is approximately at the same location, and too close to distinguish on the map
+            if((Math.abs(flagLat - posLat) <= 0.01) & (Math.abs(flagLon - posLon) <= 0.01)){
+                // add this flag to the list
+                resultList.add(f);
+            }
+        }
+
+        return resultList;
     }
 
     // TODO: implement this method, and delete Toasts afterwards
@@ -402,8 +462,11 @@ public class MapsActivity extends FragmentActivity {
 
     private void displayFlag(Flag f) {
 
-        mMap.addMarker(new MarkerOptions().position(f.getLatLng()).title(f.getText()).icon(BitmapDescriptorFactory.defaultMarker(f.getCategory().hue)));
-
+        mMap.addMarker(new MarkerOptions()
+                .position(f.getLatLng())
+                .title(f.getText())
+                .icon(BitmapDescriptorFactory.defaultMarker(f.getCategory().hue))
+        );
     }
 
     //PASCAL: ke ahnig wo dir dää code weit, aber i tues iz mau da ine.
