@@ -32,12 +32,9 @@ public final class Data {
      */
     public static final boolean addFavourite(Flag flag){
         // check if already there
-        for(int i = 0; i< MapsActivity.MAX_NUMBER_OF_FAVOURITES; i ++) {
-            if (favouriteFlags[i] != null) {
-                if (favouriteFlags[i].equals(flag))
-                    return true;
-            }
-        }
+        if(containsFavourite(flag))
+            return true;
+
         // look for a free place, and put it there
         for(int i = 0; i< MapsActivity.MAX_NUMBER_OF_FAVOURITES; i ++){
             if(favouriteFlags[i] == null){
@@ -61,4 +58,14 @@ public final class Data {
         return null;
     }
 
+    public static final boolean containsFavourite(Flag flag) {
+
+        for(int i = 0; i< MapsActivity.MAX_NUMBER_OF_FAVOURITES; i ++) {
+            if (favouriteFlags[i] != null) {
+                if (favouriteFlags[i].equals(flag))
+                    return true;
+            }
+        }
+        return false;
+    }
 }
