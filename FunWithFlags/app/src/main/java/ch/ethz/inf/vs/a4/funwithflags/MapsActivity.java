@@ -3,6 +3,7 @@ package ch.ethz.inf.vs.a4.funwithflags;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
@@ -47,6 +48,7 @@ import java.util.Random;
 public class MapsActivity extends FragmentActivity {
 
     public static final double MAX_FLAG_VISIBILITY_RANGE = 10; // i think this is in kilometers :)
+    public static final int MAX_NUMBER_OF_FAVOURITES = 20;
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private String slideMenuStrings[];
     private DrawerLayout mDrawerLayout;
@@ -192,7 +194,7 @@ public class MapsActivity extends FragmentActivity {
                 Toast.makeText(this, "Clicked " + slideMenuStrings[0] ,Toast.LENGTH_SHORT).show();
                 break;
             case 1: // Favourites
-                Toast.makeText(this, "Clicked " + slideMenuStrings[1] ,Toast.LENGTH_SHORT).show();
+                favouriteDisplayDialog();
                 break;
             case 2: // Filters
                 filterFlagsWithCategoryDialog(Data.allFlags);
@@ -208,6 +210,46 @@ public class MapsActivity extends FragmentActivity {
                 break;
         }
     }
+
+    private void favouriteDisplayDialog() {
+
+        AlertDialog.Builder b = new AlertDialog.Builder(this);
+        b.setTitle(R.string.favouriteDisplayDialogTitle);
+
+        String[] favFlagEntries;
+        int size = 0;
+        for (int i = 0; i < MAX_NUMBER_OF_FAVOURITES; i++) {
+            if (Data.favouriteFlags[i] != null)
+                size++;
+        }
+        if (size == 0) {
+            Resources res = getResources();
+            String noFavYet = String.format(res.getString(R.string.noFavourtieYet));
+            favFlagEntries = new String[1];
+            favFlagEntries[0] = noFavYet;
+        } else {
+            favFlagEntries = new String[size];
+
+            for (int i = 0; i < size; i++) {
+                favFlagEntries[i] = Data.ithFavourite(i).getText();
+            }
+        }
+
+        b.setItems(favFlagEntries, new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int whichFavourite) {
+                Toast.makeText(getApplicationContext(), "looks like your favourite flag says: " + Data.ithFavourite(whichFavourite).getText(), Toast.LENGTH_SHORT).show();
+                // todo: do something with selected favourite's flag
+                dialog.dismiss();
+
+            }
+
+        });
+
+        b.show();
+    }
+
 
     private void filterFlagsWithCategoryDialog(final List<Flag> flagsToFilter) {
 
@@ -346,6 +388,9 @@ public class MapsActivity extends FragmentActivity {
                     f.isOwner = true;
                     addToData(f);
                     displayFlag(f);
+
+                    if(!Data.addFavourite(f)) // todo: this is just for testing, remove when adding to favourites is implemented
+                        Toast.makeText(getApplicationContext(), "could not add to favourites", Toast.LENGTH_SHORT).show();
 
                 }
             });
