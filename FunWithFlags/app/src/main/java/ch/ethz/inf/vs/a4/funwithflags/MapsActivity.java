@@ -157,7 +157,7 @@ public class MapsActivity extends FragmentActivity {
             @Override
             public void onClick(DialogInterface dialog, int whichEntry) {
                 System.out.println("DEBUG: markerListener, onClick: clicked entry nr: " + whichEntry);
-                // todo: do what ever we want to do with the clicked "flag"
+                // todo: do what ever we want to do with the clicked "flag"(text)
                 dialog.dismiss();
             }
         });
@@ -167,6 +167,7 @@ public class MapsActivity extends FragmentActivity {
     private List<Flag> filterFlagsByApproximatePositions(List<Flag> InitialFlags, LatLng position) {
         List<Flag> resultList = new ArrayList<Flag>();
 
+        // todo: finding a way not to check every single flag on the whole map would be nice. but i don't know if we can do that
         for(Flag f : InitialFlags){
             double flagLat = f.getLatLng().latitude;
             double flagLon = f.getLatLng().longitude;
@@ -174,6 +175,7 @@ public class MapsActivity extends FragmentActivity {
             double posLon = position.longitude;
 
             // flag is approximately at the same location, and too close to distinguish on the map
+            // todo: find an appropriate value. 0.01 is way too far appart
             if((Math.abs(flagLat - posLat) <= 0.01) & (Math.abs(flagLon - posLon) <= 0.01)){
                 // add this flag to the list
                 resultList.add(f);
@@ -474,7 +476,8 @@ public class MapsActivity extends FragmentActivity {
     void getFlags(){
 
         //TODO: please add all the retrieved Flags into Data.allFlags()
-        ParseQuery
+        // commented out next line in order to run the code
+        //ParseQuery
 
         //stuff we would need if we weren't using parse
         /*
