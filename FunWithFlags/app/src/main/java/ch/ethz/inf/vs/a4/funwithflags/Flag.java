@@ -30,9 +30,10 @@ public class Flag {
 
     public static String NOT_IN_RANGE_MESSAGE;
 
-    public Flag(LatLng latLng, Category category, String text, Context context){
+    public Flag(LatLng latLng, Category category, String userName, String text, Context context){
         this.latLng = latLng;
         this.category = category;
+        this.userName = userName;
         this.text = text;
         gpsTracker = new GPSTracker(context);
         if(NOT_IN_RANGE_MESSAGE == null) {

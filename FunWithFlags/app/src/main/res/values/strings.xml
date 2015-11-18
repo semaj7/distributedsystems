@@ -21,4 +21,6 @@
     <string name="closeByFlagsDialogMessage">Choose a flag</string>
     <string name="favouriteDisplayDialogTitle">Your favourite flags!</string>
     <string name="noFavourtieYet">You have no favourites yet</string>
+    <string name="search_username_title">Search by Username:</string>
+    <string name="showAll">Show all flags again</string>
 </resources>

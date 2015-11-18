@@ -7,10 +7,12 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -45,6 +47,7 @@ public class MapsActivity extends FragmentActivity {
     private String slideMenuStrings[];
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
+    private Button showAllButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +67,12 @@ public class MapsActivity extends FragmentActivity {
         testObject.saveInBackground();
 
         setContentView(R.layout.activity_maps);
+
+        showAllButton = (Button) findViewById(R.id.showAllButton);
+
         setUpMapIfNeeded();
+
+
 
         slideMenuStrings = Data.slideMenuStrings; // have done this a bit nicer
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -122,6 +130,9 @@ public class MapsActivity extends FragmentActivity {
                         LatLng markerPos = marker.getPosition();
                         List<Flag> flagsAtApproxPosition = filterFlagsByApproximatePositions(Data.allFlags, markerPos);
                         chooseFlagTextDialog(flagsAtApproxPosition);
+
+                        //this is used to show the text on top of the marker
+                        marker.showInfoWindow();
                         return true;
                     }
                 });
@@ -131,6 +142,43 @@ public class MapsActivity extends FragmentActivity {
             }
         }
     }
+
+    private void searchAndFilterByUserNameDialog() {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.search_username_title);
+
+        // Set up the input
+        final EditText input = new EditText(this);
+        // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(input);
+
+        // Set up the buttons
+        builder.setPositiveButton(R.string.accept, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String searchUserName = input.getText().toString();
+                if (!searchUserName.isEmpty()) {
+                    Data.flagsToShow.removeAll(Data.flagsToShow);
+                    Data.flagsToShow.addAll(filterFlagsByUserName(Data.allFlags, searchUserName));
+                    Data.filteringEnabled.removeAll(Data.filteringEnabled);
+                    //just add a category to show that we are filtering
+                    Data.filteringEnabled.add(Category.DEFAULT);
+                    setUpMap();
+                }
+            }
+        });
+        builder.setNegativeButton(R.string.decline, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
+    }
+
 
     private void chooseFlagTextDialog(final List<Flag> closeByFlags) {
 
@@ -159,9 +207,23 @@ public class MapsActivity extends FragmentActivity {
         }
     }
 
+    private List<Flag> filterFlagsByUserName(List<Flag> flagsToFilter, String userName) {
+        //don't filter if the username to filter is null or empty
+        if (userName == null) return flagsToFilter;
+        if (userName.isEmpty()) return  flagsToFilter;
+
+        List<Flag> filteredFlags = new ArrayList<Flag>();
+        for (Flag f: flagsToFilter) {
+            if (f.getUserName().equals(userName))
+                filteredFlags.add(f);
+
+        }
+        return filteredFlags;
+    }
+
     private List<Flag> filterFlagsByApproximatePositions(List<Flag> InitialFlags, LatLng position) {
         List<Flag> resultList = new ArrayList<Flag>();
-     
+
         // todo: finding a way not to check every single flag on the whole map would be nice. but i don't know if we can do that
         for(Flag f : InitialFlags){
             double flagLat = f.getLatLng().latitude;
@@ -183,7 +245,7 @@ public class MapsActivity extends FragmentActivity {
     private void selectItem(int position) {
         switch (position) {
             case 0: // Search
-                Toast.makeText(this, "Clicked " + slideMenuStrings[0] ,Toast.LENGTH_SHORT).show();
+                searchAndFilterByUserNameDialog();
                 break;
             case 1: // Favourites
                 favouriteDisplayDialog();
@@ -271,11 +333,11 @@ public class MapsActivity extends FragmentActivity {
 
     private List<Flag> filterFlagsByCategory(List<Flag> flagsToFilter, Category c) {
 
-        Data.filteredCategories.removeAll(Data.filteredCategories);
+        Data.filteringEnabled.removeAll(Data.filteringEnabled);
 
         if (c == Category.DEFAULT) return flagsToFilter; //Do not filter if someone selects DEFAULT category
 
-        Data.filteredCategories.add(c);
+        Data.filteringEnabled.add(c);
         ArrayList<Flag> flagsThatAreInCategory = new ArrayList<Flag>();
 
         for (Flag f: flagsToFilter) {
@@ -376,7 +438,7 @@ public class MapsActivity extends FragmentActivity {
 
 
                     //TODO: get the category here
-                    Flag f = new Flag(currentPosition, cat[0], inputText, getApplicationContext());
+                    Flag f = new Flag(currentPosition, cat[0], getCurrentLoggedInUserName(), inputText, getApplicationContext());
                     f.isOwner = true;
                     addToData(f);
                     displayFlag(f);
@@ -402,6 +464,13 @@ public class MapsActivity extends FragmentActivity {
             switchToLogin();
         }
 
+    }
+
+    private String getCurrentLoggedInUserName() {
+        //before executing this, check if user is logged in!
+        //TODO: check what the current Username is
+
+        return "Homo";
     }
 
     public LatLng getCoordinates() {
@@ -463,6 +532,11 @@ public class MapsActivity extends FragmentActivity {
 
     }
 
+    public void showAllFlags(View v) {
+        Data.filteringEnabled.removeAll(Data.filteringEnabled);
+        setUpMap();
+    }
+
     /**
      * This is where we can add markers or lines, add listeners or move the camera. In this case, we
      * just add a marker near Africa.
@@ -473,12 +547,17 @@ public class MapsActivity extends FragmentActivity {
         //see other marker options: https://developers.google.com/maps/documentation/android-api/marker
         mMap.clear();
 
-        if (Data.filteredCategories.size() > 0) { //we have already set a filter and keep it that way
+        if (Data.filteringEnabled.size() > 0) { //we have already set a filter and keep it that way
+
+            showAllButton.setVisibility(View.VISIBLE);
+            Toast.makeText(this, "Displaying " + Data.flagsToShow.size() + " flags after filtering." ,Toast.LENGTH_SHORT).show();
+
             for (Flag f: Data.flagsToShow) {
                 displayFlag(f);
             }
         }
         else { //we just started the App and have not yet set a filter
+            showAllButton.setVisibility(View.INVISIBLE);
             for (Flag f: Data.allFlags) {
                 displayFlag(f);
             }
@@ -492,8 +571,8 @@ public class MapsActivity extends FragmentActivity {
     private void addToData(Flag f) {
 
         Data.allFlags.add(f);
-        if (!Data.filteredCategories.isEmpty()) {
-            if (Data.filteredCategories.contains(f.getCategory())) {
+        if (!Data.filteringEnabled.isEmpty()) {
+            if (Data.filteringEnabled.contains(f.getCategory())) {
                 Data.flagsToShow.add(f);
             }
         }

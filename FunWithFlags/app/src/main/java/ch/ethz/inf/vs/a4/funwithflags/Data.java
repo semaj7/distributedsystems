@@ -14,8 +14,8 @@ public final class Data {
     }
 
 
-
-    public final static List<Category> filteredCategories = new ArrayList<Category>();
+    //these act as a combination of static boolean and only have 1 value or none in the list
+    public final static List<Category> filteringEnabled = new ArrayList<Category>();
 
     public final static String[] slideMenuStrings = new String[]{"Search", "Favourites", "Filters","Ranking", "What's new","Settings"};
 
@@ -24,6 +24,8 @@ public final class Data {
     public final static List<Flag> allFlags = new ArrayList<Flag>();
 
     public final static Flag[] favouriteFlags = new Flag[MapsActivity.MAX_NUMBER_OF_FAVOURITES];
+
+
 
     /** returns true, if flag successfully added to favourites
      * false if favourites list was full
