@@ -47,7 +47,7 @@
             android:onClick="setNewFlagClick"
             android:padding="5dp"
             android:layout_marginBottom="10dp"
-            android:src="@drawable/ic_launcher"
+            android:src="@drawable/add_flag"
             android:background="@drawable/roundbutton"/>
 
     </FrameLayout>

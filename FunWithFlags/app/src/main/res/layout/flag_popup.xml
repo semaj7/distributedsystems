@@ -27,14 +27,16 @@
             android:layout_centerHorizontal="true"
             android:layout_above="@+id/followUserFromFlag"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:textColor="#bcbcbc"/>
 
         <TextView android:text="@string/noTextFoundDefault"
             android:id="@+id/flagText"
             android:layout_centerHorizontal="true"
             android:layout_above="@+id/followUserFromFlag"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:textColor="#bcbcbc"/>
 
     </LinearLayout>
 
@@ -56,7 +58,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:background="@drawable/ic_launcher"
+        android:background="@mipmap/ic_launcher"
         />
 
     <!--The button holder for our upvote and downvote buttons.
