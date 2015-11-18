@@ -26,7 +26,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.parse.FindCallback;
-import com.parse.Parse;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -56,10 +55,6 @@ public class MapsActivity extends FragmentActivity {
         //just testing the getFlags(). should print a flag in the terminal
         getFlags();
 
-        //PARSE.com-stuff! Don't know if I have to put it into every "onCreate()". Probably yes.
-        // Enable Local Datastore.
-        Parse.enableLocalDatastore(this);
-        Parse.initialize(this, "0tOkgHhdbWKjMHWtHlmnVEzFq83LoangMuIHIIG8", "t1apg1Ly1rHK6BhDZ5QloteIVFlNDcjbDuk9cz6c");
 
         //testing
         ParseObject testObject = new ParseObject("TestObject");
