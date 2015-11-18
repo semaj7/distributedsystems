@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <!--TODO: do a nice layout please -->
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0.5"
+        android:background="@android:color/background_dark" />
+
+    <!-- The main image to be centered in the layout.
+     Instead of ImageView, you can change it to
+     anything, for example a TextView-->
+    <LinearLayout
+        android:id="@+id/TextHolder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/followUserFromFlag"
+        android:layout_centerHorizontal="true"
+        android:orientation="horizontal" >
+
+        <TextView android:text="@string/flag_text"
+            android:id="@+id/flag"
+            android:layout_centerHorizontal="true"
+            android:layout_above="@+id/followUserFromFlag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView android:text="@string/noTextFoundDefault"
+            android:id="@+id/flagText"
+            android:layout_centerHorizontal="true"
+            android:layout_above="@+id/followUserFromFlag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+
+
+    <Button
+        android:id="@+id/followUserFromFlag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@+id/FlagView"
+        android:text="@string/followUser"
+        android:padding="5dp"
+        android:layout_marginTop="20dp"
+        android:paddingRight="10dp"/>
+
+    <ImageView
+        android:id="@+id/FlagView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="@drawable/ic_launcher"
+        />
+
+    <!--The button holder for our upvote and downvote buttons.
+    Horizontally stacking. Change it anyway you want-->
+    <LinearLayout
+        android:id="@+id/ButtonHolder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/FlagView"
+        android:layout_centerHorizontal="true"
+        android:orientation="horizontal" >
+
+        <Button
+            android:layout_width="wrap_content"
+            android:id="@+id/upVoteButton"
+            android:layout_height="wrap_content"
+            android:text="@string/upVote"
+            android:padding="5dp"
+            android:layout_marginTop="20dp"
+            android:paddingRight="10dp"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:id="@+id/downVoteButton"
+            android:layout_height="wrap_content"
+            android:text="@string/downVote"
+            android:padding="5dp"
+            android:layout_marginTop="20dp"
+            android:paddingRight="10dp"/>
+    </LinearLayout>
+
+</RelativeLayout>
+
+
