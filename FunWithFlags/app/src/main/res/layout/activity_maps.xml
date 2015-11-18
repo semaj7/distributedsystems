@@ -29,6 +29,17 @@
             android:src="@drawable/user_icon"
             android:background="@drawable/roundbutton"/>
 
+        <Button
+            android:id="@+id/showAllButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left|bottom"
+            android:text="@string/showAll"
+            android:onClick="showAllFlags"
+            android:padding="5dp"
+            android:layout_marginTop="20dp"
+            android:paddingRight="10dp"/>
+
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

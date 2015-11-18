@@ -3,13 +3,16 @@ package ch.ethz.inf.vs.a4.funwithflags;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -20,9 +23,15 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.parse.Parse;
+import com.parse.FindCallback;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
+<<<<<<< HEAD
+=======
+import com.parse.ParseQuery;
+>>>>>>> origin/master
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,11 +39,17 @@ import java.util.Random;
 
 public class MapsActivity extends FragmentActivity {
 
-    public static final double MAX_FLAG_VISIBILITY_RANGE = 10; // i think this is in kilometers :)
+    public static final double MAX_FLAG_VISIBILITY_RANGE = 0.5; // kilometers
+
+    //TODO: this constant shouldn't be a constant. the distance is dependent on the maximal zoom level of the current position
+    public static final double MAX_FLAG_OVERLAPPING_KM = 0.005; // in kilometers, so its 5 meters
+
+    public static final int MAX_NUMBER_OF_FAVOURITES = 20;
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private String slideMenuStrings[];
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
+    private Button showAllButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,10 +58,6 @@ public class MapsActivity extends FragmentActivity {
         //just testing the getFlags(). should print a flag in the terminal
         getFlags();
 
-        //PARSE.com-stuff! Don't know if I have to put it into every "onCreate()". Probably yes.
-        // Enable Local Datastore.
-        Parse.enableLocalDatastore(this);
-        Parse.initialize(this, "0tOkgHhdbWKjMHWtHlmnVEzFq83LoangMuIHIIG8", "t1apg1Ly1rHK6BhDZ5QloteIVFlNDcjbDuk9cz6c");
 
         //testing
         ParseObject testObject = new ParseObject("TestObject");
@@ -54,7 +65,12 @@ public class MapsActivity extends FragmentActivity {
         testObject.saveInBackground();
 
         setContentView(R.layout.activity_maps);
+
+        showAllButton = (Button) findViewById(R.id.showAllButton);
+
         setUpMapIfNeeded();
+
+
 
         slideMenuStrings = Data.slideMenuStrings; // have done this a bit nicer
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -73,8 +89,6 @@ public class MapsActivity extends FragmentActivity {
             selectItem(position);
         }
     }
-
-
 
     @Override
     protected void onResume() {
@@ -107,20 +121,132 @@ public class MapsActivity extends FragmentActivity {
             if (mMap != null) {
                 mMap.setMyLocationEnabled(true);
 
+                mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                    @Override
+                    public boolean onMarkerClick(Marker marker) {
+                        // get flags close to marker that got clicked
+                        LatLng markerPos = marker.getPosition();
+                        List<Flag> flagsAtApproxPosition = filterFlagsByApproximatePositions(Data.allFlags, markerPos);
+                        chooseFlagTextDialog(flagsAtApproxPosition);
+
+                        //this is used to show the text on top of the marker
+                        marker.showInfoWindow();
+                        return true;
+                    }
+                });
+
                 setUpMap();
 
             }
         }
     }
 
+    private void searchAndFilterByUserNameDialog() {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.search_username_title);
+
+        // Set up the input
+        final EditText input = new EditText(this);
+        // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(input);
+
+        // Set up the buttons
+        builder.setPositiveButton(R.string.accept, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String searchUserName = input.getText().toString();
+                if (!searchUserName.isEmpty()) {
+                    Data.flagsToShow.removeAll(Data.flagsToShow);
+                    Data.flagsToShow.addAll(filterFlagsByUserName(Data.allFlags, searchUserName));
+                    Data.filteringEnabled.removeAll(Data.filteringEnabled);
+                    //just add a category to show that we are filtering
+                    Data.filteringEnabled.add(Category.DEFAULT);
+                    setUpMap();
+                }
+            }
+        });
+        builder.setNegativeButton(R.string.decline, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
+    }
+
+
+    private void chooseFlagTextDialog(final List<Flag> closeByFlags) {
+
+        //only do this if we have actually more than 1 flag to select from
+        if (closeByFlags.size() > 1){
+            // Set up the array to display the flag texts
+            String[] flagEntries = new String[closeByFlags.size()];
+            for (int i = 0; i < closeByFlags.size(); i++) {
+                flagEntries[i] = closeByFlags.get(i).getText();
+            }
+
+            //build and show dialog
+            AlertDialog.Builder alert = new AlertDialog.Builder(this);
+            alert.setTitle(R.string.closeByFlagsDialogTitle);
+
+            //alert.setMessage(R.string.closeByFlagsDialogMessage);
+            alert.setItems(flagEntries, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int whichEntry) {
+                    System.out.println("DEBUG: markerListener, onClick: clicked entry nr: " + whichEntry);
+                    // todo: do what ever we want to do with the clicked "flag"(text)
+                    dialog.dismiss();
+                }
+            });
+            alert.show();
+        }
+    }
+
+    private List<Flag> filterFlagsByUserName(List<Flag> flagsToFilter, String userName) {
+        //don't filter if the username to filter is null or empty
+        if (userName == null) return flagsToFilter;
+        if (userName.isEmpty()) return  flagsToFilter;
+
+        List<Flag> filteredFlags = new ArrayList<Flag>();
+        for (Flag f: flagsToFilter) {
+            if (f.getUserName().equals(userName))
+                filteredFlags.add(f);
+
+        }
+        return filteredFlags;
+    }
+
+    private List<Flag> filterFlagsByApproximatePositions(List<Flag> InitialFlags, LatLng position) {
+        List<Flag> resultList = new ArrayList<Flag>();
+
+        // todo: finding a way not to check every single flag on the whole map would be nice. but i don't know if we can do that
+        for(Flag f : InitialFlags){
+            double flagLat = f.getLatLng().latitude;
+            double flagLon = f.getLatLng().longitude;
+            double posLat = position.latitude;
+            double posLon = position.longitude;
+
+            ParseGeoPoint positionGeoPoint = new ParseGeoPoint(posLat, posLon);
+            ParseGeoPoint flagGeoPoint = new ParseGeoPoint(flagLat, flagLon);
+
+            if (positionGeoPoint.distanceInKilometersTo(flagGeoPoint) < MapsActivity.MAX_FLAG_OVERLAPPING_KM)
+                resultList.add(f);
+        }
+
+        return resultList;
+    }
+
     // TODO: implement this method, and delete Toasts afterwards
     private void selectItem(int position) {
         switch (position) {
             case 0: // Search
-                Toast.makeText(this, "Clicked " + slideMenuStrings[0] ,Toast.LENGTH_SHORT).show();
+                searchAndFilterByUserNameDialog();
                 break;
             case 1: // Favourites
-                Toast.makeText(this, "Clicked " + slideMenuStrings[1] ,Toast.LENGTH_SHORT).show();
+                favouriteDisplayDialog();
                 break;
             case 2: // Filters
                 filterFlagsWithCategoryDialog(Data.allFlags);
@@ -136,6 +262,46 @@ public class MapsActivity extends FragmentActivity {
                 break;
         }
     }
+
+    private void favouriteDisplayDialog() {
+
+        AlertDialog.Builder b = new AlertDialog.Builder(this);
+        b.setTitle(R.string.favouriteDisplayDialogTitle);
+
+        String[] favFlagEntries;
+        int size = 0;
+        for (int i = 0; i < MAX_NUMBER_OF_FAVOURITES; i++) {
+            if (Data.favouriteFlags[i] != null)
+                size++;
+        }
+        if (size == 0) {
+            Resources res = getResources();
+            String noFavYet = String.format(res.getString(R.string.noFavourtieYet));
+            favFlagEntries = new String[1];
+            favFlagEntries[0] = noFavYet;
+        } else {
+            favFlagEntries = new String[size];
+
+            for (int i = 0; i < size; i++) {
+                favFlagEntries[i] = Data.ithFavourite(i).getText();
+            }
+        }
+
+        b.setItems(favFlagEntries, new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int whichFavourite) {
+                Toast.makeText(getApplicationContext(), "looks like your favourite flag says: " + Data.ithFavourite(whichFavourite).getText(), Toast.LENGTH_SHORT).show();
+                // todo: do something with selected favourite's flag
+                dialog.dismiss();
+
+            }
+
+        });
+
+        b.show();
+    }
+
 
     private void filterFlagsWithCategoryDialog(final List<Flag> flagsToFilter) {
 
@@ -165,11 +331,11 @@ public class MapsActivity extends FragmentActivity {
 
     private List<Flag> filterFlagsByCategory(List<Flag> flagsToFilter, Category c) {
 
-        Data.filteredCategories.removeAll(Data.filteredCategories);
+        Data.filteringEnabled.removeAll(Data.filteringEnabled);
 
         if (c == Category.DEFAULT) return flagsToFilter; //Do not filter if someone selects DEFAULT category
 
-        Data.filteredCategories.add(c);
+        Data.filteringEnabled.add(c);
         ArrayList<Flag> flagsThatAreInCategory = new ArrayList<Flag>();
 
         for (Flag f: flagsToFilter) {
@@ -270,10 +436,13 @@ public class MapsActivity extends FragmentActivity {
 
 
                     //TODO: get the category here
-                    Flag f = new Flag(currentPosition, cat[0], inputText, getApplicationContext());
+                    Flag f = new Flag(currentPosition, cat[0], getCurrentLoggedInUserName(), inputText, getApplicationContext());
                     f.isOwner = true;
                     addToData(f);
                     displayFlag(f);
+
+                    if(!Data.addFavourite(f)) // todo: this is just for testing, remove when adding to favourites is implemented
+                        Toast.makeText(getApplicationContext(), "could not add to favourites", Toast.LENGTH_SHORT).show();
 
                 }
             });
@@ -293,6 +462,13 @@ public class MapsActivity extends FragmentActivity {
             switchToLogin();
         }
 
+    }
+
+    private String getCurrentLoggedInUserName() {
+        //before executing this, check if user is logged in!
+        //TODO: check what the current Username is
+
+        return "Homo";
     }
 
     public LatLng getCoordinates() {
@@ -354,6 +530,11 @@ public class MapsActivity extends FragmentActivity {
 
     }
 
+    public void showAllFlags(View v) {
+        Data.filteringEnabled.removeAll(Data.filteringEnabled);
+        setUpMap();
+    }
+
     /**
      * This is where we can add markers or lines, add listeners or move the camera. In this case, we
      * just add a marker near Africa.
@@ -364,12 +545,17 @@ public class MapsActivity extends FragmentActivity {
         //see other marker options: https://developers.google.com/maps/documentation/android-api/marker
         mMap.clear();
 
-        if (Data.filteredCategories.size() > 0) { //we have already set a filter and keep it that way
+        if (Data.filteringEnabled.size() > 0) { //we have already set a filter and keep it that way
+
+            showAllButton.setVisibility(View.VISIBLE);
+            Toast.makeText(this, "Displaying " + Data.flagsToShow.size() + " flags after filtering." ,Toast.LENGTH_SHORT).show();
+
             for (Flag f: Data.flagsToShow) {
                 displayFlag(f);
             }
         }
         else { //we just started the App and have not yet set a filter
+            showAllButton.setVisibility(View.INVISIBLE);
             for (Flag f: Data.allFlags) {
                 displayFlag(f);
             }
@@ -383,8 +569,8 @@ public class MapsActivity extends FragmentActivity {
     private void addToData(Flag f) {
 
         Data.allFlags.add(f);
-        if (!Data.filteredCategories.isEmpty()) {
-            if (Data.filteredCategories.contains(f.getCategory())) {
+        if (!Data.filteringEnabled.isEmpty()) {
+            if (Data.filteringEnabled.contains(f.getCategory())) {
                 Data.flagsToShow.add(f);
             }
         }
@@ -392,8 +578,12 @@ public class MapsActivity extends FragmentActivity {
 
     private void displayFlag(Flag f) {
 
-        mMap.addMarker(new MarkerOptions().position(f.getLatLng()).title(f.getText()).icon(BitmapDescriptorFactory.defaultMarker(f.getCategory().hue)));
-
+        mMap.addMarker(new MarkerOptions()
+                .position(f.getLatLng())
+                .title(f.getText())
+                .icon(BitmapDescriptorFactory.defaultMarker(f.getCategory().hue))
+                .alpha(f.getAlpha())
+        );
     }
 
     //PASCAL: ke ahnig wo dir dää code weit, aber i tues iz mau da ine.
@@ -401,6 +591,24 @@ public class MapsActivity extends FragmentActivity {
     void getFlags(){
 
         //TODO: please add all the retrieved Flags into Data.allFlags()
+<<<<<<< HEAD
+=======
+        ParseQuery<ParseObject> flagQuery=new ParseQuery<ParseObject>("Flag");
+        flagQuery.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> objects, com.parse.ParseException e) {
+                if (e == null) {
+                    for (int i = 0; i < objects.size(); i++) {
+                        objects.get(i);
+                    }
+                } else {
+                    Log.d("debug","Flags konnten nicht vom Server abgerufen werden! :( ");
+                }
+            }
+
+        });
+        // commented out next line in order to run the code
+>>>>>>> origin/master
         //ParseQuery
 
         //stuff we would need if we weren't using parse
@@ -510,10 +718,26 @@ public class MapsActivity extends FragmentActivity {
 
     void submitFlag(Flag f){
 
+        /*
+        From the Report:
+
+        Flags(flagId:Int, userName:String, content:String, latitude:Int,
+                longitude:Int, categoryName:String, date:Date)
+        */
+
+        ParseObject parseFlag = new ParseObject("Flag");
+
+        //parseFlag.put("flagId",f. TODO);
+        parseFlag.put("userName",f.getUserName());
+        parseFlag.put("content",f.getText());
+        parseFlag.put("latitude",f.getLatLng().latitude);
+        parseFlag.put("longitude",f.getLatLng().longitude);
+        parseFlag.put("categoryName",f.getCategory().name);
+
     }
 
     void deleteFlag(Flag f){
-
+        // TODO: 17.11.15
     }
 
 
