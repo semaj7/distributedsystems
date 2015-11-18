@@ -25,6 +25,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.parse.FindCallback;
 import com.parse.Parse;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
@@ -35,6 +36,10 @@ import java.util.Random;
 public class MapsActivity extends FragmentActivity {
 
     public static final double MAX_FLAG_VISIBILITY_RANGE = 0.5; // kilometers
+
+    //TODO: this constant shouldn't be a constant. the distance is dependent on the maximal zoom level of the current position
+    public static final double MAX_FLAG_OVERLAPPING_KM = 0.005; // in kilometers, so its 5 meters
+
     public static final int MAX_NUMBER_OF_FAVOURITES = 20;
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private String slideMenuStrings[];
@@ -78,8 +83,6 @@ public class MapsActivity extends FragmentActivity {
             selectItem(position);
         }
     }
-
-
 
     @Override
     protected void onResume() {
@@ -158,7 +161,7 @@ public class MapsActivity extends FragmentActivity {
 
     private List<Flag> filterFlagsByApproximatePositions(List<Flag> InitialFlags, LatLng position) {
         List<Flag> resultList = new ArrayList<Flag>();
-
+     
         // todo: finding a way not to check every single flag on the whole map would be nice. but i don't know if we can do that
         for(Flag f : InitialFlags){
             double flagLat = f.getLatLng().latitude;
@@ -166,12 +169,11 @@ public class MapsActivity extends FragmentActivity {
             double posLat = position.latitude;
             double posLon = position.longitude;
 
-            // flag is approximately at the same location, and too close to distinguish on the map
-            // todo: find an appropriate value. 0.01 is way too far appart
-            if((Math.abs(flagLat - posLat) <= 0.01) & (Math.abs(flagLon - posLon) <= 0.01)){
-                // add this flag to the list
+            ParseGeoPoint positionGeoPoint = new ParseGeoPoint(posLat, posLon);
+            ParseGeoPoint flagGeoPoint = new ParseGeoPoint(flagLat, flagLon);
+
+            if (positionGeoPoint.distanceInKilometersTo(flagGeoPoint) < MapsActivity.MAX_FLAG_OVERLAPPING_KM)
                 resultList.add(f);
-            }
         }
 
         return resultList;
