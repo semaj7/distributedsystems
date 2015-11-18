@@ -3,6 +3,7 @@ package ch.ethz.inf.vs.a4.funwithflags;
 import android.content.Context;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.parse.ParseGeoPoint;
 
 import java.sql.Timestamp;
 
@@ -23,6 +24,7 @@ public class Flag {
     private LatLng latLng;
     private Category category;
     private Timestamp date;
+    private float alpha;
 
     private GPSTracker gpsTracker;
 
@@ -55,6 +57,14 @@ public class Flag {
         }
     }
 
+    public float getAlpha () {
+        if (isInRange())
+            return 1.0f;
+        else
+            return 0.5f;
+
+    }
+
     public boolean isOwner = false;
 
     public LatLng getLatLng() {
@@ -65,12 +75,23 @@ public class Flag {
         return category;
     }
 
-    private boolean isInRange(){
-        LatLng phoneLatLong = new LatLng(gpsTracker.getLatitude(),gpsTracker.getLongitude());
+    public boolean isInRange(){
 
-        // check if flag is a favourite -> always visible
         if(Data.containsFavourite(this))
             return true;
+
+        ParseGeoPoint phoneGeoPoint = new ParseGeoPoint(gpsTracker.getLatitude(), gpsTracker.getLongitude());
+        ParseGeoPoint flagGeoPoint = new ParseGeoPoint(getLatLng().latitude, getLatLng().longitude);
+
+        if (phoneGeoPoint.distanceInKilometersTo(flagGeoPoint) < MapsActivity.MAX_FLAG_VISIBILITY_RANGE)
+            return true;
+        else
+            return false;
+
+        /*
+        LatLng phoneLatLong = new LatLng(gpsTracker.getLatitude(),gpsTracker.getLongitude());
+        // check if flag is a favourite -> always visible
+
 
         // this is an approximation of the distance that works best if close by, but since we want to only see close by flags, this should work just fine
         int R = 6371; // km
@@ -82,6 +103,8 @@ public class Flag {
             return true;
         else
             return false;
+
+            */
     }
 
     public String getUserName() {

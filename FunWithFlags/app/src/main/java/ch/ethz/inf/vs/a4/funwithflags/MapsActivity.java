@@ -5,12 +5,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.View;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -19,11 +17,6 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -35,21 +28,13 @@ import com.parse.Parse;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Random;
 
 public class MapsActivity extends FragmentActivity {
 
-    public static final double MAX_FLAG_VISIBILITY_RANGE = 10; // i think this is in kilometers :)
+    public static final double MAX_FLAG_VISIBILITY_RANGE = 0.5; // kilometers
     public static final int MAX_NUMBER_OF_FAVOURITES = 20;
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private String slideMenuStrings[];
@@ -146,26 +131,29 @@ public class MapsActivity extends FragmentActivity {
 
     private void chooseFlagTextDialog(final List<Flag> closeByFlags) {
 
-        // Set up the array to display the flag texts
-        String[] flagEntries = new String[closeByFlags.size()];
-        for (int i = 0; i < closeByFlags.size(); i++) {
-            flagEntries[i] = closeByFlags.get(i).getText();
-        }
-
-        //build and show dialog
-        AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        alert.setTitle(R.string.closeByFlagsDialogTitle);
-
-        //alert.setMessage(R.string.closeByFlagsDialogMessage);
-        alert.setItems(flagEntries, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int whichEntry) {
-                System.out.println("DEBUG: markerListener, onClick: clicked entry nr: " + whichEntry);
-                // todo: do what ever we want to do with the clicked "flag"(text)
-                dialog.dismiss();
+        //only do this if we have actually more than 1 flag to select from
+        if (closeByFlags.size() > 1){
+            // Set up the array to display the flag texts
+            String[] flagEntries = new String[closeByFlags.size()];
+            for (int i = 0; i < closeByFlags.size(); i++) {
+                flagEntries[i] = closeByFlags.get(i).getText();
             }
-        });
-        alert.show();
+
+            //build and show dialog
+            AlertDialog.Builder alert = new AlertDialog.Builder(this);
+            alert.setTitle(R.string.closeByFlagsDialogTitle);
+
+            //alert.setMessage(R.string.closeByFlagsDialogMessage);
+            alert.setItems(flagEntries, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int whichEntry) {
+                    System.out.println("DEBUG: markerListener, onClick: clicked entry nr: " + whichEntry);
+                    // todo: do what ever we want to do with the clicked "flag"(text)
+                    dialog.dismiss();
+                }
+            });
+            alert.show();
+        }
     }
 
     private List<Flag> filterFlagsByApproximatePositions(List<Flag> InitialFlags, LatLng position) {
@@ -515,6 +503,7 @@ public class MapsActivity extends FragmentActivity {
                 .position(f.getLatLng())
                 .title(f.getText())
                 .icon(BitmapDescriptorFactory.defaultMarker(f.getCategory().hue))
+                .alpha(f.getAlpha())
         );
     }
 
