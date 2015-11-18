@@ -4,17 +4,25 @@ import android.content.Context;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.sql.Timestamp;
+
 /**
  * Created by Andres on 13.11.15.
  */
+
 public class Flag {
 
-    private LatLng latLng;
-    private String text;
-
+    /*
+    from the report:
+    Flags(flagId:Int, userName:String, content:String, latitude:Int,
+    longitude:Int, categoryName:String, date:Date)
+     */
     private long ID;
-
+    private String userName;
+    private String text;
+    private LatLng latLng;
     private Category category;
+    private Timestamp date;
 
     private GPSTracker gpsTracker;
 
@@ -70,5 +78,9 @@ public class Flag {
             return true;
         else
             return false;
+    }
+
+    public String getUserName() {
+        return userName;
     }
 }

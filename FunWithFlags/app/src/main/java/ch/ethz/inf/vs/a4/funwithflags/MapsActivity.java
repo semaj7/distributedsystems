@@ -26,6 +26,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.parse.FindCallback;
 import com.parse.Parse;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -34,6 +35,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -411,7 +413,20 @@ public class MapsActivity extends FragmentActivity {
     void getFlags(){
 
         //TODO: please add all the retrieved Flags into Data.allFlags()
-        ParseQuery
+        ParseQuery<ParseObject> flagQuery=new ParseQuery<ParseObject>("Flag");
+        flagQuery.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> objects, com.parse.ParseException e) {
+                if (e == null) {
+                    for (int i = 0; i < objects.size(); i++) {
+                        objects.get(i)
+                    }
+                } else {
+                    Log.d("debug","Flags konnten nicht vom Server abgerufen werden! :( ");
+                }
+            }
+
+        });
 
         //stuff we would need if we weren't using parse
         /*
@@ -520,10 +535,26 @@ public class MapsActivity extends FragmentActivity {
 
     void submitFlag(Flag f){
 
+        /*
+        From the Report:
+
+        Flags(flagId:Int, userName:String, content:String, latitude:Int,
+                longitude:Int, categoryName:String, date:Date)
+        */
+
+        ParseObject parseFlag = new ParseObject("Flag");
+
+        //parseFlag.put("flagId",f. TODO);
+        parseFlag.put("userName",f.getUserName());
+        parseFlag.put("content",f.getText());
+        parseFlag.put("latitude",f.getLatLng().latitude);
+        parseFlag.put("longitude",f.getLatLng().longitude);
+        parseFlag.put("categoryName",f.getCategory().name);
+
     }
 
     void deleteFlag(Flag f){
-
+        // TODO: 17.11.15
     }
 
 
