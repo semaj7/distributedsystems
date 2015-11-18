@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">FunWithFlags</string>
+    <string name="app_name">flaggr</string>
     <string name="title_activity_maps">flaggr</string>
     <string name="newFlagDialogTitle">Set your flag!</string>
     <string name="newFlagDialogMessage">Enter your text:</string>

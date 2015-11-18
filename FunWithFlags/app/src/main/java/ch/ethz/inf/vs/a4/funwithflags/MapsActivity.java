@@ -32,13 +32,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.parse.FindCallback;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
-<<<<<<< HEAD
-
 import com.parse.ParseQuery;
-
-=======
-import com.parse.ParseQuery;
->>>>>>> origin/master
 
 import java.util.ArrayList;
 import java.util.List;
@@ -668,10 +662,7 @@ public class MapsActivity extends FragmentActivity {
     void getFlags(){
 
         //TODO: please add all the retrieved Flags into Data.allFlags()
-<<<<<<< HEAD
 
-=======
->>>>>>> origin/master
         ParseQuery<ParseObject> flagQuery=new ParseQuery<ParseObject>("Flag");
         flagQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
@@ -687,10 +678,7 @@ public class MapsActivity extends FragmentActivity {
 
         });
         // commented out next line in order to run the code
-<<<<<<< HEAD
 
-=======
->>>>>>> origin/master
         //ParseQuery
 
         //stuff we would need if we weren't using parse
