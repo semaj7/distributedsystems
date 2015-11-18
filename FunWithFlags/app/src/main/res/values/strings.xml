@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">FunWithFlags</string>
-    <string name="title_activity_maps">Map</string>
+    <string name="title_activity_maps">flaggr</string>
     <string name="newFlagDialogTitle">Set your flag!</string>
     <string name="newFlagDialogMessage">Enter your text:</string>
     <string name="Profile">Profile</string>
@@ -17,4 +17,8 @@
     <string name="not_in_range_message">You are not close enough to this flag</string>
     <string name="choose_category">choose category</string>
     <string name="flag_text_hint">say something</string>
+    <string name="closeByFlagsDialogTitle">Flags near you</string>
+    <string name="closeByFlagsDialogMessage">Choose a flag</string>
+    <string name="favouriteDisplayDialogTitle">Your favourite flags!</string>
+    <string name="noFavourtieYet">You have no favourites yet</string>
 </resources>

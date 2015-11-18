@@ -3,11 +3,14 @@ package ch.ethz.inf.vs.a4.funwithflags;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.View;
+import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -25,6 +28,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.parse.FindCallback;
 import com.parse.Parse;
@@ -37,12 +41,16 @@ import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Random;
 
 public class MapsActivity extends FragmentActivity {
 
     public static final double MAX_FLAG_VISIBILITY_RANGE = 10; // i think this is in kilometers :)
+    public static final int MAX_NUMBER_OF_FAVOURITES = 20;
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private String slideMenuStrings[];
     private DrawerLayout mDrawerLayout;
@@ -119,10 +127,66 @@ public class MapsActivity extends FragmentActivity {
             if (mMap != null) {
                 mMap.setMyLocationEnabled(true);
 
+                mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                    @Override
+                    public boolean onMarkerClick(Marker marker) {
+                        // get flags close to marker that got clicked
+                        LatLng markerPos = marker.getPosition();
+                        List<Flag> flagsAtApproxPosition = filterFlagsByApproximatePositions(Data.allFlags, markerPos);
+                        chooseFlagTextDialog(flagsAtApproxPosition);
+                        return true;
+                    }
+                });
+
                 setUpMap();
 
             }
         }
+    }
+
+    private void chooseFlagTextDialog(final List<Flag> closeByFlags) {
+
+        // Set up the array to display the flag texts
+        String[] flagEntries = new String[closeByFlags.size()];
+        for (int i = 0; i < closeByFlags.size(); i++) {
+            flagEntries[i] = closeByFlags.get(i).getText();
+        }
+
+        //build and show dialog
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle(R.string.closeByFlagsDialogTitle);
+
+        //alert.setMessage(R.string.closeByFlagsDialogMessage);
+        alert.setItems(flagEntries, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int whichEntry) {
+                System.out.println("DEBUG: markerListener, onClick: clicked entry nr: " + whichEntry);
+                // todo: do what ever we want to do with the clicked "flag"(text)
+                dialog.dismiss();
+            }
+        });
+        alert.show();
+    }
+
+    private List<Flag> filterFlagsByApproximatePositions(List<Flag> InitialFlags, LatLng position) {
+        List<Flag> resultList = new ArrayList<Flag>();
+
+        // todo: finding a way not to check every single flag on the whole map would be nice. but i don't know if we can do that
+        for(Flag f : InitialFlags){
+            double flagLat = f.getLatLng().latitude;
+            double flagLon = f.getLatLng().longitude;
+            double posLat = position.latitude;
+            double posLon = position.longitude;
+
+            // flag is approximately at the same location, and too close to distinguish on the map
+            // todo: find an appropriate value. 0.01 is way too far appart
+            if((Math.abs(flagLat - posLat) <= 0.01) & (Math.abs(flagLon - posLon) <= 0.01)){
+                // add this flag to the list
+                resultList.add(f);
+            }
+        }
+
+        return resultList;
     }
 
     // TODO: implement this method, and delete Toasts afterwards
@@ -132,7 +196,7 @@ public class MapsActivity extends FragmentActivity {
                 Toast.makeText(this, "Clicked " + slideMenuStrings[0] ,Toast.LENGTH_SHORT).show();
                 break;
             case 1: // Favourites
-                Toast.makeText(this, "Clicked " + slideMenuStrings[1] ,Toast.LENGTH_SHORT).show();
+                favouriteDisplayDialog();
                 break;
             case 2: // Filters
                 filterFlagsWithCategoryDialog(Data.allFlags);
@@ -148,6 +212,46 @@ public class MapsActivity extends FragmentActivity {
                 break;
         }
     }
+
+    private void favouriteDisplayDialog() {
+
+        AlertDialog.Builder b = new AlertDialog.Builder(this);
+        b.setTitle(R.string.favouriteDisplayDialogTitle);
+
+        String[] favFlagEntries;
+        int size = 0;
+        for (int i = 0; i < MAX_NUMBER_OF_FAVOURITES; i++) {
+            if (Data.favouriteFlags[i] != null)
+                size++;
+        }
+        if (size == 0) {
+            Resources res = getResources();
+            String noFavYet = String.format(res.getString(R.string.noFavourtieYet));
+            favFlagEntries = new String[1];
+            favFlagEntries[0] = noFavYet;
+        } else {
+            favFlagEntries = new String[size];
+
+            for (int i = 0; i < size; i++) {
+                favFlagEntries[i] = Data.ithFavourite(i).getText();
+            }
+        }
+
+        b.setItems(favFlagEntries, new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int whichFavourite) {
+                Toast.makeText(getApplicationContext(), "looks like your favourite flag says: " + Data.ithFavourite(whichFavourite).getText(), Toast.LENGTH_SHORT).show();
+                // todo: do something with selected favourite's flag
+                dialog.dismiss();
+
+            }
+
+        });
+
+        b.show();
+    }
+
 
     private void filterFlagsWithCategoryDialog(final List<Flag> flagsToFilter) {
 
@@ -287,6 +391,9 @@ public class MapsActivity extends FragmentActivity {
                     addToData(f);
                     displayFlag(f);
 
+                    if(!Data.addFavourite(f)) // todo: this is just for testing, remove when adding to favourites is implemented
+                        Toast.makeText(getApplicationContext(), "could not add to favourites", Toast.LENGTH_SHORT).show();
+
                 }
             });
 
@@ -404,8 +511,11 @@ public class MapsActivity extends FragmentActivity {
 
     private void displayFlag(Flag f) {
 
-        mMap.addMarker(new MarkerOptions().position(f.getLatLng()).title(f.getText()).icon(BitmapDescriptorFactory.defaultMarker(f.getCategory().hue)));
-
+        mMap.addMarker(new MarkerOptions()
+                .position(f.getLatLng())
+                .title(f.getText())
+                .icon(BitmapDescriptorFactory.defaultMarker(f.getCategory().hue))
+        );
     }
 
     //PASCAL: ke ahnig wo dir dää code weit, aber i tues iz mau da ine.
@@ -413,6 +523,7 @@ public class MapsActivity extends FragmentActivity {
     void getFlags(){
 
         //TODO: please add all the retrieved Flags into Data.allFlags()
+<<<<<<< HEAD
         ParseQuery<ParseObject> flagQuery=new ParseQuery<ParseObject>("Flag");
         flagQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
@@ -427,6 +538,10 @@ public class MapsActivity extends FragmentActivity {
             }
 
         });
+=======
+        // commented out next line in order to run the code
+        //ParseQuery
+>>>>>>> origin/master
 
         //stuff we would need if we weren't using parse
         /*
