@@ -7,6 +7,8 @@
     <string name="title_activity_profile">ProfileActivity</string>
 
     <string name="hello_world">Hello world!</string>
+    <string name="OK">OK</string>
+    <string name="Cancel">Cancel</string>
     <string name="action_settings">Settings</string>
     <string name="ratingTextPlaceHolder">No ratings found.</string>
     <string name="settedFlagsCountTextPlaceHolder">This user has not yet set any flags.</string>
@@ -23,4 +25,10 @@
     <string name="noFavourtieYet">You have no favourites yet</string>
     <string name="search_username_title">Search by Username:</string>
     <string name="showAll">Show all flags again</string>
+    <string name="flag_activity_title">Flag</string>
+    <string name="followUser">Follow User</string>
+    <string name="upVote">Upvote</string>
+    <string name="downVote">Downvote</string>
+    <string name="noTextFoundDefault">Could\'t find Text for this flag!</string>
+    <string name="flag_text">Flag Text: </string>
 </resources>

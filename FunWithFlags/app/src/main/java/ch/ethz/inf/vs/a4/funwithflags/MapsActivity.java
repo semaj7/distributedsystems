@@ -9,14 +9,18 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
 import android.text.InputType;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -47,6 +51,7 @@ public class MapsActivity extends FragmentActivity {
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private Button showAllButton;
+    private PopupWindow flagPopUpWindow;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +96,19 @@ public class MapsActivity extends FragmentActivity {
     protected void onResume() {
         super.onResume();
         setUpMapIfNeeded();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(flagPopUpWindow.isShowing())
+        {
+            flagPopUpWindow.dismiss();
+        }
+        else
+        {
+            super.onBackPressed();
+        }
+
     }
 
     /**
@@ -180,7 +198,7 @@ public class MapsActivity extends FragmentActivity {
         //only do this if we have actually more than 1 flag to select from
         if (closeByFlags.size() > 1){
             // Set up the array to display the flag texts
-            String[] flagEntries = new String[closeByFlags.size()];
+            final String[] flagEntries = new String[closeByFlags.size()];
             for (int i = 0; i < closeByFlags.size(); i++) {
                 flagEntries[i] = closeByFlags.get(i).getText();
             }
@@ -195,10 +213,14 @@ public class MapsActivity extends FragmentActivity {
                 public void onClick(DialogInterface dialog, int whichEntry) {
                     System.out.println("DEBUG: markerListener, onClick: clicked entry nr: " + whichEntry);
                     // todo: do what ever we want to do with the clicked "flag"(text)
+                    popUpFlag(closeByFlags.get(whichEntry));
                     dialog.dismiss();
                 }
             });
             alert.show();
+        }
+        else if (closeByFlags.size() == 1) {
+            popUpFlag(closeByFlags.get(0));
         }
     }
 
@@ -256,6 +278,7 @@ public class MapsActivity extends FragmentActivity {
                 break;
             default: // Settings
                 Toast.makeText(this, "Clicked " + slideMenuStrings[5] ,Toast.LENGTH_SHORT).show();
+
                 break;
         }
     }
@@ -425,8 +448,8 @@ public class MapsActivity extends FragmentActivity {
             layout.addView(categorySpinner);
             alert.setView(layout);
 
-
-            alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            Resources res = getResources();
+            alert.setPositiveButton(String.format(res.getString(R.string.OK)), new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
                     String inputText = input.getText().toString();
                     LatLng currentPosition = getCoordinates();
@@ -444,7 +467,7 @@ public class MapsActivity extends FragmentActivity {
                 }
             });
 
-            alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            alert.setNegativeButton(String.format(res.getString(R.string.Cancel)), new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
                     // Canceled.
                 }
@@ -531,6 +554,55 @@ public class MapsActivity extends FragmentActivity {
         Data.filteringEnabled.removeAll(Data.filteringEnabled);
         setUpMap();
     }
+
+    private void popUpFlag(final Flag f) {
+        //inflate the popup layout we just created, make sure the name is correct
+        View popupView = getLayoutInflater().inflate(R.layout.flag_popup, null);
+        //init controls
+        TextView text = (TextView) popupView.findViewById(R.id.flagText);
+        text.setText(f.getText());
+        final Button followUserButton = (Button) popupView.findViewById(R.id.followUserFromFlag);
+        Button upVoteButton = (Button) popupView.findViewById(R.id.upVoteButton);
+        Button downVoteButton = (Button) popupView.findViewById(R.id.downVoteButton);
+        //straightforward, now handle the onclick listeners for all buttons
+        upVoteButton.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                //TODO: do whatever upvote should do
+                flagPopUpWindow.dismiss();
+            }
+        });
+        downVoteButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                //TODO: do whatever downvote should do
+                flagPopUpWindow.dismiss();
+            }
+        });
+
+        followUserButton.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                followUser(f.getUserName());
+                flagPopUpWindow.dismiss();
+            }
+        });
+
+        flagPopUpWindow = new PopupWindow(popupView, WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+        //this method shows the popup, the first param is just an anchor, passing in the view
+        //we inflated is fine
+        flagPopUpWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
+
+    }
+
+    public void followUser(String userName){
+        //TODO: implement this
+    }
+
+
 
     /**
      * This is where we can add markers or lines, add listeners or move the camera. In this case, we
