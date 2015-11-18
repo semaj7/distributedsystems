@@ -523,14 +523,13 @@ public class MapsActivity extends FragmentActivity {
     void getFlags(){
 
         //TODO: please add all the retrieved Flags into Data.allFlags()
-<<<<<<< HEAD
         ParseQuery<ParseObject> flagQuery=new ParseQuery<ParseObject>("Flag");
         flagQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> objects, com.parse.ParseException e) {
                 if (e == null) {
                     for (int i = 0; i < objects.size(); i++) {
-                        objects.get(i)
+                        objects.get(i);
                     }
                 } else {
                     Log.d("debug","Flags konnten nicht vom Server abgerufen werden! :( ");
@@ -538,10 +537,8 @@ public class MapsActivity extends FragmentActivity {
             }
 
         });
-=======
         // commented out next line in order to run the code
         //ParseQuery
->>>>>>> origin/master
 
         //stuff we would need if we weren't using parse
         /*
