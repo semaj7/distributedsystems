@@ -1,81 +1,23 @@
 
-<<<<<<< HEAD
-*.xml
-
-*.xml
-
-VS_jdermelj_AntiTheft/.idea/misc.xml
-
-VS_jdermelj_AntiTheft/app/src/main/res/layout/activity_main.xml
-=======
-
-VS_jdermelj_AntiTheft/.idea/misc.xml
-VS_jdermelj_AntiTheft/.idea/workspace.xml
-VS_jdermelj_AntiTheft/.idea/gradle.xml
-VS_jdermelj_AntiTheft/.idea/inspectionProfiles/Project_Default.xml
-VS_jdermelj_AntiTheft/.idea/inspectionProfiles/profiles_settings.xml
 FunWithFlags/.idea/
-VS_jdermelj_Webservices/.idea/vcs.xml
 
-VS_jdermelj_Sensors/.idea/misc_conflict-20151005-091642.xml
+FunWithFlags/.idea/gradle.xml
 
-VS_jdermelj_Sensors/.idea/gradle.xml
+FunWithFlags/.idea/vcs.xml
 
-VS_jdermelj_Sensors/.idea/misc.xml
+FunWithFlags/.idea/misc.xml
 
-VS_jdermelj_Webservices/app/src/main/libs/httpclient-4.5.1.jar
+FunWithFlags/.idea/gradle.xml
 
-VS_jdermelj_Webservices/app/src/main/libs/httpcore-4.4.3.jar
+FunWithFlags/.idea/vcs.xml
+FunWithFlags/.idea/compiler.xml
+FunWithFlags/.idea/modules.xml
+FunWithFlags/app/app.iml
+FunWithFlags/FunWithFlags.iml
 
-VS_jdermelj_Webservices/app/src/main/libs/ksoap2-android-assembly-3.0.0-jar-with-dependencies.jar
+FunWithFlags/app/app.iml
 
-VS_jdermelj_Webservices/.idea/.compiler.xml.~65ae9187
+FunWithFlags/app/src/debug/res/values/google_maps_api.xml
+FunWithFlags/app/src/main/res/values/google_maps_api.xml
 
-VS_jdermelj_Webservices/.idea/..name.~2e5f1a29
-
-VS_jdermelj_Webservices/.idea/.gradle.xml.~6a8996f5
-
-VS_jdermelj_Webservices/.idea/.misc.xml.~6f15e577
-
-VS_jdermelj_Webservices/.idea/.modules.xml.~68c209b
-
-VS_jdermelj_Webservices/.idea/copyright/.profiles_settings.xml.~27d46a38
-
-VS_jdermelj_Webservices/.idea/gradle_conflict-20151013-134412.xml
-
-VS_jdermelj_Webservices/.idea/gradle.xml
-
-VS_jdermelj_Webservices/.idea/gradle.xml
-
-VS_jdermelj_Webservices/.idea/gradle.xml
-
-VS_jdermelj_Webservices/.idea/misc_conflict-20151013-134412.xml
-
-VS_jdermelj_Webservices/.idea/gradle.xml
-
-VS_jdermelj_Webservices/.idea/gradle.xml
-
-VS_jdermelj_Webservices/.idea/misc.xml
-
-VS_jdermelj_Webservices/.idea/workspace_conflict-20151013-170045.xml
-
-VS_jdermelj_Webservices/.idea/misc.xml
-
-VS_jdermelj_Webservices/.idea/misc.xml
-
-VS_dermelj_Chat/.idea/.name
-
-VS_dermelj_Chat/.idea/compiler.xml
-
-VS_dermelj_Chat/.idea/copyright/profiles_settings.xml
-
-VS_dermelj_Chat/.idea/misc.xml
-
-VS_dermelj_Chat/.idea/modules.xml
-
-VS_dermelj_Chat/.idea/vcs.xml
-
-VS_dermelj_Chat/.idea/VS_dermelj_Assignment3.iml
-
-VS_dermelj_Chat/.idea/workspace.xml
->>>>>>> origin/master
+..gitignore.~72199752

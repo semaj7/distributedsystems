@@ -1,16 +1,34 @@
 <resources>
-    <string name="app_name">FunWithFlags</string>
-    <string name="title_activity_maps">Map</string>
+    <string name="app_name">flaggr</string>
+    <string name="title_activity_maps">flaggr</string>
     <string name="newFlagDialogTitle">Set your flag!</string>
     <string name="newFlagDialogMessage">Enter your text:</string>
     <string name="Profile">Profile</string>
     <string name="title_activity_profile">ProfileActivity</string>
 
     <string name="hello_world">Hello world!</string>
+    <string name="OK">OK</string>
+    <string name="Cancel">Cancel</string>
     <string name="action_settings">Settings</string>
     <string name="ratingTextPlaceHolder">No ratings found.</string>
     <string name="settedFlagsCountTextPlaceHolder">This user has not yet set any flags.</string>
     <string name="ratingText">Your current rating is @rating. Good job!</string>
     <string name="settedFlagsText">You have already set @count flags! That\'s fun!</string>
     <string name="followedUser">You are now following @name. What a stalker!</string>
+    <string name="SportsName">Sports</string>
+    <string name="not_in_range_message">You are not close enough to this flag</string>
+    <string name="choose_category">choose category</string>
+    <string name="flag_text_hint">say something</string>
+    <string name="closeByFlagsDialogTitle">Flags near you</string>
+    <string name="closeByFlagsDialogMessage">Choose a flag</string>
+    <string name="favouriteDisplayDialogTitle">Your favourite flags!</string>
+    <string name="noFavourtieYet">You have no favourites yet</string>
+    <string name="search_username_title">Search by Username:</string>
+    <string name="showAll">Show all flags again</string>
+    <string name="flag_activity_title">Flag</string>
+    <string name="followUser">Follow User</string>
+    <string name="upVote">Upvote</string>
+    <string name="downVote">Downvote</string>
+    <string name="noTextFoundDefault">Could\'t find Text for this flag!</string>
+    <string name="flag_text">Flag Text: </string>
 </resources>
