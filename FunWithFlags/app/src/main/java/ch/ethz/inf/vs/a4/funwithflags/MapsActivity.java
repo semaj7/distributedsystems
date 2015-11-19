@@ -1,37 +1,14 @@
 package ch.ethz.inf.vs.a4.funwithflags;
 
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
-import android.content.ContentResolver;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.IntentSender;
-import android.content.ServiceConnection;
-import android.content.SharedPreferences;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.content.res.AssetManager;
-import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.database.DatabaseErrorHandler;
-import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.UserHandle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
 import android.text.InputType;
 import android.util.Log;
-import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
@@ -57,16 +34,7 @@ import com.parse.GetCallback;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.parse.SaveCallback;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.sql.Timestamp;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -485,6 +453,7 @@ public class MapsActivity extends FragmentActivity {
 
             Resources res = getResources();
             AlertDialog.Builder builder = alert.setPositiveButton(String.format(res.getString(R.string.OK)), new DialogInterface.OnClickListener() {
+                @Override
                 public void onClick(DialogInterface dialog, int whichButton) {
                     String inputText = input.getText().toString();
                     LatLng currentPosition = getCoordinates();
@@ -493,11 +462,15 @@ public class MapsActivity extends FragmentActivity {
                     //TODO: get the category here
                     Flag f = new Flag("No_ID_before_committed",getCurrentLoggedInUserName(), inputText, currentPosition, cat[0], new Timestamp(System.currentTimeMillis()), getApplicationContext());
                     submitFlag(f);
+
+
                     f.isOwner = true;
                     addToData(f);
                     displayFlag(f);
 
-                    if (!Data.addFavourite(f)) // todo: this is just for testing, remove when adding to favourites is implemented
+
+
+                    if(!Data.addFavourite(f)) // todo: this is just for testing, remove when adding to favourites is implemented
                         Toast.makeText(getApplicationContext(), "could not add to favourites", Toast.LENGTH_SHORT).show();
 
                 }
@@ -684,10 +657,10 @@ public class MapsActivity extends FragmentActivity {
     private void displayFlag(Flag f) {
 
         mMap.addMarker(new MarkerOptions()
-                .position(f.getLatLng())
-                .title(f.getText())
-                .icon(BitmapDescriptorFactory.defaultMarker(f.getCategory().hue))
-                .alpha(f.getAlpha())
+                        .position(f.getLatLng())
+                        .title(f.getText())
+                        .icon(BitmapDescriptorFactory.defaultMarker(f.getCategory().hue))
+                        .alpha(f.getAlpha())
         );
     }
 
@@ -731,10 +704,12 @@ public class MapsActivity extends FragmentActivity {
                     Data.setAllFlags(ret);
                 }
             }
+
         });
         // commented out next line in order to run the code
 
         //ParseQuery
+
 
     }
 
@@ -748,6 +723,7 @@ public class MapsActivity extends FragmentActivity {
         */
 
         final ParseObject parseFlag = new ParseObject("Flag");
+
 
         //parseFlag.put("flagId",f. TODO);
         parseFlag.put("userName",f.getUserName());
@@ -771,6 +747,12 @@ public class MapsActivity extends FragmentActivity {
                 }
             }
         });
+
+
+    }
+
+    void deleteFlag(Flag f){
+        // TODO: 17.11.15
 
     }
 

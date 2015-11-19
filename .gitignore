@@ -1,5 +1,6 @@
 
 FunWithFlags/.idea/
+<<<<<<< HEAD
 
 FunWithFlags/.idea/gradle.xml
 
@@ -21,3 +22,24 @@ FunWithFlags/app/src/debug/res/values/google_maps_api.xml
 FunWithFlags/app/src/main/res/values/google_maps_api.xml
 
 ..gitignore.~72199752
+=======
+
+FunWithFlags/.idea/gradle.xml
+
+FunWithFlags/.idea/vcs.xml
+
+FunWithFlags/.idea/misc.xml
+
+FunWithFlags/.idea/gradle.xml
+
+FunWithFlags/.idea/vcs.xml
+FunWithFlags/.idea/compiler.xml
+FunWithFlags/.idea/modules.xml
+FunWithFlags/app/app.iml
+FunWithFlags/FunWithFlags.iml
+
+FunWithFlags/app/app.iml
+
+FunWithFlags/app/src/debug/res/values/google_maps_api.xml
+FunWithFlags/app/src/main/res/values/google_maps_api.xml
+>>>>>>> origin/master

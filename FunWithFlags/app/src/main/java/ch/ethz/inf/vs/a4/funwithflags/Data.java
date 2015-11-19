@@ -23,6 +23,7 @@ public final class Data {
 
     public static List<Flag> allFlags = new ArrayList<Flag>();
 
+
     public final static Flag[] favouriteFlags = new Flag[MapsActivity.MAX_NUMBER_OF_FAVOURITES];
 
 
@@ -71,8 +72,10 @@ public final class Data {
         return false;
     }
 
+
     public static void setAllFlags(List<Flag> flags){
         allFlags.clear();
         allFlags=new ArrayList<Flag>(flags);
     }
+
 }

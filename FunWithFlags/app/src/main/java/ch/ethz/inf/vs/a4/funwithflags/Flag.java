@@ -18,6 +18,7 @@ public class Flag {
     Flags(flagId:Int, userName:String, content:String, latitude:Int,
     longitude:Int, categoryName:String, date:Date)
      */
+
     private String ID;
     private String userName;
     private String text;
@@ -111,6 +112,7 @@ public class Flag {
     public String getUserName() {
         return userName;
     }
+
     public void setID(String ID){
         this.ID=ID;
     }
@@ -122,4 +124,5 @@ public class Flag {
     public String getID() {
         return ID;
     }
+
 }
