@@ -1,6 +1,7 @@
 package ch.ethz.inf.vs.a4.funwithflags;
 
 import android.app.AlertDialog;
+import android.content.ClipData;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -9,7 +10,9 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
 import android.text.InputType;
 import android.util.Log;
+import android.view.DragEvent;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
@@ -154,6 +157,52 @@ public class MapsActivity extends FragmentActivity {
 
             }
         }
+    }
+
+    private void makeButtonDraggable(Button b) {
+
+        //TODO: fix this, this does not work properly yet
+        b.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                    ClipData clipData = ClipData.newPlainText("", "");
+                    View.DragShadowBuilder dsb = new View.DragShadowBuilder(view);
+                    view.startDrag(clipData, dsb, view, 0);
+                    view.setVisibility(View.INVISIBLE);
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        });
+
+        b.setOnDragListener(new View.OnDragListener() {
+            private boolean containsDragable;
+            @Override
+            public boolean onDrag(View view, DragEvent dragEvent) {
+                int dragAction = dragEvent.getAction();
+                View dragView = (View) dragEvent.getLocalState();
+                if (dragAction == DragEvent.ACTION_DRAG_EXITED) {
+                    containsDragable = false;
+                } else if (dragAction == DragEvent.ACTION_DRAG_ENTERED) {
+                    containsDragable = true;
+                } else if (dragAction == DragEvent.ACTION_DRAG_ENDED) {
+                    if (dropEventNotHandled(dragEvent)) {
+                        dragView.setVisibility(View.VISIBLE);
+                    }
+                } else if (dragAction == DragEvent.ACTION_DROP && containsDragable) {
+                    dragView.setVisibility(View.VISIBLE);
+                }
+                return true;
+            }
+
+            private boolean dropEventNotHandled(DragEvent dragEvent) {
+                return !dragEvent.getResult();
+            }
+        });
+
+
     }
 
     private void searchAndFilterByUserNameDialog() {
