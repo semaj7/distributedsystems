@@ -39,6 +39,7 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -730,7 +731,7 @@ public class MapsActivity extends FragmentActivity {
                     String text;
                     LatLng latLng;
                     Category category;
-                    Timestamp date;
+                    Date date;
 
                     ParseGeoPoint geoPoint;
 
@@ -745,13 +746,15 @@ public class MapsActivity extends FragmentActivity {
                         text = (String) flags.get(i).get("content");
                         geoPoint = (ParseGeoPoint) flags.get(i).get("geoPoint");
                         latLng = new LatLng(geoPoint.getLatitude(), geoPoint.getLongitude());
-                        category = Category.valueOf((String) flags.get(i).get("categoryName"));
-                        date = (Timestamp) flags.get(i).get("date");
+                        category = Category.getByName((String) flags.get(i).get("categoryName"));
+                        date = (Date) flags.get(i).get("date");
 
                         ret.add(new Flag(ID, userName, text, latLng, category, date, getApplicationContext()));
                     }
                     Data.setAllFlags(ret);
                 }
+
+                setUpMap();
             }
 
         });

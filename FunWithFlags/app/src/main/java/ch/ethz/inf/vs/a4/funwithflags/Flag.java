@@ -5,7 +5,8 @@ import android.content.Context;
 import com.google.android.gms.maps.model.LatLng;
 import com.parse.ParseGeoPoint;
 
-import java.sql.Timestamp;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by Andres on 13.11.15.
@@ -24,14 +25,17 @@ public class Flag {
     private String text;
     private LatLng latLng;
     private Category category;
-    private Timestamp date;
+    private Date date;
     private float alpha;
 
     private GPSTracker gpsTracker;
 
     public static String NOT_IN_RANGE_MESSAGE;
 
-    public Flag(String ID,String userName, String text, LatLng latLng, Category category, Timestamp date, Context context){
+    public Flag(String ID,String userName, String text, LatLng latLng, Category category, Date date, Context context){
+        Calendar c = Calendar.getInstance();
+
+        this.date = date;
         this.latLng = latLng;
         this.category = category;
         this.userName = userName;
@@ -117,7 +121,8 @@ public class Flag {
         this.ID=ID;
     }
 
-    public Timestamp getDate() {
+    public Date getDate() {
+
         return date;
     }
 

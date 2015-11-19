@@ -34,6 +34,41 @@ public enum Category {
         return Category.values()[i];
     }
 
+    public static Category getByName(String name) {
+        //TODO: make this design better, this is ugly
+        switch (name) {
+            case "No category":
+                return DEFAULT;
+
+            case "Work":
+                return WORK;
+
+            case "Landscape":
+                return LANDSCAPE;
+
+            case "Sports":
+                return SPORT;
+
+            case "Food":
+                return FOOD;
+
+            case "Lifestyle":
+                return LIFESTYLE;
+
+            case "Mystery":
+                return MYSTERY;
+
+            case "Tourism":
+                return TOURISM;
+
+            default:
+                return DEFAULT;
+
+
+
+        }
+    }
+
 
     public static List<String> getallCategoryNames() {
 
