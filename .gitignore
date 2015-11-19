@@ -43,3 +43,4 @@ FunWithFlags/app/app.iml
 FunWithFlags/app/src/debug/res/values/google_maps_api.xml
 FunWithFlags/app/src/main/res/values/google_maps_api.xml
 >>>>>>> origin/master
+FunWithFlags/app/build.gradle

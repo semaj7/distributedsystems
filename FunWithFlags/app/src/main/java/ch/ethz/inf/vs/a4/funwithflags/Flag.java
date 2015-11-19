@@ -27,14 +27,19 @@ public class Flag {
     private Category category;
     private Date date;
     private float alpha;
+    private int upVotes;
+    private int downVotes;  // temporarily added both, up and downvotes, so that we can delete flags that have a particular up/down vote RATIO, instead of just an absolute number. we can easily change this though :)
 
     private GPSTracker gpsTracker;
 
     public static String NOT_IN_RANGE_MESSAGE;
+    private static final float MINIMAL_UP_TO_DOWN_VOTE_RATIO = 0.4f; // todo: maybe find a better value for this
 
     public Flag(String ID,String userName, String text, LatLng latLng, Category category, Date date, Context context){
         Calendar c = Calendar.getInstance();
 
+        this.upVotes = 0;
+        this.downVotes = 0;
         this.date = date;
         this.latLng = latLng;
         this.category = category;
@@ -46,6 +51,20 @@ public class Flag {
         }
     }
 
+    public void upVote(){
+        upVotes++;
+    }
+
+    // this function returns true if that downvote lead a the point where the ratio got too bad, and the flag should get deleted, this should be checked everytime the method is used
+    public boolean downVote(){
+        downVotes++;
+        if (getVoteRate() <= MINIMAL_UP_TO_DOWN_VOTE_RATIO)
+            return true;
+        return false;
+    }
+
+    public int getVoteRateAbsolut(){ return (upVotes - downVotes); }
+    public float getVoteRate(){ return (downVotes != 0 ) ? (upVotes / downVotes) : 0.0f; }
     public void setLatLng(LatLng latLng){
         this.latLng = latLng;
     }

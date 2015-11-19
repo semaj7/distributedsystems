@@ -181,6 +181,7 @@ public class MapsActivity extends FragmentActivity {
 
         b.setOnDragListener(new View.OnDragListener() {
             private boolean containsDragable;
+
             @Override
             public boolean onDrag(View view, DragEvent dragEvent) {
                 int dragAction = dragEvent.getAction();
@@ -328,8 +329,7 @@ public class MapsActivity extends FragmentActivity {
                 Toast.makeText(this, "Clicked " + slideMenuStrings[4] ,Toast.LENGTH_SHORT).show();
                 break;
             default: // Settings
-                Toast.makeText(this, "Clicked " + slideMenuStrings[5] ,Toast.LENGTH_SHORT).show();
-
+                startActivity(new Intent(this, SettingsActivity.class));
                 break;
         }
     }
@@ -615,11 +615,14 @@ public class MapsActivity extends FragmentActivity {
     }
 
     private void popUpFlag(final Flag f) {
+        //todo: only show follow button if user does not already follow that user, or at least tell him he already follows that user, if we always show it.
         //inflate the popup layout we just created, make sure the name is correct
         View popupView = getLayoutInflater().inflate(R.layout.flag_popup, null);
         //init controls
         TextView text = (TextView) popupView.findViewById(R.id.flagText);
         text.setText(f.getText());
+        TextView ratingTv = (TextView) popupView.findViewById(R.id.ratingTextView);
+        ratingTv.setText(String.valueOf(f.getVoteRateAbsolut()));
         final Button followUserButton = (Button) popupView.findViewById(R.id.followUserFromFlag);
         Button upVoteButton = (Button) popupView.findViewById(R.id.upVoteButton);
         Button downVoteButton = (Button) popupView.findViewById(R.id.downVoteButton);
@@ -628,7 +631,8 @@ public class MapsActivity extends FragmentActivity {
 
             @Override
             public void onClick(View v) {
-                //TODO: do whatever upvote should do
+                f.upVote();
+                System.out.println("debug, got upvoted, now is at: "+ f.getVoteRateAbsolut());
                 flagPopUpWindow.dismiss();
             }
         });
@@ -636,7 +640,12 @@ public class MapsActivity extends FragmentActivity {
 
             @Override
             public void onClick(View v) {
-                //TODO: do whatever downvote should do
+                if(f.downVote()){
+                    // ratio too bad, delete this flag
+                    deleteFlag(f);
+                } else {
+                    System.out.println("debug, got downvoted, now is at: " + f.getVoteRateAbsolut());
+                }
                 flagPopUpWindow.dismiss();
             }
         });
