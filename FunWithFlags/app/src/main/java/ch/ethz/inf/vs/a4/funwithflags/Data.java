@@ -32,6 +32,7 @@ public final class Data {
         System.out.println("debug, check if top flag");
         if (containsFlag(flag, topRankedFlags)) {
             System.out.println("debug, already a top flag");
+            sortTopFlags();
             return;
         }
         
@@ -39,33 +40,39 @@ public final class Data {
             if(topRankedFlags[i] == null){
                 topRankedFlags[i] = flag;
                 System.out.println("debug, new top flag, since there was an empty place");
+                sortTopFlags();
                 return;
             }
             if(flag.getVoteRateAbsolut() > topRankedFlags[i].getVoteRateAbsolut()){
                 replaceWithMinimumTopFlag(flag);
                 System.out.println("debug, found a new top flag");
+                sortTopFlags();
                 return;
             }
         }
     }
 
-    // todo: if we have enough time, implement a more efficient way to do do this, and the whole storage of the top flags
-    private static void replaceWithMinimumTopFlag(Flag flag) {
-        int minimumRating=0;
-        for(int i = 0; i < MapsActivity.TOP_RANKED_FLAGS_AMOUNT; i++){
-            if(topRankedFlags[i] == null){
-                topRankedFlags[i] = flag;
-                return;
-            } else {
+    private static void sortTopFlags() { // i know this is not the most efficient way to sort, but it is easy :P
+        // at position 0 there is the flag with the most points
+        // at the end there is null, if not filled yet, or the flag with the least points
 
-                // normal case
-                if(topRankedFlags[i].getVoteRateAbsolut() < topRankedFlags[minimumRating].getVoteRateAbsolut()){
-                    // new minimum is found
-                    minimumRating = i;
+        for(int i = 0; i < MapsActivity.TOP_RANKED_FLAGS_AMOUNT; i ++){
+            int max = i;
+            for(int e = i; e < MapsActivity.TOP_RANKED_FLAGS_AMOUNT; e ++){
+                if(topRankedFlags[e] != null && topRankedFlags[max]!= null){
+                    if(topRankedFlags[e].getVoteRateAbsolut() > topRankedFlags[max].getVoteRateAbsolut())
+                        max = e;
                 }
             }
+            Flag temp = topRankedFlags[i];
+            topRankedFlags[i] = topRankedFlags[max];
+            topRankedFlags[max] = temp;
         }
-        topRankedFlags[minimumRating] = flag;
+    }
+
+    private static void replaceWithMinimumTopFlag(Flag flag) {
+        sortTopFlags();
+        topRankedFlags[MapsActivity.TOP_RANKED_FLAGS_AMOUNT - 1] = flag;
     }
 
     /** returns true, if flag successfully added to favourites

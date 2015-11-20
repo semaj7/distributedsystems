@@ -360,7 +360,7 @@ public class MapsActivity extends FragmentActivity {
                 title = String.format(res.getString(R.string.topRankingDisplayDialogTitle));
                 flagData = Data.topRankedFlags;
                 flagDataText = new String[flagData.length];
-                for(int i = flagData.length - 1; i>= 0; i --){
+                for(int i = 0; i < flagData.length; i ++){
                     if(Data.ithRanked(i) != null) {
                         Flag f = Data.ithRanked(i);
                         String time = f.getDate().toGMTString();
