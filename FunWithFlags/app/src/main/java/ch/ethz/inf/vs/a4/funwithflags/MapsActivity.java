@@ -385,7 +385,7 @@ public class MapsActivity extends FragmentActivity {
         AlertDialog.Builder b = new AlertDialog.Builder(this);
         b.setTitle(title);
 
-
+        final boolean[] empty = new boolean[1];
         String[] entries;
         int size = 0;
         for (int i = 0; i < flagDataText.length; i++) {
@@ -395,6 +395,7 @@ public class MapsActivity extends FragmentActivity {
         if (size == 0) {
             entries = new String[1];
             entries[0] = nothingThereYet;
+            empty[0] = true;
         } else {
             entries = new String[size];
 
@@ -408,7 +409,8 @@ public class MapsActivity extends FragmentActivity {
             @Override
             public void onClick(DialogInterface dialog, int whichFlag) {
                 // todo: do something with selected flag.. right now, show it :)
-                popUpFlag(nonNullFlagData.get(whichFlag));
+                if(!empty[0])
+                    popUpFlag(nonNullFlagData.get(whichFlag));
                 dialog.dismiss();
 
             }
