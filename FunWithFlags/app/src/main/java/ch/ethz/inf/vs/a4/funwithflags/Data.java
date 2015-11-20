@@ -29,13 +29,16 @@ public final class Data {
     public final static Flag[] topRankedFlags = new Flag[MapsActivity.TOP_RANKED_FLAGS_AMOUNT];
 
     public static final void checkIfTopAndAdd(Flag flag){
+        System.out.println("debug, check if top flag");
         if (containsFlag(flag, topRankedFlags)) {
+            System.out.println("debug, already a top flag");
             return;
         }
         
         for(int i = 0; i < topRankedFlags.length; i++){
             if(topRankedFlags[i] == null){
                 topRankedFlags[i] = flag;
+                System.out.println("debug, new top flag, since there was an empty place");
                 return;
             }
             if(flag.getVoteRateAbsolut() > topRankedFlags[i].getVoteRateAbsolut()){
@@ -102,7 +105,7 @@ public final class Data {
 
         for(int i = 0; i< flags.length; i ++) {
             if (flags[i] != null) {
-                if (flags[i].getID() == flag.getID())
+                if (flags[i].getID().equals(flag.getID())) // simply using .equals did not work somehow. we really need to implement ID
                     return true;
             }
         }

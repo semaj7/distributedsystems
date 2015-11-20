@@ -51,7 +51,7 @@ public class MapsActivity extends FragmentActivity {
     public static final double MAX_FLAG_OVERLAPPING_KM = 0.005; // in kilometers, so its 5 meters
 
     public static final int MAX_NUMBER_OF_FAVOURITES = 20;
-    public static final int TOP_RANKED_FLAGS_AMOUNT = 25;//TODO: discuss this number together, also should the top ranked flag's content always be visible? this could give some insight on what a good flag should contain, also it is quite unlickely that someone would travel the world for some random good ranked flags, just to see their content..
+    public static final int TOP_RANKED_FLAGS_AMOUNT = 4;//TODO: discuss this number together, also should the top ranked flag's content always be visible? this could give some insight on what a good flag should contain, also it is quite unlickely that someone would travel the world for some random good ranked flags, just to see their content..
     private static final int FAVOURITE_DIALOG = 0;
     private static final int RANKING_DIALOG = 1;
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
@@ -368,7 +368,7 @@ public class MapsActivity extends FragmentActivity {
                 flagDataText = new String[flagData.length];
                 for(int i = flagData.length - 1; i>= 0; i --){
                     if(Data.ithRanked(i) != null) {
-                        flagDataText[i] = Data.ithRanked(i).getText();
+                        flagDataText[i] = Data.ithRanked(i).getUserName();
                         nonNullFlagData.add(Data.ithRanked(i));
                     }
                 }
@@ -681,7 +681,6 @@ public class MapsActivity extends FragmentActivity {
             @Override
             public void onClick(View v) {
                 f.upVote();
-                Data.checkIfTopAndAdd(f);
                 System.out.println("debug, got upvoted, now is at: "+ f.getVoteRateAbsolut());
                 flagPopUpWindow.dismiss();
             }

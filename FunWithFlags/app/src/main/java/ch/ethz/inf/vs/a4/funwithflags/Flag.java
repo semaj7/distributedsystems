@@ -38,6 +38,7 @@ public class Flag {
     public Flag(String ID,String userName, String text, LatLng latLng, Category category, Date date, Context context){
         Calendar c = Calendar.getInstance();
 
+        this.setID(ID);
         this.upVotes = 0;
         this.downVotes = 0;
         this.date = date;
@@ -103,7 +104,7 @@ public class Flag {
 
     public boolean isInRange(){
 
-        if(Data.containsFlag(this, Data.favouriteFlags) | Data.containsFlag(this, Data.topRankedFlags))
+        if(Data.containsFlag(this, Data.favouriteFlags) /*| Data.containsFlag(this, Data.topRankedFlags)*/)
             return true;
 
         ParseGeoPoint phoneGeoPoint = new ParseGeoPoint(gpsTracker.getLatitude(), gpsTracker.getLongitude());
