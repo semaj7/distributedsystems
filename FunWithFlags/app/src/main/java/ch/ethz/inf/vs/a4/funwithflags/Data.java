@@ -105,7 +105,8 @@ public final class Data {
 
         for(int i = 0; i< flags.length; i ++) {
             if (flags[i] != null) {
-                if (flags[i].getID().equals(flag.getID())) // simply using .equals did not work somehow. we really need to implement ID
+                if (flags[i].equals(flag)) // simply using .equals did not work somehow. we really need to implement ID
+                //now it should
                     return true;
             }
         }

@@ -5,7 +5,6 @@ import android.content.Context;
 import com.google.android.gms.maps.model.LatLng;
 import com.parse.ParseGeoPoint;
 
-import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -36,9 +35,8 @@ public class Flag {
     private static final float MINIMAL_UP_TO_DOWN_VOTE_RATIO = 0.4f; // todo: maybe find a better value for this
 
     public Flag(String ID,String userName, String text, LatLng latLng, Category category, Date date, Context context){
-        Calendar c = Calendar.getInstance();
 
-        this.setID(ID);
+        this.ID = ID;
         this.upVotes = 0;
         this.downVotes = 0;
         this.date = date;
@@ -53,6 +51,7 @@ public class Flag {
     }
 
     public void upVote(){
+        //TODO: implement parse logic here
         upVotes++;
         Data.checkIfTopAndAdd(this);
     }
@@ -66,7 +65,7 @@ public class Flag {
     }
 
     public int getVoteRateAbsolut(){ return (upVotes - downVotes); }
-    public float getVoteRate(){ return (downVotes != 0 ) ? (upVotes / downVotes) : 0.0f; }
+    public float getVoteRate(){ return (downVotes != 0 ) ? (upVotes / downVotes) : upVotes; }
     public void setLatLng(LatLng latLng){
         this.latLng = latLng;
     }
@@ -102,6 +101,28 @@ public class Flag {
         return category;
     }
 
+    @Override
+    public boolean equals(Object o)
+    {
+        if (o instanceof Flag)
+        {
+            Flag f = (Flag) o;
+            //if both IDs are not null, check if their IDs are equal
+            if (f.getID() != null && this.getID() != null) {
+                return f.getID().equals(this.getID());
+            }
+            else {
+                if (f.getID() == null && this.getID() == null) {
+                    //check if they are at exactly the same location and time
+                    return f.getLatLng().equals(this.getLatLng()) && f.getDate().equals(this.getDate());
+                }
+                //otherwise its false
+
+            }
+        }
+        return false;
+    }
+
     public boolean isInRange(){
 
         if(Data.containsFlag(this, Data.favouriteFlags) /*| Data.containsFlag(this, Data.topRankedFlags)*/)
@@ -134,19 +155,11 @@ public class Flag {
             */
     }
 
-    public String getUserName() {
-        return userName;
-    }
+    public String getUserName() {return userName;}
 
-    public void setID(String ID){
-        this.ID=ID;
-    }
+    public Date getDate() {return date;}
 
-    public Date getDate() {
-
-        return date;
-    }
-
+    //may return null, if it was not yet on the server
     public String getID() {
         return ID;
     }

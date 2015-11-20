@@ -557,7 +557,7 @@ public class MapsActivity extends FragmentActivity {
 
 
                     //TODO: get the category here
-                    Flag f = new Flag("No_ID_before_committed",getCurrentLoggedInUserName(), inputText, currentPosition, cat[0], new Timestamp(System.currentTimeMillis()), getApplicationContext());
+                    Flag f = new Flag(null,getCurrentLoggedInUserName(), inputText, currentPosition, cat[0], new Timestamp(System.currentTimeMillis()), getApplicationContext());
                     //TODO: get the flags ID somewhere
                     // f.setID(ID);
                     submitFlag(f);
