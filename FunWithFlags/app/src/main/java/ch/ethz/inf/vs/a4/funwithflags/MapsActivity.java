@@ -68,12 +68,6 @@ public class MapsActivity extends FragmentActivity {
         //just testing the getFlags(). should print a flag in the terminal
         getFlags();
 
-
-        //testing
-        ParseObject testObject = new ParseObject("TestObject");
-        testObject.put("foo", "bar");
-        testObject.saveInBackground();
-
         setContentView(R.layout.activity_maps);
 
         showAllButton = (Button) findViewById(R.id.showAllButton);
