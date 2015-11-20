@@ -368,7 +368,14 @@ public class MapsActivity extends FragmentActivity {
                 flagDataText = new String[flagData.length];
                 for(int i = flagData.length - 1; i>= 0; i --){
                     if(Data.ithRanked(i) != null) {
-                        flagDataText[i] = Data.ithRanked(i).getUserName();
+                        Flag f = Data.ithRanked(i);
+                        String time = f.getDate().toGMTString();
+                        flagDataText[i] =
+                                        "#" + String.valueOf(i+1)+ "\n" +
+                                        res.getString(R.string.userName) + ": " + f.getUserName() + "\n" +
+                                        res.getString(R.string.time) + ": " + time + "\n" +
+                                        res.getString(R.string.upVoteRatio) + ": " + f.getVoteRate() + "\n" +
+                                        res.getString(R.string.category) + ": " + f.getCategory().name + "\n" ;
                         nonNullFlagData.add(Data.ithRanked(i));
                     }
                 }
@@ -843,6 +850,9 @@ public class MapsActivity extends FragmentActivity {
         parseFlag.put("date", f.getDate());
         parseFlag.saveInBackground();
 
+        //TODO: when this saveInBackground completed, execute:
+        //getFlags();
+
     }
 
     void deleteFlagFromServer(Flag f){
@@ -863,6 +873,7 @@ public class MapsActivity extends FragmentActivity {
 
     void deleteFlag(Flag f){
         // TODO: 17.11.15
+        //this is overdue!!!!!
 
     }
 

@@ -93,4 +93,8 @@
     <string name="pref_title_vibrate">Vibrate</string>
     <string name="noTopFlagsYet">There are no top ranked flags yet...</string>
     <string name="topRankingDisplayDialogTitle">Top flags</string>
+    <string name="userName">Username</string>
+    <string name="time">Time</string>
+    <string name="upVoteRatio">Points</string>
+    <string name="category">Category</string>
 </resources>
