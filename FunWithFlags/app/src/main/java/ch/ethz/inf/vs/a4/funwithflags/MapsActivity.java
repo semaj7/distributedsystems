@@ -153,7 +153,7 @@ public class MapsActivity extends FragmentActivity {
                         chooseFlagTextDialog(flagsAtApproxPosition);
 
                         //this is used to show the text on top of the marker
-                        marker.showInfoWindow();
+                      //  marker.showInfoWindow();
                         return true;
                     }
                 });
