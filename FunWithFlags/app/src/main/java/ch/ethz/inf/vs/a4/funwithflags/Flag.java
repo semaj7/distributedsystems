@@ -53,6 +53,7 @@ public class Flag {
 
     public void upVote(){
         upVotes++;
+        Data.checkIfTopAndAdd(this);
     }
 
     // this function returns true if that downvote lead a the point where the ratio got too bad, and the flag should get deleted, this should be checked everytime the method is used
@@ -102,7 +103,7 @@ public class Flag {
 
     public boolean isInRange(){
 
-        if(Data.containsFavourite(this))
+        if(Data.containsFlag(this, Data.favouriteFlags) | Data.containsFlag(this, Data.topRankedFlags))
             return true;
 
         ParseGeoPoint phoneGeoPoint = new ParseGeoPoint(gpsTracker.getLatitude(), gpsTracker.getLongitude());

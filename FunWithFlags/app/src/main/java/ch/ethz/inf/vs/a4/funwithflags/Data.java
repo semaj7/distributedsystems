@@ -24,9 +24,46 @@ public final class Data {
     public static List<Flag> allFlags = new ArrayList<Flag>();
 
 
+    // todo: get and put this information (fav, and top) from server, keep stuff consistent
     public final static Flag[] favouriteFlags = new Flag[MapsActivity.MAX_NUMBER_OF_FAVOURITES];
+    public final static Flag[] topRankedFlags = new Flag[MapsActivity.TOP_RANKED_FLAGS_AMOUNT];
 
+    public static final void checkIfTopAndAdd(Flag flag){
+        if (containsFlag(flag, topRankedFlags)) {
+            return;
+        }
+        
+        for(int i = 0; i < topRankedFlags.length; i++){
+            if(topRankedFlags[i] == null){
+                topRankedFlags[i] = flag;
+                return;
+            }
+            if(flag.getVoteRateAbsolut() > topRankedFlags[i].getVoteRateAbsolut()){
+                replaceWithMinimumTopFlag(flag);
+                System.out.println("debug, found a new top flag");
+                return;
+            }
+        }
+    }
 
+    // todo: if we have enough time, implement a more efficient way to do do this, and the whole storage of the top flags
+    private static void replaceWithMinimumTopFlag(Flag flag) {
+        int minimumRating=0;
+        for(int i = 0; i < MapsActivity.TOP_RANKED_FLAGS_AMOUNT; i++){
+            if(topRankedFlags[i] == null){
+                topRankedFlags[i] = flag;
+                return;
+            } else {
+
+                // normal case
+                if(topRankedFlags[i].getVoteRateAbsolut() < topRankedFlags[minimumRating].getVoteRateAbsolut()){
+                    // new minimum is found
+                    minimumRating = i;
+                }
+            }
+        }
+        topRankedFlags[minimumRating] = flag;
+    }
 
     /** returns true, if flag successfully added to favourites
      * false if favourites list was full
@@ -35,7 +72,7 @@ public final class Data {
      */
     public static final boolean addFavourite(Flag flag){
         // check if already there
-        if(containsFavourite(flag))
+        if(containsFlag(flag, favouriteFlags))
             return true;
 
         // look for a free place, and put it there
@@ -61,11 +98,11 @@ public final class Data {
         return null;
     }
 
-    public static final boolean containsFavourite(Flag flag) {
+    public static final boolean containsFlag(Flag flag, Flag[] flags) {
 
-        for(int i = 0; i< MapsActivity.MAX_NUMBER_OF_FAVOURITES; i ++) {
-            if (favouriteFlags[i] != null) {
-                if (favouriteFlags[i].equals(flag))
+        for(int i = 0; i< flags.length; i ++) {
+            if (flags[i] != null) {
+                if (flags[i].getID() == flag.getID())
                     return true;
             }
         }
@@ -78,4 +115,14 @@ public final class Data {
         allFlags=new ArrayList<Flag>(flags);
     }
 
+    public static final Flag ithRanked(int i){
+        for(int c = 0; c< MapsActivity.TOP_RANKED_FLAGS_AMOUNT; c ++){
+            if (topRankedFlags[c] != null){
+                if (i <= 0)
+                    return topRankedFlags[c];
+                i--;
+            }
+        }
+        return null;
+    }
 }

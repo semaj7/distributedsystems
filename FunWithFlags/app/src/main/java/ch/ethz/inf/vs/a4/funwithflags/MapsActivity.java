@@ -51,6 +51,9 @@ public class MapsActivity extends FragmentActivity {
     public static final double MAX_FLAG_OVERLAPPING_KM = 0.005; // in kilometers, so its 5 meters
 
     public static final int MAX_NUMBER_OF_FAVOURITES = 20;
+    public static final int TOP_RANKED_FLAGS_AMOUNT = 25;//TODO: discuss this number together, also should the top ranked flag's content always be visible? this could give some insight on what a good flag should contain, also it is quite unlickely that someone would travel the world for some random good ranked flags, just to see their content..
+    private static final int FAVOURITE_DIALOG = 0;
+    private static final int RANKING_DIALOG = 1;
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private String slideMenuStrings[];
     private DrawerLayout mDrawerLayout;
@@ -317,13 +320,13 @@ public class MapsActivity extends FragmentActivity {
                 searchAndFilterByUserNameDialog();
                 break;
             case 1: // Favourites
-                favouriteDisplayDialog();
+                displayDialog(FAVOURITE_DIALOG);
                 break;
             case 2: // Filters
                 filterFlagsWithCategoryDialog(Data.allFlags);
                 break;
             case 3: // Ranking
-                Toast.makeText(this, "Clicked " + slideMenuStrings[3] ,Toast.LENGTH_SHORT).show();
+                displayDialog(RANKING_DIALOG);
                 break;
             case 4: // what's new
                 Toast.makeText(this, "Clicked " + slideMenuStrings[4] ,Toast.LENGTH_SHORT).show();
@@ -334,36 +337,78 @@ public class MapsActivity extends FragmentActivity {
         }
     }
 
-    private void favouriteDisplayDialog() {
+    private void displayDialog(final int whatKind) {
 
+        Resources res = getResources();
+        String nothingThereYet;
+        String title;
+        Flag[] flagData;
+        final List<Flag> nonNullFlagData = new ArrayList<Flag>();
+        String[] flagDataText;
+
+        switch (whatKind) {
+
+            case FAVOURITE_DIALOG: // todo: only assign stuff that is different in switch, and then avoid code duplication
+                nothingThereYet = String.format(res.getString(R.string.noFavourtieYet));
+                title = String.format(res.getString(R.string.favouriteDisplayDialogTitle));
+                flagData = Data.favouriteFlags;
+                flagDataText = new String[flagData.length];
+                for(int i =0; i< flagData.length; i ++){
+                    if(Data.ithFavourite(i) != null) {
+                        flagDataText[i] = Data.ithFavourite(i).getText();
+                        nonNullFlagData.add(Data.ithFavourite(i));
+                    }
+                }
+                break;
+
+            case RANKING_DIALOG:
+                nothingThereYet = String.format(res.getString(R.string.noTopFlagsYet));
+                title = String.format(res.getString(R.string.topRankingDisplayDialogTitle));
+                flagData = Data.topRankedFlags;
+                flagDataText = new String[flagData.length];
+                for(int i = flagData.length - 1; i>= 0; i --){
+                    if(Data.ithRanked(i) != null) {
+                        flagDataText[i] = Data.ithRanked(i).getText();
+                        nonNullFlagData.add(Data.ithRanked(i));
+                    }
+                }
+                break;
+
+            default :
+                nothingThereYet = "Wrong usage of method";
+                title = nothingThereYet;
+                flagData = null;
+                flagDataText = null;
+                break;
+
+        }
         AlertDialog.Builder b = new AlertDialog.Builder(this);
-        b.setTitle(R.string.favouriteDisplayDialogTitle);
+        b.setTitle(title);
 
-        String[] favFlagEntries;
+
+        String[] entries;
         int size = 0;
-        for (int i = 0; i < MAX_NUMBER_OF_FAVOURITES; i++) {
-            if (Data.favouriteFlags[i] != null)
+        for (int i = 0; i < flagDataText.length; i++) {
+            if (flagDataText[i] != null)
                 size++;
         }
         if (size == 0) {
-            Resources res = getResources();
-            String noFavYet = String.format(res.getString(R.string.noFavourtieYet));
-            favFlagEntries = new String[1];
-            favFlagEntries[0] = noFavYet;
+            entries = new String[1];
+            entries[0] = nothingThereYet;
         } else {
-            favFlagEntries = new String[size];
+            entries = new String[size];
 
             for (int i = 0; i < size; i++) {
-                favFlagEntries[i] = Data.ithFavourite(i).getText();
+                entries[i] = flagDataText[i];
             }
         }
 
-        b.setItems(favFlagEntries, new DialogInterface.OnClickListener() {
+        b.setItems(entries, new DialogInterface.OnClickListener() {
 
             @Override
-            public void onClick(DialogInterface dialog, int whichFavourite) {
-                Toast.makeText(getApplicationContext(), "looks like your favourite flag says: " + Data.ithFavourite(whichFavourite).getText(), Toast.LENGTH_SHORT).show();
-                // todo: do something with selected favourite's flag
+            public void onClick(DialogInterface dialog, int whichFlag) {
+                // todo: do something with selected flag.. right now, show it :)
+                popUpFlag(nonNullFlagData.get(whichFlag));
                 dialog.dismiss();
 
             }
@@ -511,6 +556,8 @@ public class MapsActivity extends FragmentActivity {
 
                     //TODO: get the category here
                     Flag f = new Flag("No_ID_before_committed",getCurrentLoggedInUserName(), inputText, currentPosition, cat[0], new Timestamp(System.currentTimeMillis()), getApplicationContext());
+                    //TODO: get the flags ID somewhere
+                    // f.setID(ID);
                     submitFlag(f);
 
 
@@ -632,6 +679,7 @@ public class MapsActivity extends FragmentActivity {
             @Override
             public void onClick(View v) {
                 f.upVote();
+                Data.checkIfTopAndAdd(f);
                 System.out.println("debug, got upvoted, now is at: "+ f.getVoteRateAbsolut());
                 flagPopUpWindow.dismiss();
             }
