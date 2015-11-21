@@ -7,8 +7,11 @@
     <string name="action_sign_in">Sign in or register</string>
     <string name="action_sign_in_short">Sign in</string>
 
-    <string name="error_invalid_email">This email address is invalid</string>
-    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_intro">Error: </string>
+    <string name="error_invalid_email">This is not an email address</string>
+    <string name="error_short_password">This password is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>
-    <string name="error_field_required">This field is required</string>
+    <string name="error_email_required">This field is required</string>
+    <string name="error_password_required">This field is required</string>
+
 </resources>

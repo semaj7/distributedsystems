@@ -4,10 +4,8 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.CursorLoader;
-import android.content.DialogInterface;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
@@ -15,7 +13,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.text.InputType;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
@@ -26,12 +23,6 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.parse.LogInCallback;
-import com.parse.ParseException;
-import com.parse.ParseUser;
-import com.parse.SignUpCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +32,7 @@ import java.util.regex.Pattern;
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
+public class LoginActivityOld extends Activity implements LoaderCallbacks<Cursor> {
 
     private static final String EMAIL_PATTERN =
             "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
@@ -65,9 +56,6 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
     private View mProgressView;
     private View mLoginFormView;
 
-    private String username;
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,19 +70,18 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
                 if (id == R.id.login || id == EditorInfo.IME_NULL) {
-                    signup();
+                    attemptLogin();
                     return true;
                 }
                 return false;
             }
         });
 
-        //Designate functionality to button
         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                signup();
+                attemptLogin();
             }
         });
 
@@ -112,123 +99,51 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
      * If there are form errors (invalid email, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
-    private void signup() { // Signing up: not yet clear if it is a registration or a login
-        String email = mEmailView.getText().toString().trim();
-        String password = mPasswordView.getText().toString().trim();
-
-        //Format checks
-        boolean validationError = true;
-        StringBuilder validationErrorMessage = new StringBuilder(getString(R.string.error_intro));
-        if(email.isEmpty()){
-            validationErrorMessage.append(getString(R.string.error_email_required));
-        }
-        else if(!isEmailValid(email)){
-            validationErrorMessage.append(getString(R.string.error_invalid_email));
-        }
-        else if(password.isEmpty()){
-            validationErrorMessage.append(getString(R.string.error_password_required));
-
-        }
-        else if(password.length() < 4){
-            validationErrorMessage.append(getString(R.string.error_short_password));
-        }
-        else{
-            validationError = false;
-        }
-        if (validationError) {
-            Toast.makeText(LoginActivity.this, validationErrorMessage.toString(), Toast.LENGTH_LONG).show();
+    public void attemptLogin() {
+        if (mAuthTask != null) {
             return;
         }
 
-        //Check if email already exists. If yes -> login, else -> register
-        if(true){
-            username = "";
-            while(username.isEmpty()){ //'while' might be a mistake. I'm not sure if the main thread waits for the dialog to close
-                askForUsername();
-            }
-                register(email, password);
+        // Reset errors.
+        mEmailView.setError(null);
+        mPasswordView.setError(null);
 
+        // Store values at the time of the login attempt.
+        String email = mEmailView.getText().toString();
+        String password = mPasswordView.getText().toString();
+
+        boolean cancel = false;
+        View focusView = null;
+
+        // Check for a valid password, if the user entered one.
+        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
+            mPasswordView.setError(getString(R.string.error_invalid_password));
+            focusView = mPasswordView;
+            cancel = true;
         }
-        else{
-            logIn(email, password);
+
+        // Check for a valid email address.
+        if (TextUtils.isEmpty(email)) {
+            mEmailView.setError(getString(R.string.error_field_required));
+            focusView = mEmailView;
+            cancel = true;
+        } else if (!isEmailValid(email)) {
+            mEmailView.setError(getString(R.string.error_invalid_email));
+            focusView = mEmailView;
+            cancel = true;
         }
 
-        //Set up new parse user
-
-
-
-
-
-
-    }
-
-    private void logIn(String email, String password){
-        ParseUser.logInInBackground(email, password
-                .toString(), new LogInCallback() {
-            @Override
-            public void done(ParseUser user, ParseException e) {
-
-            }
-        });
-
-    }
-    private void loginSuccessful(){
-        Toast.makeText(LoginActivity.this, "welcome " + username + "!", Toast.LENGTH_LONG).show();
-        this.finish(); //not sure if this works. Maybe we should rather start a other activity
-    }
-
-    private void askForUsername(){ // Creates dialog which asks the user to enter a new username.
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Registering");
-        final EditText input = new EditText(this);
-        input.setInputType(InputType.TYPE_CLASS_TEXT);
-        builder.setView(input);
-        //Set up the buttons
-        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String name = input.getText().toString();
-                //format check
-                if (name.isEmpty()){
-                    Toast.makeText(LoginActivity.this, "username cannot be empty", Toast.LENGTH_LONG).show();
-                }
-                else if(name.length() < 3){
-                    Toast.makeText(LoginActivity.this, "username must be at least 3 characters long", Toast.LENGTH_LONG).show();
-                }
-                else if(true){
-                    //Check if username is already taken
-                    //Alternatively, check this outside of the dialogue.
-                }
-                else{
-                    username = name;
-                }
-
-            }
-        });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                username = "";
-                dialog.cancel();
-            }
-        });
-        builder.show();
-    }
-    private void register(String email, String password){
-        askForUsername(); //
-
-        ParseUser user = new ParseUser();
-        user.setEmail(email);
-        user.setPassword(password);
-        user.setUsername(username);
-        // Call the Parse signup method
-        user.signUpInBackground(new SignUpCallback() {
-            @Override
-            public void done(ParseException e) {
-                // Handle the response
-            }
-        });
+        if (cancel) {
+            // There was an error; don't attempt login and focus the first
+            // form field with an error.
+            focusView.requestFocus();
+        } else {
+            // Show a progress spinner, and kick off a background task to
+            // perform the user login attempt.
+            showProgress(true);
+            mAuthTask = new UserLoginTask(email, password);
+            mAuthTask.execute((Void) null);
+        }
     }
 
     private boolean isEmailValid(String email) {
@@ -326,7 +241,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
     private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
         //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
         ArrayAdapter<String> adapter =
-                new ArrayAdapter<String>(LoginActivity.this,
+                new ArrayAdapter<String>(LoginActivityOld.this,
                         android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
 
         mEmailView.setAdapter(adapter);
