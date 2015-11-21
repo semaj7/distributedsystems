@@ -36,13 +36,15 @@ public class GPSTracker extends Service implements LocationListener {
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // 10 meters
 
     // The minimum time between updates in milliseconds
-    private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 1; // 1 minute
+    private static final long MIN_TIME_BW_UPDATES = 1000 * 30 * 1; // 30 seconds
 
     // Declaring a Location Manager
     protected LocationManager locationManager;
+    private MapsActivity mapsActivity;
 
-    public GPSTracker(Context context) {
+    public GPSTracker(Context context, MapsActivity mapsActivity) {
         this.mContext = context;
+        this.mapsActivity = mapsActivity;
         getLocation();
     }
 
@@ -167,6 +169,10 @@ public class GPSTracker extends Service implements LocationListener {
 
     @Override
     public void onLocationChanged(Location location) {
+        if (mapsActivity != null) {
+            mapsActivity.locationChanged();
+
+        }
     }
 
     @Override

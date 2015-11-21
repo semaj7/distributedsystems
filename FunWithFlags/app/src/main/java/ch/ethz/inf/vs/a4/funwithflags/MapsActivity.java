@@ -29,6 +29,8 @@ import android.widget.Toast;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -62,6 +64,8 @@ public class MapsActivity extends FragmentActivity {
     private ListView mDrawerList;
     private Button showAllButton;
     private PopupWindow flagPopUpWindow;
+    private Circle circle_visible_range;
+    private GPSTracker gps;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,8 +78,11 @@ public class MapsActivity extends FragmentActivity {
 
         showAllButton = (Button) findViewById(R.id.showAllButton);
 
+        gps = new GPSTracker(this, this);
+
         setUpMapIfNeeded();
 
+        locationChanged();
 
 
         slideMenuStrings = Data.slideMenuStrings; // have done this a bit nicer
@@ -158,6 +165,16 @@ public class MapsActivity extends FragmentActivity {
 
             }
         }
+    }
+
+    //this should get called if the user moves 10m or all 30 seconds
+    public void locationChanged() {
+
+        System.out.println("Noticed a location change!");
+
+        //add a circle to display how far a user can see
+        addCircleToCurrentDestination((int) (MAX_FLAG_VISIBILITY_RANGE * 1000));
+
     }
 
     private void makeButtonDraggable(Button b) {
@@ -482,6 +499,30 @@ public class MapsActivity extends FragmentActivity {
 
     }
 
+    public void addCircleToCurrentDestination(int radius_in_meters){
+
+        //remove old circle
+        if (circle_visible_range != null) circle_visible_range.remove();
+
+        CircleOptions circleOptions = new CircleOptions()
+                .center(getCoordinates())
+
+                // Fill color of the circle
+                // 0x represents, this is an hexadecimal code
+                // 50 represents percentage of transparency. For 100% transparency, specify 00.
+                // For 0% transparency ( ie, opaque ) , specify ff
+                // The remaining 6 characters(00ff00) specify the fill color
+                .fillColor(0x5000A68B)
+
+                // Border color of the circle
+                .strokeColor(0x50003AA1)
+
+                .radius(radius_in_meters); // In meters
+
+        // Get back the mutable Circle
+        circle_visible_range = mMap.addCircle(circleOptions);
+    }
+
     public void setNewFlagClick(View v){
 
         if (isLoggedIn()) {
@@ -619,8 +660,6 @@ public class MapsActivity extends FragmentActivity {
 
         //TODO: change to something meaningful
 
-
-        GPSTracker gps = new GPSTracker(this);
         if(gps.canGetLocation()){
 
             //TODO: this might also use outdated coordinates, check if they're old

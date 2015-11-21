@@ -29,7 +29,7 @@ public class Flag {
     private int upVotes;
     private int downVotes;  // temporarily added both, up and downvotes, so that we can delete flags that have a particular up/down vote RATIO, instead of just an absolute number. we can easily change this though :)
 
-    private GPSTracker gpsTracker;
+    private static GPSTracker gpsTracker; //this is static so that all flags can use the same gpsTracker (otherwise overkill)
 
     public static String NOT_IN_RANGE_MESSAGE;
     private static final float MINIMAL_UP_TO_DOWN_VOTE_RATIO = 0.4f; // todo: maybe find a better value for this
@@ -44,7 +44,7 @@ public class Flag {
         this.category = category;
         this.userName = userName;
         this.text = text;
-        gpsTracker = new GPSTracker(context);
+        gpsTracker = new GPSTracker(context, null);
         if(NOT_IN_RANGE_MESSAGE == null) {
             NOT_IN_RANGE_MESSAGE = context.getString(R.string.not_in_range_message);
         }
