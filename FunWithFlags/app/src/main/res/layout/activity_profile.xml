@@ -22,8 +22,17 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Follow"
+        android:text="@string/followUser"
         android:onClick="followUserClick"
+        android:padding="5dp"
+        android:layout_marginTop="20dp"
+        android:paddingRight="10dp"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/log_out"
+        android:onClick="logOut"
         android:padding="5dp"
         android:layout_marginTop="20dp"
         android:paddingRight="10dp"/>

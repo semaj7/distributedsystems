@@ -9,6 +9,8 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.parse.ParseUser;
+
 public class ProfileActivity extends AppCompatActivity {
 
     @Override
@@ -32,6 +34,10 @@ public class ProfileActivity extends AppCompatActivity {
         String fU = String.format(res.getString(R.string.followedUser));
         fU = fU.replace("@name", getUserId());
         Toast.makeText(this, fU, Toast.LENGTH_LONG).show();
+    }
+
+    public void logOut(View v) {
+        ParseUser.logOut();
     }
 
     public void updateUI() {

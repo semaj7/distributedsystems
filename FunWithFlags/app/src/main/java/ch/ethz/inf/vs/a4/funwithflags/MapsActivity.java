@@ -37,6 +37,8 @@ import com.parse.GetCallback;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
+
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -469,14 +471,15 @@ public class MapsActivity extends FragmentActivity {
 
     public boolean isLoggedIn() {
 
-        //TODO: implement this
-/*
-        float n = RandomFloat(0, 1);
-        if( n >= 0.5f)
+        ParseUser currentUser = ParseUser.getCurrentUser();
+        if (currentUser != null) {
+            // do stuff with the user
             return true;
-        return false; */
+        } else {
+            // show the signup or login screen
+            return false;
+        }
 
-        return true;
     }
 
     public void setNewFlagClick(View v){
@@ -595,9 +598,18 @@ public class MapsActivity extends FragmentActivity {
 
     private String getCurrentLoggedInUserName() {
         //before executing this, check if user is logged in!
-        //TODO: check what the current Username is
 
-        return "Homo";
+        ParseUser currentUser = ParseUser.getCurrentUser();
+        if (currentUser != null) {
+            return currentUser.getUsername();
+        } else {
+            //this should almost never happen, because before executing getCurrentLoggedInUserName, one should always check if the user is logged in
+            //but it could happen that the user is logged out right after isLoggedIn() is checked
+            //TODO: handle this error with an alert or exit the app gracefully
+            return "DefaultUser";
+        }
+
+
     }
 
     public LatLng getCoordinates() {

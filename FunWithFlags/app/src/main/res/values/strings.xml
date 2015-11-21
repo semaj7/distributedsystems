@@ -97,4 +97,12 @@
     <string name="time">Time</string>
     <string name="upVoteRatio">Points</string>
     <string name="category">Category</string>
+    <string name="login_first_time">Seems like you login for the first time!</string>
+    <string name="welcome">Welcome</string>
+    <string name="provide_username">Provide a username:</string>
+    <string name="login_not_successful">Login was not successful!</string>
+    <string name="try_again_later">Make sure you have internet access and please try again later</string>
+    <string name="log_out">Logout</string>
+    <string name="prompt_username">Username</string>
+    <string name="provide_email">Please provide an email:</string>
 </resources>
