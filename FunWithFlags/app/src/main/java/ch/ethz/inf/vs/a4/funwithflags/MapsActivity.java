@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
 import android.text.InputType;
-import android.util.Log;
 import android.view.DragEvent;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -71,7 +70,6 @@ public class MapsActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //just testing the getFlags(). should print a flag in the terminal
         getFlags();
 
         setContentView(R.layout.activity_maps);
@@ -83,7 +81,6 @@ public class MapsActivity extends FragmentActivity {
         setUpMapIfNeeded();
 
         locationChanged();
-
 
         slideMenuStrings = Data.slideMenuStrings; // have done this a bit nicer
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -504,6 +501,10 @@ public class MapsActivity extends FragmentActivity {
         //remove old circle
         if (circle_visible_range != null) circle_visible_range.remove();
 
+        LatLng coord = getCoordinates();
+
+        System.out.print("location: " + coord.latitude+ ", " + coord.longitude);
+
         CircleOptions circleOptions = new CircleOptions()
                 .center(getCoordinates())
 
@@ -518,6 +519,7 @@ public class MapsActivity extends FragmentActivity {
                 .strokeColor(0x50003AA1)
 
                 .radius(radius_in_meters); // In meters
+
 
         // Get back the mutable Circle
         circle_visible_range = mMap.addCircle(circleOptions);
@@ -660,11 +662,10 @@ public class MapsActivity extends FragmentActivity {
 
         //TODO: change to something meaningful
 
-        if(gps.canGetLocation()){
-
-            //TODO: this might also use outdated coordinates, check if they're old
-            lat = gps.getLatitude(); // returns latitude
+        if (gps.canGetLocation()) {
+            lat = gps.getLatitude();
             lon = gps.getLongitude();
+
         }
 
         else {
@@ -673,7 +674,6 @@ public class MapsActivity extends FragmentActivity {
             lon = RandomFloat( -180, 180 );
         }
 
-        Log.d("DEBUG", String.valueOf(lat));
         System.out.println("Lat:" + lat);
         System.out.println("Lon:" + lon);
 

@@ -1,5 +1,7 @@
 package ch.ethz.inf.vs.a4.funwithflags;
 
+import android.location.Location;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +24,8 @@ public final class Data {
     public final static List<Flag> flagsToShow = new ArrayList<Flag>();
 
     public static List<Flag> allFlags = new ArrayList<Flag>();
+
+    public static Location lastLocation;
 
 
     // todo: get and put this information (fav, and top) from server, keep stuff consistent

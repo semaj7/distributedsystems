@@ -29,7 +29,7 @@ public class Flag {
     private int upVotes;
     private int downVotes;  // temporarily added both, up and downvotes, so that we can delete flags that have a particular up/down vote RATIO, instead of just an absolute number. we can easily change this though :)
 
-    private static GPSTracker gpsTracker; //this is static so that all flags can use the same gpsTracker (otherwise overkill)
+  //  private static GPSTracker gpsTracker; //this is static so that all flags can use the same gpsTracker (otherwise overkill)
 
     public static String NOT_IN_RANGE_MESSAGE;
     private static final float MINIMAL_UP_TO_DOWN_VOTE_RATIO = 0.4f; // todo: maybe find a better value for this
@@ -44,7 +44,7 @@ public class Flag {
         this.category = category;
         this.userName = userName;
         this.text = text;
-        gpsTracker = new GPSTracker(context, null);
+     //   gpsTracker = new GPSTracker(context, null);
         if(NOT_IN_RANGE_MESSAGE == null) {
             NOT_IN_RANGE_MESSAGE = context.getString(R.string.not_in_range_message);
         }
@@ -128,7 +128,9 @@ public class Flag {
         if(Data.containsFlag(this, Data.favouriteFlags) /*| Data.containsFlag(this, Data.topRankedFlags)*/)
             return true;
 
-        ParseGeoPoint phoneGeoPoint = new ParseGeoPoint(gpsTracker.getLatitude(), gpsTracker.getLongitude());
+        if (Data.lastLocation == null) return false;
+
+        ParseGeoPoint phoneGeoPoint = new ParseGeoPoint(Data.lastLocation.getLatitude(), Data.lastLocation.getLongitude());
         ParseGeoPoint flagGeoPoint = new ParseGeoPoint(getLatLng().latitude, getLatLng().longitude);
 
         if (phoneGeoPoint.distanceInKilometersTo(flagGeoPoint) < MapsActivity.MAX_FLAG_VISIBILITY_RANGE)
