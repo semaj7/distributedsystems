@@ -25,7 +25,7 @@
     <string name="favouriteDisplayDialogTitle">Your favourite flags!</string>
     <string name="noFavourtieYet">You have no favourites yet</string>
     <string name="search_username_title">Search by Username:</string>
-    <string name="showAll">Show all flags again</string>
+    <string name="showAll">Show all flags</string>
     <string name="flag_activity_title">Flag</string>
     <string name="followUser">Follow User</string>
     <string name="upVote">Upvote</string>
