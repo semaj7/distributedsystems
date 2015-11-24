@@ -5,6 +5,7 @@ import android.content.ClipData;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
@@ -25,9 +26,11 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
@@ -66,6 +69,9 @@ public class MapsActivity extends FragmentActivity {
     private Circle circle_visible_range;
     private GPSTracker gps;
 
+    //initialize this with a flag if you want to animate to a flag after setting up the map, otherwise null
+    private Flag goToFlag;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,6 +97,29 @@ public class MapsActivity extends FragmentActivity {
                 R.layout.drawer_list_item, slideMenuStrings));
         // Set the list's click listener
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+
+        //check if invoked with extras (from closeFlagActivity: value 1)
+        Bundle b = getIntent().getExtras();
+        if (b != null) {
+            int value = b.getInt("otherActivity");
+            switch (value) {
+                case 1:
+                    //closeFlagActivity
+                    if (Data.showMeThisCloseFlagPleaseInOtherActivity.size() > 0) {
+                        Flag showFlag = Data.showMeThisCloseFlagPleaseInOtherActivity.get(0);
+                        Data.showMeThisCloseFlagPleaseInOtherActivity.removeAll(Data.showMeThisCloseFlagPleaseInOtherActivity);
+                        goToFlag = showFlag;
+
+                    }
+                    else {
+                        //something went wrong
+                    }
+                    break;
+                default:
+                    //do nothing
+                    break;
+            }
+        }
     }
 
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
@@ -162,6 +191,26 @@ public class MapsActivity extends FragmentActivity {
 
             }
         }
+    }
+
+    public void goToMarker(Flag f) {
+
+        Marker m = Data.flagMarkerHashMap.get(f);
+        if (m != null) {
+            LatLng latLng = m.getPosition();
+       /*     CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 10);
+            mMap.animateCamera(cameraUpdate); */
+
+
+            CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(latLng)      // Sets the center of the map to Mountain View
+                .zoom(15)                   // Sets the zoom
+                .bearing(0)                // Sets the orientation of the camera to east
+                .build();                   // Creates a CameraPosition from the builder
+            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        }
+
+        popUpFlag(f);
     }
 
     //this should get called if the user moves 10m or all 30 seconds
@@ -328,24 +377,42 @@ public class MapsActivity extends FragmentActivity {
         switch (position) {
             case 0: // Search
                 searchAndFilterByUserNameDialog();
+                mDrawerLayout.closeDrawers();
                 break;
             case 1: // Favourites
                 displayDialog(FAVOURITE_DIALOG);
+                mDrawerLayout.closeDrawers();
                 break;
             case 2: // Filters
                 filterFlagsWithCategoryDialog(Data.allFlags);
+                mDrawerLayout.closeDrawers();
                 break;
             case 3: // Ranking
                 displayDialog(RANKING_DIALOG);
+                mDrawerLayout.closeDrawers();
                 break;
             case 4: // what's new
                 Toast.makeText(this, "Clicked " + slideMenuStrings[4] ,Toast.LENGTH_SHORT).show();
+                mDrawerLayout.closeDrawers();
+                //just temporary TODO remove this
+                switchToCloseFlagsActivity();
+
                 break;
             default: // Settings
+                mDrawerLayout.closeDrawers();
                 startActivity(new Intent(this, SettingsActivity.class));
+
                 break;
         }
     }
+
+    public void switchToCloseFlagsActivity() {
+
+        updateCloseFlagsFromAll();
+        startActivity(new Intent(this, CloseFlagListActivity.class));
+    }
+
+
 
     private void displayDialog(final int whatKind) {
 
@@ -427,7 +494,7 @@ public class MapsActivity extends FragmentActivity {
             public void onClick(DialogInterface dialog, int whichFlag) {
                 // todo: do something with selected flag.. right now, show it :)
                 if(!empty[0])
-                    popUpFlag(nonNullFlagData.get(whichFlag));
+                    goToMarker(nonNullFlagData.get(whichFlag));
                 dialog.dismiss();
 
             }
@@ -799,6 +866,10 @@ public class MapsActivity extends FragmentActivity {
             }
         }
 
+        if (goToFlag != null) {
+            goToMarker(goToFlag);
+        }
+
 
         //LatLng in degrees, (double, double), ([-90,90],[-180,180])
 
@@ -816,12 +887,33 @@ public class MapsActivity extends FragmentActivity {
 
     private void displayFlag(Flag f) {
 
-        mMap.addMarker(new MarkerOptions()
+        Marker m = mMap.addMarker(new MarkerOptions()
                         .position(f.getLatLng())
                         .title(f.getText())
                         .icon(BitmapDescriptorFactory.defaultMarker(f.getCategory().hue))
                         .alpha(f.getAlpha())
         );
+        Data.flagMarkerHashMap.put(f, m);
+    }
+
+    public void updateMyFlagsFromAll() {
+
+      //TODO
+    }
+
+    public void updateCloseFlagsFromAll() {
+
+        List<Flag> closeFlags = new ArrayList<Flag>();
+        List<Flag> allFlags = Data.allFlags;
+
+        Location lastLocation = Data.lastLocation;
+        for (Flag flag : allFlags) {
+            if (flag.isInRange(lastLocation))
+                closeFlags.add(flag);
+
+        }
+
+        Data.closeFlags = new ArrayList<Flag>(closeFlags);
     }
 
     //PASCAL: ke ahnig wo dir dää code weit, aber i tues iz mau da ine.
@@ -861,7 +953,9 @@ public class MapsActivity extends FragmentActivity {
 
                         ret.add(new Flag(ID, userName, text, latLng, category, date, getApplicationContext()));
                     }
-                    Data.setAllFlags(ret);
+
+                    dataSetChanged(ret);
+
                 }
 
                 setUpMap();
@@ -873,6 +967,12 @@ public class MapsActivity extends FragmentActivity {
         //ParseQuery
 
 
+    }
+
+    public void dataSetChanged(List<Flag> flags) {
+        Data.setAllFlags(flags);
+        updateCloseFlagsFromAll();
+        updateMyFlagsFromAll();
     }
 
     void submitFlag(Flag f){
@@ -901,6 +1001,7 @@ public class MapsActivity extends FragmentActivity {
     }
 
     void deleteFlagFromServer(Flag f){
+        //don't forget to remove all the local references to this flag, by e.g. calling deleteFlag
         ParseQuery<ParseObject> flagQuery=new ParseQuery<ParseObject>("Flag");
         flagQuery.getInBackground(f.getID(), new GetCallback<ParseObject>() {
             @Override
@@ -918,7 +1019,10 @@ public class MapsActivity extends FragmentActivity {
 
     void deleteFlag(Flag f){
         // TODO: 17.11.15
-        //this is overdue!!!!!
+        //this is overdue!!!!!!!!!!!!!!!!!!!!
+
+        Data.flagMarkerHashMap.remove(f);
+
 
     }
 

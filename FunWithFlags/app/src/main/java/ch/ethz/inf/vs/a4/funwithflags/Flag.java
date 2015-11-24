@@ -1,6 +1,7 @@
 package ch.ethz.inf.vs.a4.funwithflags;
 
 import android.content.Context;
+import android.location.Location;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.parse.ParseGeoPoint;
@@ -123,6 +124,21 @@ public class Flag {
         return false;
     }
 
+    public boolean isInRange(Location lastLocation) {
+
+        if(Data.containsFlag(this, Data.favouriteFlags) /*| Data.containsFlag(this, Data.topRankedFlags)*/)
+            return true;
+
+        ParseGeoPoint phoneGeoPoint = new ParseGeoPoint(lastLocation.getLatitude(), lastLocation.getLongitude());
+        ParseGeoPoint flagGeoPoint = new ParseGeoPoint(getLatLng().latitude, getLatLng().longitude);
+
+        if (phoneGeoPoint.distanceInKilometersTo(flagGeoPoint) < MapsActivity.MAX_FLAG_VISIBILITY_RANGE)
+            return true;
+        else
+            return false;
+
+    }
+
     public boolean isInRange(){
 
         if(Data.containsFlag(this, Data.favouriteFlags) /*| Data.containsFlag(this, Data.topRankedFlags)*/)
@@ -130,13 +146,7 @@ public class Flag {
 
         if (Data.lastLocation == null) return false;
 
-        ParseGeoPoint phoneGeoPoint = new ParseGeoPoint(Data.lastLocation.getLatitude(), Data.lastLocation.getLongitude());
-        ParseGeoPoint flagGeoPoint = new ParseGeoPoint(getLatLng().latitude, getLatLng().longitude);
-
-        if (phoneGeoPoint.distanceInKilometersTo(flagGeoPoint) < MapsActivity.MAX_FLAG_VISIBILITY_RANGE)
-            return true;
-        else
-            return false;
+        return isInRange(Data.lastLocation);
 
         /*
         LatLng phoneLatLong = new LatLng(gpsTracker.getLatitude(),gpsTracker.getLongitude());

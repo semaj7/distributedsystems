@@ -105,4 +105,5 @@
     <string name="log_out">Logout</string>
     <string name="prompt_username">Username</string>
     <string name="provide_email">Please provide an email:</string>
+    <string name="title_activity_close_flag_list">CloseFlagListActivity</string>
 </resources>

@@ -2,7 +2,10 @@ package ch.ethz.inf.vs.a4.funwithflags;
 
 import android.location.Location;
 
+import com.google.android.gms.maps.model.Marker;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -24,6 +27,15 @@ public final class Data {
     public final static List<Flag> flagsToShow = new ArrayList<Flag>();
 
     public static List<Flag> allFlags = new ArrayList<Flag>();
+
+    public static HashMap<Flag, Marker> flagMarkerHashMap = new HashMap<Flag, Marker>();
+
+    public static ArrayList<Flag>closeFlags = new ArrayList<Flag>();
+
+    public static List<Flag>myFlags = new ArrayList<Flag>();
+
+    //following the KISS principle:
+    public final static List<Flag>showMeThisCloseFlagPleaseInOtherActivity = new ArrayList<Flag>();
 
     public static Location lastLocation;
 
