@@ -105,9 +105,6 @@
     <string name="log_out">Logout</string>
     <string name="prompt_username">Username</string>
     <string name="provide_email">Please provide an email:</string>
-<<<<<<< HEAD
     <string name="title_activity_close_flag_list">CloseFlagListActivity</string>
-=======
     <string name="user_name_not_found">No username found</string>
->>>>>>> origin/master
 </resources>

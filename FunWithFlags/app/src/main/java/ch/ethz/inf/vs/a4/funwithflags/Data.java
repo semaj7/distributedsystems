@@ -2,12 +2,9 @@ package ch.ethz.inf.vs.a4.funwithflags;
 
 import android.location.Location;
 
-<<<<<<< HEAD
 import com.google.android.gms.maps.model.Marker;
-=======
 import com.google.android.gms.maps.model.LatLng;
 import com.parse.ParseUser;
->>>>>>> origin/master
 
 import java.util.ArrayList;
 import java.util.HashMap;

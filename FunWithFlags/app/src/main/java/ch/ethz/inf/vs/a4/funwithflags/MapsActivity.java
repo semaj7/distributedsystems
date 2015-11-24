@@ -1,17 +1,12 @@
 package ch.ethz.inf.vs.a4.funwithflags;
 
-import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
-<<<<<<< HEAD
 import android.location.Location;
-=======
 import android.os.AsyncTask;
-import android.os.Build;
->>>>>>> origin/master
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
