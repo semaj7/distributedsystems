@@ -2,6 +2,9 @@ package ch.ethz.inf.vs.a4.funwithflags;
 
 import android.location.Location;
 
+import com.google.android.gms.maps.model.LatLng;
+import com.parse.ParseUser;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,6 +12,7 @@ import java.util.List;
  * Created by Andres on 13.11.15.
  */
 public final class Data {
+
 
     private Data() {
         //since this class should be static, the constructor should not get invoked
@@ -27,10 +31,42 @@ public final class Data {
 
     public static Location lastLocation;
 
+    public static ParseUser user;
+
+    private static LatLng cameraPosition;
+    private static int camLatGrid;
+    private static int camLongGrid;
+    //private static boolean[][] cameraGrid; // [latitude][longitude]
 
     // todo: get and put this information (fav, and top) from server, keep stuff consistent
     public final static Flag[] favouriteFlags = new Flag[MapsActivity.MAX_NUMBER_OF_FAVOURITES];
     public final static Flag[] topRankedFlags = new Flag[MapsActivity.TOP_RANKED_FLAGS_AMOUNT];
+
+    public static final void cameraPositionUpdate(LatLng newPosition){
+
+        System.out.print("debug; old camera latitude: "+ cameraPosition.latitude);
+        System.out.println(". old camera latitude: "+ cameraPosition.longitude);
+        cameraPosition = newPosition;
+        camLatGrid = (int) (cameraPosition.latitude) / 2;
+        camLongGrid = (int) (cameraPosition.longitude) / 2;
+        System.out.print("debug; new camera latitude: "+ cameraPosition.latitude);
+        System.out.println(". new camera longitude: "+ cameraPosition.longitude);
+    }
+
+    public static final LatLng getLastCameraPosition(){
+        return cameraPosition;
+    }
+
+    public static final boolean stillInSameSector(LatLng toTest){
+        if(cameraPosition == null)
+            cameraPosition = new LatLng(0.0, 0.0);
+        if(!(camLatGrid == (int) (toTest.latitude) / 2) && (camLongGrid == (int) (toTest.longitude) /2)) {
+            System.out.println("debug; camera grid change. last grid ["+ camLatGrid +"]["+ camLongGrid +"]. tested grid: ["+ ((int) (toTest.latitude) / 2) +"]["+ ((int) (toTest.longitude) / 2) +"]");
+            return false;
+        }
+        System.out.println("debug; still in same sector");
+        return true;
+    }
 
     public static final void checkIfTopAndAdd(Flag flag){
         System.out.println("debug, check if top flag");

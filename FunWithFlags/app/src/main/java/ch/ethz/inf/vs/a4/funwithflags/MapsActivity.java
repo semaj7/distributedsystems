@@ -1,16 +1,23 @@
 package ch.ethz.inf.vs.a4.funwithflags;
 
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.view.DragEvent;
 import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -28,6 +35,7 @@ import android.widget.Toast;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
@@ -46,13 +54,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
-public class MapsActivity extends FragmentActivity {
+public class MapsActivity extends AppCompatActivity {
 
     public static final double MAX_FLAG_VISIBILITY_RANGE = 0.5; // kilometers
 
     //TODO: this constant shouldn't be a constant. the distance is dependent on the maximal zoom level of the current position
     public static final double MAX_FLAG_OVERLAPPING_KM = 0.005; // in kilometers, so its 5 meters
 
+    public static final float NON_CAMERA_MOVEMENT_TIMEOUT = 2.5f;
     public static final int MAX_NUMBER_OF_FAVOURITES = 20;
     public static final int TOP_RANKED_FLAGS_AMOUNT = 4;//TODO: discuss this number together, also should the top ranked flag's content always be visible? this could give some insight on what a good flag should contain, also it is quite unlickely that someone would travel the world for some random good ranked flags, just to see their content..
     private static final int FAVOURITE_DIALOG = 0;
@@ -65,6 +74,8 @@ public class MapsActivity extends FragmentActivity {
     private PopupWindow flagPopUpWindow;
     private Circle circle_visible_range;
     private GPSTracker gps;
+    private AsyncTask cameraWorker;
+    private boolean cameraWorkerRunning;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,16 +92,79 @@ public class MapsActivity extends FragmentActivity {
         setUpMapIfNeeded();
 
         locationChanged();
+        cameraWorker = new AsyncCameraWorker();
+        mMap.setOnCameraChangeListener(new mapCameraListener());
 
-        slideMenuStrings = Data.slideMenuStrings; // have done this a bit nicer
+        // todo: initialize app compat action bar, as to however it should be
+        ActionBar toolbar = getSupportActionBar();
+        toolbar.setTitle(R.string.app_name);
+
+
+        // initialize Navigation Drawer
+        slideMenuStrings = Data.slideMenuStrings;
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
-
-        // Set the adapter for the list view
-        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
-                R.layout.drawer_list_item, slideMenuStrings));
-        // Set the list's click listener
+        mDrawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, slideMenuStrings));
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+    }
+
+    private class mapCameraListener implements GoogleMap.OnCameraChangeListener{
+        @Override
+        public void onCameraChange(CameraPosition cameraPosition) {
+            System.out.println("debug; camera changed");
+            if(!Data.stillInSameSector(cameraPosition.target)) {
+                // crossed a grid border, so do stuff :)
+                Data.cameraPositionUpdate(cameraPosition.target);
+                getFlagsIfCameraStillLongEnough();
+            } else {
+                Data.cameraPositionUpdate(cameraPosition.target);
+            }
+        }
+    }
+
+    private void getFlagsIfCameraStillLongEnough() {
+        if(cameraWorkerRunning){
+            cameraWorker.cancel(true);
+        }
+        cameraWorker = new AsyncCameraWorker();
+        cameraWorker.execute();
+    }
+
+    private class AsyncCameraWorker extends AsyncTask<Object, Void, Void> {
+
+
+        public AsyncCameraWorker(){
+            cameraWorkerRunning = false;
+        }
+
+        @Override
+        protected Void doInBackground(Object... params) {
+
+            cameraWorkerRunning = true;
+            LatLng oldCameraPosition = Data.getLastCameraPosition();
+            long time = (long) (1000 * MapsActivity.NON_CAMERA_MOVEMENT_TIMEOUT);
+            try {
+                Thread.sleep(time);
+            } catch (InterruptedException e) {
+                System.out.println("debug, cameraworker catch. wait failed");
+                e.printStackTrace();
+            }
+            LatLng newCameraPosition = Data.getLastCameraPosition();
+            if (oldCameraPosition.latitude == newCameraPosition.latitude && oldCameraPosition.longitude == newCameraPosition.longitude) {
+                // we stood still long enough. now we should get the flags at that location.
+                // todo: use parse-magic to get flags around current camera position.
+                // getFlags(newCameraPosition) oder so was :)
+            }
+            System.out.println("debug: now loading flags in visible map");
+            cameraWorkerRunning = false;
+            return null;
+        }
+
+        @Override
+        protected void onCancelled() {
+            cameraWorkerRunning = false;
+        }
+
     }
 
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
@@ -117,6 +191,30 @@ public class MapsActivity extends FragmentActivity {
             super.onBackPressed();
         }
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_map, menu);
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     /**
@@ -488,6 +586,9 @@ public class MapsActivity extends FragmentActivity {
         ParseUser currentUser = ParseUser.getCurrentUser();
         if (currentUser != null) {
             // do stuff with the user
+            Data.user = currentUser;
+
+            System.out.println("username: "+ Data.user.getUsername());
             return true;
         } else {
             // show the signup or login screen
@@ -705,9 +806,15 @@ public class MapsActivity extends FragmentActivity {
 
     public void switchToProfile(View v) {
 
-        Intent newIntent = new Intent(this, ProfileActivity.class);
-        startActivity(newIntent);
 
+
+        if(isLoggedIn()) {
+
+            Intent newIntent = new Intent(this, ProfileActivity.class);
+            startActivity(newIntent);
+        } else {
+            startActivity(new Intent(this, LoginActivity.class));
+        }
     }
 
     public void showAllFlags(View v) {
