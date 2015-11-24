@@ -489,9 +489,6 @@ public class MapsActivity extends AppCompatActivity {
             case 4: // what's new
                 Toast.makeText(this, "Clicked " + slideMenuStrings[4] ,Toast.LENGTH_SHORT).show();
                 mDrawerLayout.closeDrawers();
-                //just temporary TODO remove this
-                switchToCloseFlagsActivity();
-
                 break;
             default: // Settings
                 mDrawerLayout.closeDrawers();
@@ -501,10 +498,10 @@ public class MapsActivity extends AppCompatActivity {
         }
     }
 
-    public void switchToCloseFlagsActivity() {
-
+    public void switchToCloseFlagsActivity(MenuItem m) {
         updateCloseFlagsFromAll();
         startActivity(new Intent(this, CloseFlagListActivity.class));
+
     }
 
 

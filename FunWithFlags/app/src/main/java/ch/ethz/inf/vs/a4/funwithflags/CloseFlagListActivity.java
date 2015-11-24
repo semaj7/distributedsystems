@@ -29,13 +29,10 @@ public class CloseFlagListActivity extends Activity {
 
             final ListView listview = (ListView) findViewById(R.id.listview);
 
-
-            final ArrayList<Flag> flagList = new ArrayList<Flag>(Data.closeFlags);
-
             final ArrayList<Flag> sortedFlagList = quickSortListByDate(Data.closeFlags);
 
             final FlagArrayAdapter adapter = new FlagArrayAdapter(this,
-                    android.R.layout.simple_list_item_1, flagList);
+                    android.R.layout.simple_list_item_1, sortedFlagList);
             listview.setAdapter(adapter);
 
             listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -71,7 +68,7 @@ public class CloseFlagListActivity extends Activity {
         ArrayList<Flag> lower = new ArrayList<Flag>();
         ArrayList<Flag> higher = new ArrayList<Flag>();
         for (Flag f : closeFlags)
-            if (f.getDate().before(rotation.getDate()))
+            if (f.getDate().after(rotation.getDate()))
                 lower.add(f);
             else
                 higher.add(f);
