@@ -931,6 +931,7 @@ public class MapsActivity extends AppCompatActivity {
         flagPopUpWindow = new PopupWindow(popupView, WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
         //this method shows the popup, the first param is just an anchor, passing in the view
         //we inflated is fine
+        flagPopUpWindow.setAnimationStyle(R.style.animation);
         flagPopUpWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
 
     }
