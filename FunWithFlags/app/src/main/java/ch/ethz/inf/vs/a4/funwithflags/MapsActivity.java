@@ -8,10 +8,13 @@ import android.content.res.Resources;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
+import android.util.DisplayMetrics;
 import android.view.DragEvent;
 import android.view.Gravity;
 import android.view.Menu;
@@ -54,6 +57,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
+import static android.view.MotionEvent.ACTION_DOWN;
+
 public class MapsActivity extends AppCompatActivity {
 
     public static final double MAX_FLAG_VISIBILITY_RANGE = 0.5; // kilometers
@@ -76,6 +81,9 @@ public class MapsActivity extends AppCompatActivity {
     private GPSTracker gps;
     private AsyncTask cameraWorker;
     private boolean cameraWorkerRunning;
+    private SwipeRefreshLayout refresh;
+    private float initialX, initialY;
+
 
     //initialize this with a flag if you want to animate to a flag after setting up the map, otherwise null
     private Flag goToFlag;
@@ -94,14 +102,17 @@ public class MapsActivity extends AppCompatActivity {
 
         setUpMapIfNeeded();
 
+        // map
         locationChanged();
         cameraWorker = new AsyncCameraWorker();
         mMap.setOnCameraChangeListener(new mapCameraListener());
+        mMap.setOnMapLongClickListener(new MapLongClickListenerRefresh());
+        refresh = (SwipeRefreshLayout) findViewById(R.id.refresh);
+        refresh.setEnabled(false);
 
         // todo: initialize app compat action bar, as to however it should be
         ActionBar toolbar = getSupportActionBar();
         toolbar.setTitle(R.string.app_name);
-
 
         // initialize Navigation Drawer
         slideMenuStrings = Data.slideMenuStrings;
@@ -134,10 +145,118 @@ public class MapsActivity extends AppCompatActivity {
         }
     }
 
+    private class MapLongClickListenerRefresh implements GoogleMap.OnMapLongClickListener {
+        // this is pretty stupid... but sadly the only way i found to do it for now
+        @Override
+        public void onMapLongClick(LatLng latLng) {
+            Vibrator vib = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+            vib.vibrate(125); // give some haptic feedback, so that user knows he long-clicked
+            refresh();
+        }
+    }
+
+    private void refresh() {
+        refresh.setRefreshing(true);
+        // do everything we need to do to refresh
+        Toast.makeText(getApplicationContext(), "Refreshing...", Toast.LENGTH_SHORT).show();
+        getFlags();
+        //
+        refresh.setRefreshing(false);
+    }
+
+
+    private class MapClickListener implements GoogleMap.OnMapClickListener{
+        // sadly this only works with single taps, and not with touches that do a swipe movement :(
+        // otherwhise this would work. but due to clicking it is very unintuitive on how to get to refreshing and back
+        @Override
+        public void onMapClick(LatLng latLng) {
+            double cameraLat = Data.getLastCameraPosition().latitude;
+            double clickLat = latLng.latitude;
+            System.out.println("DEBUG: clickLat: "+clickLat);
+            System.out.println("DEBUG: cameraLat: "+cameraLat);
+            if (clickLat > cameraLat) {
+                System.out.println("DEBUG: enabling refresh");
+                refresh.setEnabled(true);
+            }
+            else {
+                System.out.println("DEBUG: disabling refresh");
+                refresh.setEnabled(false);
+            }
+        }
+    }
+
+    private class MapsTouchListener implements View.OnTouchListener{
+            // sadly this baby didn't get no action either :'(
+            @Override
+            public boolean onTouch (View v, MotionEvent event){
+
+                int action = event.getActionMasked();
+
+                switch (action) {
+
+                    case MotionEvent.ACTION_DOWN:
+                        initialX = event.getX();
+                        initialY = event.getY();
+
+                        System.out.println("DEBUG: Action was DOWN");
+                        return true;
+
+
+                    case MotionEvent.ACTION_MOVE:
+                        System.out.println("DEBUG: Action was MOVE");
+                        return true;
+
+                    case MotionEvent.ACTION_UP:
+                        float finalX = event.getX();
+                        float finalY = event.getY();
+
+                        System.out.println("DEBUG: Action was UP");
+
+                        if (initialX < finalX) {
+                            System.out.println("DEBUG: Left to Right swipe performed");
+                        }
+
+                        if (initialX > finalX) {
+                            System.out.println("DEBUG: Right to Left swipe performed");
+                        }
+
+                        if (initialY < finalY) {
+                            System.out.println("DEBUG: Up to Down swipe performed");
+                            DisplayMetrics displaymetrics = new DisplayMetrics();
+                            getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+                            int height = displaymetrics.heightPixels / 8 * 3; // upper part of screen
+                            if (initialY < height)
+                                refresh.setEnabled(true);
+                            else
+                                refresh.setEnabled(false);
+                        }
+
+                        if (initialY > finalY) {
+                            System.out.println("DEBUG: Down to Up swipe performed");
+                        }
+                        return true;
+
+                    case MotionEvent.ACTION_CANCEL:
+                        System.out.println("DEBUG: Action was CANCEL");
+                        return true;
+
+                    case MotionEvent.ACTION_OUTSIDE:
+                        System.out.println("DEBUG: Movement occurred outside bounds of current screen element");
+                        return true;
+                }
+
+            return false;
+        }
+    }
+
+
     private class mapCameraListener implements GoogleMap.OnCameraChangeListener{
+
         @Override
         public void onCameraChange(CameraPosition cameraPosition) {
+
             System.out.println("debug; camera changed");
+
             if(!Data.stillInSameSector(cameraPosition.target)) {
                 // crossed a grid border, so do stuff :)
                 Data.cameraPositionUpdate(cameraPosition.target);
@@ -172,7 +291,7 @@ public class MapsActivity extends AppCompatActivity {
             try {
                 Thread.sleep(time);
             } catch (InterruptedException e) {
-                System.out.println("debug, cameraworker catch. wait failed");
+                System.out.println("debug, cameraworker catch. sleep failed");
                 e.printStackTrace();
             }
             LatLng newCameraPosition = Data.getLastCameraPosition();
@@ -181,7 +300,7 @@ public class MapsActivity extends AppCompatActivity {
                 // todo: use parse-magic to get flags around current camera position.
                 // getFlags(newCameraPosition) oder so was :)
             }
-            System.out.println("debug: now loading flags in visible map");
+            System.out.println("debug: now loading flags in visible map part");
             cameraWorkerRunning = false;
             return null;
         }
@@ -324,7 +443,7 @@ public class MapsActivity extends AppCompatActivity {
         b.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                if (motionEvent.getAction() == ACTION_DOWN) {
                     ClipData clipData = ClipData.newPlainText("", "");
                     View.DragShadowBuilder dsb = new View.DragShadowBuilder(view);
                     view.startDrag(clipData, dsb, view, 0);
