@@ -22,7 +22,10 @@ public class ProfileActivity extends AppCompatActivity {
 
     public String getUserId() {
         //TODO: get user's name
-        return "DefaultUser";
+        if(Data.user != null)
+            return Data.user.getUsername();
+        Resources res = getResources();
+        return res.getString(R.string.user_name_not_found);
     }
 
     public void followUserClick(View v) {
