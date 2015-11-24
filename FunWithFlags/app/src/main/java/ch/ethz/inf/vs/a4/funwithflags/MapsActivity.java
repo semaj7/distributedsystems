@@ -305,7 +305,7 @@ public class MapsActivity extends AppCompatActivity {
             mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         }
 
-        popUpFlag(f);
+       // popUpFlag(f);
     }
 
     //this should get called if the user moves 10m or all 30 seconds
