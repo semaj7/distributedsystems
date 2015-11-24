@@ -541,6 +541,7 @@ public class MapsActivity extends AppCompatActivity {
                 public void onClick(DialogInterface dialog, int whichEntry) {
                     System.out.println("DEBUG: markerListener, onClick: clicked entry nr: " + whichEntry);
                     // todo: do what ever we want to do with the clicked "flag"(text)
+                    goToMarker(closeByFlags.get(whichEntry));
                     popUpFlag(closeByFlags.get(whichEntry));
                     dialog.dismiss();
                 }
@@ -548,6 +549,7 @@ public class MapsActivity extends AppCompatActivity {
             alert.show();
         }
         else if (closeByFlags.size() == 1) {
+            goToMarker(closeByFlags.get(0));
             popUpFlag(closeByFlags.get(0));
         }
     }
@@ -704,8 +706,10 @@ public class MapsActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int whichFlag) {
                 // todo: do something with selected flag.. right now, show it :)
-                if(!empty[0])
+                if(!empty[0]) {
                     goToMarker(nonNullFlagData.get(whichFlag));
+                    popUpFlag(nonNullFlagData.get(whichFlag));
+                }
                 dialog.dismiss();
 
             }
