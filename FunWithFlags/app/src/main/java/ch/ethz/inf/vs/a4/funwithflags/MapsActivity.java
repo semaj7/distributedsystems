@@ -893,6 +893,7 @@ public class MapsActivity extends AppCompatActivity {
         TextView ratingTv = (TextView) popupView.findViewById(R.id.ratingTextView);
         ratingTv.setText(String.valueOf(f.getVoteRateAbsolut()));
         final Button followUserButton = (Button) popupView.findViewById(R.id.followUserFromFlag);
+
         Button upVoteButton = (Button) popupView.findViewById(R.id.upVoteButton);
         Button downVoteButton = (Button) popupView.findViewById(R.id.downVoteButton);
         //straightforward, now handle the onclick listeners for all buttons
@@ -919,7 +920,7 @@ public class MapsActivity extends AppCompatActivity {
             }
         });
 
-        followUserButton.setOnClickListener(new View.OnClickListener(){
+        followUserButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -927,6 +928,24 @@ public class MapsActivity extends AppCompatActivity {
                 flagPopUpWindow.dismiss();
             }
         });
+
+         //blur background
+        //TODO: fix this that also the google maps is blurred
+/*
+      //  final View content = this.findViewById(android.R.id.content).getRootView();
+        final View content = this.findViewById(android.R.id.content).getRootView();
+        View v1 = getWindow().getDecorView().getRootView();
+
+
+        if (v1.getWidth() > 0) {
+            Bitmap image = BlurBuilder.blur(v1);
+            ImageView background = (ImageView) popupView.findViewById(R.id.backgroundPopUp);
+            background.setImageBitmap(image);
+        }
+
+
+        */
+
 
         flagPopUpWindow = new PopupWindow(popupView, WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
         //this method shows the popup, the first param is just an anchor, passing in the view
