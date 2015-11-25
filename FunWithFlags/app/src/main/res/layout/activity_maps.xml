@@ -27,12 +27,20 @@
 
 
 
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height= "match_parent"
+                android:src="@drawable/whitescreen"
+                android:id="@+id/whitescreen"
+                android:scaleType="fitXY"
+                />
 
             <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal|top"
                 android:onClick="switchToProfile"
+                android:id="@+id/profileButton"
                 android:padding="5dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginLeft="10dp"
@@ -46,6 +54,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal|bottom"
                 android:onClick="setNewFlagClick"
+                android:id="@+id/newFlagButton"
                 android:padding="5dp"
                 android:layout_marginBottom="10dp"
                 android:src="@drawable/add_flag"

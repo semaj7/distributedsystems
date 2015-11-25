@@ -2,6 +2,7 @@ package ch.ethz.inf.vs.a4.funwithflags;
 
 import android.app.AlertDialog;
 import android.content.ClipData;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -17,16 +18,20 @@ import android.text.InputType;
 import android.util.DisplayMetrics;
 import android.view.DragEvent;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
@@ -54,6 +59,7 @@ import com.parse.ParseUser;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -76,13 +82,16 @@ public class MapsActivity extends AppCompatActivity {
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private Button showAllButton;
-    private PopupWindow flagPopUpWindow;
+    private ImageButton profileButton, addFlagButton;
+    private PopupWindow flagPopUpWindow, closeByFlagsPopUpWindow;
     private Circle circle_visible_range;
     private GPSTracker gps;
     private AsyncTask cameraWorker;
     private boolean cameraWorkerRunning;
     private SwipeRefreshLayout refresh;
     private float initialX, initialY;
+    private ImageView whitescreen;
+    private ActionBar toolbar;
 
 
     //initialize this with a flag if you want to animate to a flag after setting up the map, otherwise null
@@ -94,15 +103,20 @@ public class MapsActivity extends AppCompatActivity {
 
         getFlags();
 
+        // view's
         setContentView(R.layout.activity_maps);
 
         showAllButton = (Button) findViewById(R.id.showAllButton);
+        addFlagButton = (ImageButton) findViewById(R.id.newFlagButton);
+        profileButton = (ImageButton) findViewById(R.id.profileButton);
+        whitescreen = (ImageView) findViewById(R.id.whitescreen);
+        whitescreen.setVisibility(View.INVISIBLE);
 
         gps = new GPSTracker(this, this);
 
-        setUpMapIfNeeded();
 
         // map
+        setUpMapIfNeeded();
         locationChanged();
         cameraWorker = new AsyncCameraWorker();
         mMap.setOnCameraChangeListener(new mapCameraListener());
@@ -110,8 +124,11 @@ public class MapsActivity extends AppCompatActivity {
         refresh = (SwipeRefreshLayout) findViewById(R.id.refresh);
         refresh.setEnabled(false);
 
+
+
+
         // todo: initialize app compat action bar, as to however it should be
-        ActionBar toolbar = getSupportActionBar();
+        toolbar = getSupportActionBar();
         toolbar.setTitle(R.string.app_name);
 
         // initialize Navigation Drawer
@@ -162,6 +179,20 @@ public class MapsActivity extends AppCompatActivity {
         getFlags();
         //
         refresh.setRefreshing(false);
+    }
+
+    private void showWhitescreen(){
+        whitescreen.setVisibility(View.VISIBLE);
+        toolbar.hide();
+        profileButton.setVisibility(View.INVISIBLE);
+        addFlagButton.setVisibility(View.INVISIBLE);
+    }
+
+    private void hideWhitescreen(){
+        whitescreen.setVisibility(View.INVISIBLE);
+        toolbar.show();
+        profileButton.setVisibility(View.VISIBLE);
+        addFlagButton.setVisibility(View.VISIBLE);
     }
 
 
@@ -333,7 +364,12 @@ public class MapsActivity extends AppCompatActivity {
         }
         else
         {
-            super.onBackPressed();
+            if(closeByFlagsPopUpWindow.isShowing()) {
+                closeByFlagsPopUpWindow.dismiss();
+                hideWhitescreen();
+            }
+            else
+                super.onBackPressed();
         }
 
     }
@@ -619,13 +655,104 @@ public class MapsActivity extends AppCompatActivity {
         }
     }
 
-    public void switchToCloseFlagsActivity(MenuItem m) {
+    public void openCloseFlagsPopUp(MenuItem m) {
+        showWhitescreen();
         updateCloseFlagsFromAll();
-        startActivity(new Intent(this, CloseFlagListActivity.class));
+
+
+
+        View popupView = getLayoutInflater().inflate(R.layout.activity_close_flag_list, null);
+
+        //init controls
+        final ListView listview = (ListView) popupView.findViewById(R.id.listview);
+
+        final ArrayList<Flag> sortedFlagList = Data.quickSortListByDate(Data.closeFlags);
+
+        final FlagArrayAdapter adapter = new FlagArrayAdapter(this,
+                android.R.layout.simple_list_item_1, sortedFlagList);
+        listview.setAdapter(adapter);
+
+        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, final View view,
+                                    int position, long id) {
+                final Flag item = (Flag) parent.getItemAtPosition(position);
+
+                closeByFlagsPopUpWindow.dismiss();
+                hideWhitescreen();
+                goToMarker(item);
+                popUpFlag(item);
+
+            }
+
+        });
+
+        closeByFlagsPopUpWindow = new PopupWindow(popupView, WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+        //this method shows the popup, the first param is just an anchor, passing in the view
+        //we inflated is fine
+        closeByFlagsPopUpWindow.setAnimationStyle(R.style.animation);
+        closeByFlagsPopUpWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
 
     }
 
 
+    private class FlagArrayAdapter extends ArrayAdapter<Flag> {
+
+        private final List<Flag> flags;
+        HashMap<Flag, Integer> mIdMap = new HashMap<Flag, Integer>();
+
+        Context context;
+
+
+        public FlagArrayAdapter(Context context, int textViewResourceId,
+                                List<Flag> flags) {
+            super(context, textViewResourceId, flags);
+            this.context = context;
+            this.flags = flags;
+            for (int i = 0; i < flags.size(); ++i) {
+                mIdMap.put(flags.get(i), i);
+            }
+        }
+
+        @Override
+        public long getItemId(int position) {
+            Flag item = getItem(position);
+            return mIdMap.get(item);
+        }
+
+        @Override
+        public boolean hasStableIds() {
+            return true;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            LayoutInflater inflater = (LayoutInflater) context
+                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+            View rowView = inflater.inflate(R.layout.close_flag_row_layout, parent, false);
+
+            TextView textView = (TextView) rowView.findViewById(R.id.label);
+            ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);
+
+            Flag flag = flags.get(position);
+
+            //TODO: change the layout according to flag
+            textView.setText(flag.getText());
+
+                /*
+                if (s.startsWith("iPhone")) {
+                    imageView.setImageResource(R.drawable.no);
+                } else {
+                    imageView.setImageResource(R.drawable.ok);
+                }
+                */
+
+            return rowView;
+        }
+
+    }
 
     private void displayDialog(final int whatKind) {
 

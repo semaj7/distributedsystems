@@ -71,14 +71,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="ch.ethz.inf.vs.a4.funwithflags.MapsActivity" />
         </activity>
-        <activity
-            android:name=".CloseFlagListActivity"
-            android:label="@string/title_activity_close_flag_list"
-            android:parentActivityName=".MapsActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="ch.ethz.inf.vs.a4.funwithflags.MapsActivity" />
-        </activity>
     </application>
 
 </manifest>

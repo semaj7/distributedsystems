@@ -9,6 +9,7 @@ import com.parse.ParseUser;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by Andres on 13.11.15.
@@ -101,6 +102,32 @@ public final class Data {
                 return;
             }
         }
+    }
+
+    static Random r = new Random();
+
+    public static final ArrayList<Flag> quickSortListByDate(ArrayList<Flag> closeFlags) {
+
+        if (closeFlags.size() <= 1)
+            return closeFlags;
+        int rotationplacement = r.nextInt(closeFlags.size());
+        Flag rotation = closeFlags.get(rotationplacement);
+        closeFlags.remove(rotationplacement);
+        ArrayList<Flag> lower = new ArrayList<Flag>();
+        ArrayList<Flag> higher = new ArrayList<Flag>();
+        for (Flag f : closeFlags)
+            if (f.getDate().after(rotation.getDate()))
+                lower.add(f);
+            else
+                higher.add(f);
+        quickSortListByDate(lower);
+        quickSortListByDate(higher);
+
+        closeFlags.clear();
+        closeFlags.addAll(lower);
+        closeFlags.add(rotation);
+        closeFlags.addAll(higher);
+        return closeFlags;
     }
 
     private static void sortTopFlags() { // i know this is not the most efficient way to sort, but it is easy :P
