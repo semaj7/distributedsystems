@@ -1262,9 +1262,6 @@ public class MapsActivity extends AppCompatActivity {
     }
 
     void deleteFlag(Flag f){
-        // TODO: 17.11.15
-        //this is overdue!!!!!!!!!!!!!!!!!!!!
-
         //is user authorized?
         if(f.getUserName().equals(getCurrentLoggedInUserName())) {
             //delete locally TODO: hope i have not forgotten some place where the flag is stored

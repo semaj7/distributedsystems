@@ -187,4 +187,38 @@ public final class Data {
         }
         return null;
     }
+
+
+    /*
+    SERVER COMMUNICATION (trying not to mix stuff to much)
+
+    we can always put the server functionality into the other functions later on, but I think it
+    makes sense to separate it.
+    */
+    public static void getFavouriteFlagsFromServer(){
+        //TODO
+    }
+    public static void getTopRankedFlagsFromServer(){
+        //TODO
+    }
+    public static void submitFavouriteToServer(){
+        //TODO
+    }
+    public static void deleteFavouriteFromServer(){
+        //TODO
+    }
+    public static void submitRatingToServer(){
+        //TODO
+    }
+    //TODO: move getFlags() to this class
+    //TODO: move deleteFlagFromServer and deleteFlag to this class
+    /*
+    maybe not necessary since we can change a rating by just submitting another one
+    (e.g at first I like a flag, but then I realize that it sucks, so I can just rate again)
+
+    public static void deleteRatingFromServer(Flag f){
+
+    }
+    */
+
 }
