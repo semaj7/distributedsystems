@@ -358,19 +358,22 @@ public class MapsActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if(flagPopUpWindow.isShowing())
-        {
-            flagPopUpWindow.dismiss();
+        boolean closedSomething = false;
+        if (flagPopUpWindow != null) {
+            if (flagPopUpWindow.isShowing()) {
+                flagPopUpWindow.dismiss();
+                closedSomething = true;
+            }
         }
-        else
-        {
-            if(closeByFlagsPopUpWindow.isShowing()) {
+        if (closeByFlagsPopUpWindow != null) {
+            if (closeByFlagsPopUpWindow.isShowing()) {
                 closeByFlagsPopUpWindow.dismiss();
                 hideWhitescreen();
+                closedSomething = true;
             }
-            else
-                super.onBackPressed();
         }
+        if (!closedSomething) super.onBackPressed();
+
 
     }
 
