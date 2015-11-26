@@ -108,4 +108,8 @@
     <string name="title_activity_close_flag_list">CloseFlagListActivity</string>
     <string name="user_name_not_found">No username found</string>
     <string name="show_close_flags">Show Close Flags</string>
+<<<<<<< HEAD
+=======
+    <string name="fieldUsername">Written by: </string>
+>>>>>>> origin/master
 </resources>

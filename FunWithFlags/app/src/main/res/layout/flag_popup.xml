@@ -48,7 +48,11 @@
         android:padding="5dp"
         android:paddingRight="10dp"
         android:layout_above="@+id/FlagView"
+<<<<<<< HEAD
         android:layout_alignStart="@+id/textView" />
+=======
+        android:layout_centerHorizontal="true" />
+>>>>>>> origin/master
 
     <TextView
         android:layout_width="wrap_content"
@@ -56,16 +60,27 @@
         android:text="@string/rating"
         android:textColor="#000000"
         android:id="@+id/textView"
+<<<<<<< HEAD
         android:layout_below="@+id/ButtonHolder"
         android:layout_toStartOf="@+id/ButtonHolder" />
+=======
+        android:layout_alignTop="@+id/ButtonHolder"
+        android:layout_alignEnd="@+id/upVoteButton" />
+>>>>>>> origin/master
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/ratingTextView"
         android:textColor="#000000"
+<<<<<<< HEAD
         android:layout_above="@+id/upVoteButton"
         android:layout_alignEnd="@+id/followUserFromFlag" />
+=======
+        android:layout_below="@+id/FlagView"
+        android:layout_alignStart="@+id/downVoteButton"
+        android:layout_alignBottom="@+id/textView" />
+>>>>>>> origin/master
 
     <ImageView
         android:id="@+id/FlagView"
@@ -112,7 +127,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="#000000"
+<<<<<<< HEAD
         android:layout_above="@+id/TextHolder"
+=======
+        android:layout_above="@+id/textViewUsername"
+>>>>>>> origin/master
         android:layout_centerHorizontal="true" />
 
     <TextView android:text="@string/flag_text"
@@ -120,9 +139,33 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="#000000"
+<<<<<<< HEAD
         android:layout_above="@+id/flagText"
         android:layout_centerHorizontal="true" />
 
+=======
+
+        android:layout_above="@+id/flagText"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/fieldUsername"
+        android:textColor="#000000"
+        android:id="@+id/textViewUsername"
+        android:layout_above="@+id/followUserFromFlag"
+        android:layout_alignStart="@+id/upVoteButton" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/placeholderUsername"
+        android:textColor="#000000"
+        android:layout_above="@+id/followUserFromFlag"
+        android:layout_alignEnd="@+id/downVoteButton" />
+
+
+>>>>>>> origin/master
 </RelativeLayout>
 
 

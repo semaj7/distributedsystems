@@ -17,7 +17,11 @@
         <item
             android:id="@+id/close_info"
             android:icon="@android:drawable/ic_menu_view"
+<<<<<<< HEAD
             android:onClick="switchToCloseFlagsActivity"
+=======
+            android:onClick="openCloseFlagsPopUp"
+>>>>>>> origin/master
             app:showAsAction="always"
             android:title="@string/show_close_flags"
         />
