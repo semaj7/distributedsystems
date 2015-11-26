@@ -1265,9 +1265,18 @@ public class MapsActivity extends AppCompatActivity {
         // TODO: 17.11.15
         //this is overdue!!!!!!!!!!!!!!!!!!!!
 
-        Data.flagMarkerHashMap.remove(f);
-
-
+        //is user authorized?
+        if(f.getUserName().equals(getCurrentLoggedInUserName())) {
+            //delete locally TODO: hope i have not forgotten some place where the flag is stored
+            Data.flagMarkerHashMap.remove(f);
+            Data.allFlags.remove(f);
+            Data.closeFlags.remove(f);
+            Data.myFlags.remove(f);
+            //if already uploaded: delete also from server
+            if (f.getID() != null) {
+                deleteFlagFromServer(f);
+            }
+        }
     }
 
 
