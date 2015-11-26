@@ -1097,6 +1097,8 @@ public class MapsActivity extends AppCompatActivity {
         text.setText(f.getText());
         TextView ratingTv = (TextView) popupView.findViewById(R.id.ratingTextView);
         ratingTv.setText(String.valueOf(f.getVoteRateAbsolut()));
+        TextView usernameTv = (TextView) popupView.findViewById(R.id.placeholderUsername);
+        usernameTv.setText(f.getUserName());
         final Button followUserButton = (Button) popupView.findViewById(R.id.followUserFromFlag);
 
         Button upVoteButton = (Button) popupView.findViewById(R.id.upVoteButton);
