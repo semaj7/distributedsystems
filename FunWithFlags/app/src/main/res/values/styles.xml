@@ -1,8 +1,18 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
+    <style name="Theme.FlaggrTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+
+        <!-- Set AppCompat’s color theming attrs -->
+        <item name="colorPrimary">#3333dd</item>
+        <item name="colorPrimaryDark">#0000aa</item>
+
+        <!-- The rest of your attributes -->
+
     </style>
+
+    <style name="animation">
+        <item name="android:windowEnterAnimation">@anim/popup_show</item>
+        <item name="android:windowExitAnimation">@anim/popup_hide</item></style>
 
 </resources>

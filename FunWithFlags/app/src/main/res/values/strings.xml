@@ -1,16 +1,111 @@
 <resources>
-    <string name="app_name">FunWithFlags</string>
-    <string name="title_activity_maps">Map</string>
+    <string name="app_name">flaggr</string>
+    <string name="title_activity_maps">flaggr</string>
     <string name="newFlagDialogTitle">Set your flag!</string>
     <string name="newFlagDialogMessage">Enter your text:</string>
     <string name="Profile">Profile</string>
     <string name="title_activity_profile">ProfileActivity</string>
 
     <string name="hello_world">Hello world!</string>
+    <string name="OK">OK</string>
+    <string name="Cancel">Cancel</string>
     <string name="action_settings">Settings</string>
     <string name="ratingTextPlaceHolder">No ratings found.</string>
     <string name="settedFlagsCountTextPlaceHolder">This user has not yet set any flags.</string>
     <string name="ratingText">Your current rating is @rating. Good job!</string>
+    <string name="rating">Rating:\t</string>
     <string name="settedFlagsText">You have already set @count flags! That\'s fun!</string>
     <string name="followedUser">You are now following @name. What a stalker!</string>
+    <string name="SportsName">Sports</string>
+    <string name="not_in_range_message">You are not close enough to this flag</string>
+    <string name="choose_category">choose category</string>
+    <string name="flag_text_hint">say something</string>
+    <string name="closeByFlagsDialogTitle">Flags near you</string>
+    <string name="closeByFlagsDialogMessage">Choose a flag</string>
+    <string name="favouriteDisplayDialogTitle">Your favourite flags!</string>
+    <string name="noFavourtieYet">You have no favourites yet</string>
+    <string name="search_username_title">Search by Username:</string>
+    <string name="showAll">Show all flags</string>
+    <string name="flag_activity_title">Flag</string>
+    <string name="followUser">Follow User</string>
+    <string name="upVote">Upvote</string>
+    <string name="downVote">Downvote</string>
+    <string name="noTextFoundDefault">Could\'t find Text for this flag!</string>
+    <string name="flag_text">Flag Text: </string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Strings related to Settings -->
+
+    <!-- Example General settings -->
+    <string name="pref_header_general">General</string>
+
+    <string name="pref_title_social_recommendations">Enable social recommendations</string>
+    <string name="pref_description_social_recommendations">Recommendations for people to contact
+        based on your message history
+    </string>
+
+    <string name="pref_title_display_name">Display name</string>
+    <string name="pref_default_display_name">John Smith</string>
+
+    <string name="pref_title_add_friends_to_messages">Add friends to messages</string>
+    <string-array name="pref_example_list_titles">
+        <item>Always</item>
+        <item>When possible</item>
+        <item>Never</item>
+    </string-array>
+    <string-array name="pref_example_list_values">
+        <item>1</item>
+        <item>0</item>
+        <item>-1</item>
+    </string-array>
+
+    <!-- Example settings for Data & Sync -->
+    <string name="pref_header_data_sync">Data &amp; sync</string>
+
+    <string name="pref_title_sync_frequency">Sync frequency</string>
+    <string-array name="pref_sync_frequency_titles">
+        <item>15 minutes</item>
+        <item>30 minutes</item>
+        <item>1 hour</item>
+        <item>3 hours</item>
+        <item>6 hours</item>
+        <item>Never</item>
+    </string-array>
+    <string-array name="pref_sync_frequency_values">
+        <item>15</item>
+        <item>30</item>
+        <item>60</item>
+        <item>180</item>
+        <item>360</item>
+        <item>-1</item>
+    </string-array>
+
+    <string name="pref_title_system_sync_settings">System sync settings</string>
+
+    <!-- Example settings for Notifications -->
+    <string name="pref_header_notifications">Notifications</string>
+
+    <string name="pref_title_new_message_notifications">New message notifications</string>
+
+    <string name="pref_title_ringtone">Ringtone</string>
+    <string name="pref_ringtone_silent">Silent</string>
+
+    <string name="pref_title_vibrate">Vibrate</string>
+    <string name="noTopFlagsYet">There are no top ranked flags yet...</string>
+    <string name="topRankingDisplayDialogTitle">Top flags</string>
+    <string name="userName">Username</string>
+    <string name="time">Time</string>
+    <string name="upVoteRatio">Points</string>
+    <string name="category">Category</string>
+    <string name="login_first_time">Seems like you login for the first time!</string>
+    <string name="welcome">Welcome</string>
+    <string name="provide_username">Provide a username:</string>
+    <string name="login_not_successful">Login was not successful!</string>
+    <string name="try_again_later">Make sure you have internet access and please try again later</string>
+    <string name="log_out">Logout</string>
+    <string name="prompt_username">Username</string>
+    <string name="provide_email">Please provide an email:</string>
+    <string name="title_activity_close_flag_list">CloseFlagListActivity</string>
+    <string name="user_name_not_found">No username found</string>
+    <string name="show_close_flags">Show Close Flags</string>
 </resources>

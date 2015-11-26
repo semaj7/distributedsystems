@@ -2,6 +2,7 @@ package ch.ethz.inf.vs.a4.funwithflags;
 
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -9,18 +10,35 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.parse.ParseUser;
+
 public class ProfileActivity extends AppCompatActivity {
+
+    private SwipeRefreshLayout refresh;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
         updateUI();
+
+        refresh = (SwipeRefreshLayout) findViewById(R.id.refresh_profile);
+        refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refresh.setRefreshing(true);
+                updateUI();
+                refresh.setRefreshing(false);
+            }
+        });
     }
 
     public String getUserId() {
         //TODO: get user's name
-        return "DefaultUser";
+        if(Data.user != null)
+            return Data.user.getUsername();
+        Resources res = getResources();
+        return res.getString(R.string.user_name_not_found);
     }
 
     public void followUserClick(View v) {
@@ -32,6 +50,10 @@ public class ProfileActivity extends AppCompatActivity {
         String fU = String.format(res.getString(R.string.followedUser));
         fU = fU.replace("@name", getUserId());
         Toast.makeText(this, fU, Toast.LENGTH_LONG).show();
+    }
+
+    public void logOut(View v) {
+        ParseUser.logOut();
     }
 
     public void updateUI() {

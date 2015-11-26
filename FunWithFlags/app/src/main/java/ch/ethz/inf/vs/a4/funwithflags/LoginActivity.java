@@ -4,51 +4,55 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.content.Loader;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.text.TextUtils;
+import android.text.InputType;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.parse.FindCallback;
+import com.parse.LogInCallback;
+import com.parse.ParseException;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
+import com.parse.SignUpCallback;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * A login screen that offers login via email/password.
  */
 public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
-    /**
-     * A dummy authentication store containing known user names and passwords.
-     * TODO: remove after connecting to a real authentication system.
-     */
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world"
-    };
-    /**
-     * Keep track of the login task to ensure we can cancel it if requested.
-     */
-    private UserLoginTask mAuthTask = null;
+    private static final String EMAIL_PATTERN =
+            "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
+                    + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+
 
     // UI references.
-    private AutoCompleteTextView mEmailView;
+    private EditText mUserNameView;
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,26 +60,26 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         setContentView(R.layout.activity_login);
 
         // Set up the login form.
-        mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
-        populateAutoComplete();
+        mUserNameView = (EditText) findViewById(R.id.user_name_text_view);
 
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
                 if (id == R.id.login || id == EditorInfo.IME_NULL) {
-                    attemptLogin();
+                    LogInOrRegister();
                     return true;
                 }
                 return false;
             }
         });
 
-        Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
-        mEmailSignInButton.setOnClickListener(new OnClickListener() {
+        //Designate functionality to button
+        Button mUserNameSignInButton = (Button) findViewById(R.id.user_name_sign_in_button);
+        mUserNameSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                attemptLogin();
+                LogInOrRegister();
             }
         });
 
@@ -89,60 +93,173 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
 
     /**
-     * Attempts to sign in or register the account specified by the login form.
+     * Attempts to log in or register the account specified by the login form.
      * If there are form errors (invalid email, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
-    public void attemptLogin() {
-        if (mAuthTask != null) {
+    private void LogInOrRegister() { // Signing up: not yet clear if it is a registration or a login
+        final String username =  mUserNameView.getText().toString().trim();
+        final String password = mPasswordView.getText().toString().trim();
+
+        //Format checks
+        boolean validationError = true;
+        StringBuilder validationErrorMessage = new StringBuilder(getString(R.string.error_intro));
+        if(username.isEmpty()){
+            validationErrorMessage.append(getString(R.string.error_email_required));
+        }
+        else if(password.isEmpty()){
+            validationErrorMessage.append(getString(R.string.error_password_required));
+        }
+        else if(password.length() < 4){
+            validationErrorMessage.append(getString(R.string.error_short_password));
+        }
+        else{
+            validationError = false;
+        }
+        if (validationError) {
+            Toast.makeText(LoginActivity.this, validationErrorMessage.toString(), Toast.LENGTH_LONG).show();
             return;
         }
 
-        // Reset errors.
-        mEmailView.setError(null);
-        mPasswordView.setError(null);
 
-        // Store values at the time of the login attempt.
-        String email = mEmailView.getText().toString();
-        String password = mPasswordView.getText().toString();
+        showProgress(true);
 
-        boolean cancel = false;
-        View focusView = null;
+        //Check if username already exists. If yes -> login, else -> register
+        ParseQuery<ParseUser> query = ParseUser.getQuery();
+        query.whereEqualTo("username", username);
+        query.setLimit(1); //if found, return this username
+        query.findInBackground(new FindCallback<ParseUser>() {
+            public void done(List<ParseUser> objects, ParseException e) {
+                if (e == null) {
 
-        // Check for a valid password, if the user entered one.
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
-            mPasswordView.setError(getString(R.string.error_invalid_password));
-            focusView = mPasswordView;
-            cancel = true;
-        }
+                    showProgress(false);
 
-        // Check for a valid email address.
-        if (TextUtils.isEmpty(email)) {
-            mEmailView.setError(getString(R.string.error_field_required));
-            focusView = mEmailView;
-            cancel = true;
-        } else if (!isEmailValid(email)) {
-            mEmailView.setError(getString(R.string.error_invalid_email));
-            focusView = mEmailView;
-            cancel = true;
-        }
+                    if (objects.size() == 0) {
 
-        if (cancel) {
-            // There was an error; don't attempt login and focus the first
-            // form field with an error.
-            focusView.requestFocus();
-        } else {
-            // Show a progress spinner, and kick off a background task to
-            // perform the user login attempt.
-            showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
-            mAuthTask.execute((Void) null);
-        }
+                        register(username, password);
+
+                    } else {
+                        //username aready exists!
+                        logIn(username, password);
+                    }
+                } else {
+                    // could not check if username already exists
+                    loginNotSuccessful(e.getLocalizedMessage());
+                }
+            }
+        });
+
+    }
+
+
+    private void register(final String username, final String password){
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(getString(R.string.login_first_time));
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+        builder.setMessage(R.string.provide_email);
+        builder.setView(input);
+        //Set up the buttons
+        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String email = input.getText().toString();
+                //format check
+                if (email.isEmpty()) {
+                    Toast.makeText(LoginActivity.this, "Email cannot be empty", Toast.LENGTH_LONG).show();
+                } else if (!isEmailValid(email)) {
+                    Toast.makeText(LoginActivity.this, "Please provide a valid email!", Toast.LENGTH_LONG).show();
+                } else {
+
+                    signUp(username, password, email);
+                }
+
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        builder.show();
+
+    }
+
+    private void signUp(String username, String password, String email) {
+
+        ParseUser user = new ParseUser();
+        user.setEmail(email);
+        user.setPassword(password);
+        user.setUsername(username);
+        // Call the Parse LogInOrRegister method
+        user.signUpInBackground(new SignUpCallback() {
+            @Override
+            public void done(ParseException e) {
+
+                showProgress(false);
+
+                if (e == null) {
+                    // The query was successful.
+                    loginSuccessful();
+                } else {
+                    loginNotSuccessful(e.getLocalizedMessage());
+                }
+            }
+        });
+
+    }
+
+
+    private void logIn(String username, String password){
+        showProgress(true);
+        ParseUser.logInInBackground(username, password, new LogInCallback() {
+            @Override
+            public void done(ParseUser user, ParseException e) {
+
+                showProgress(false);
+
+                if (e == null) {
+                    // Hooray! Let them use the app now.
+                    loginSuccessful();
+                } else {
+                    loginNotSuccessful(e.getLocalizedMessage());
+                }
+
+            }
+        });
+
+    }
+
+    private void loginNotSuccessful(String error) {
+
+        //TODO: Provide useful messages to the user, maybe change String error to int ErrorCode
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        Resources res = getResources();
+        builder.setTitle(res.getString(R.string.login_not_successful));
+
+        builder.setMessage(R.string.try_again_later + "\nError message:\n" + error);
+        //Set up the buttons
+        builder.setPositiveButton(getString(R.string.OK), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        builder.show();
+    }
+    private void loginSuccessful(){
+        ParseUser currentUser = ParseUser.getCurrentUser();
+        Toast.makeText(LoginActivity.this, getString(R.string.welcome) + " " + currentUser.getUsername() + "!", Toast.LENGTH_LONG).show();
+        this.finish(); //not sure if this works. Maybe we should rather start a other activity
     }
 
     private boolean isEmailValid(String email) {
-        //TODO: Replace this with your own logic
-        return email.contains("@");
+        Pattern pattern = Pattern.compile(EMAIL_PATTERN);
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
     }
 
     private boolean isPasswordValid(String password) {
@@ -211,8 +328,6 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
             emails.add(cursor.getString(ProfileQuery.ADDRESS));
             cursor.moveToNext();
         }
-
-        addEmailsToAutoComplete(emails);
     }
 
     @Override
@@ -230,71 +345,5 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         int IS_PRIMARY = 1;
     }
 
-
-    private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
-        //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
-        ArrayAdapter<String> adapter =
-                new ArrayAdapter<String>(LoginActivity.this,
-                        android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
-
-        mEmailView.setAdapter(adapter);
-    }
-
-    /**
-     * Represents an asynchronous login/registration task used to authenticate
-     * the user.
-     */
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
-
-        private final String mEmail;
-        private final String mPassword;
-
-        UserLoginTask(String email, String password) {
-            mEmail = email;
-            mPassword = password;
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
-
-            try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
-            }
-
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
-                }
-            }
-
-            // TODO: register the new account here.
-            return true;
-        }
-
-        @Override
-        protected void onPostExecute(final Boolean success) {
-            mAuthTask = null;
-            showProgress(false);
-
-            if (success) {
-                finish();
-            } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
-            }
-        }
-
-        @Override
-        protected void onCancelled() {
-            mAuthTask = null;
-            showProgress(false);
-        }
-    }
 }
 
