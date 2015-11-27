@@ -10,7 +10,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:alpha="0.5"
-        android:background="@android:color/background_dark" />
+        android:background="@android:color/background_dark"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true" />
 
     <!-- The main image to be centered in the layout.
      Instead of ImageView, you can change it to
@@ -20,13 +22,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:alpha="0.5"
-        android:background="@color/background_floating_material_light"
-        android:layout_alignBottom="@+id/upVoteButton"
-        android:layout_alignParentEnd="true"
-        android:layout_toEndOf="@+id/flagText"
         android:layout_alignParentStart="true"
         android:id="@+id/imageView"
-        android:layout_alignTop="@+id/flag" />
+        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@+id/flag"
+        android:layout_alignBottom="@+id/upVoteButton"
+        android:layout_centerInParent="true"/>
 
     <LinearLayout
         android:id="@+id/TextHolder"
@@ -48,7 +49,8 @@
         android:padding="5dp"
         android:paddingRight="10dp"
         android:layout_above="@+id/FlagView"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/roundbutton"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -96,7 +98,8 @@
         android:padding="5dp"
         android:paddingRight="10dp"
         android:layout_below="@+id/textView"
-        android:layout_toStartOf="@+id/FlagView" />
+        android:layout_toStartOf="@+id/FlagView"
+        android:background="@drawable/roundbutton"/>
 
     <Button
         android:layout_width="wrap_content"
@@ -106,7 +109,8 @@
         android:padding="5dp"
         android:paddingRight="10dp"
         android:layout_below="@+id/ratingTextView"
-        android:layout_toEndOf="@+id/ButtonHolder" />
+        android:layout_toEndOf="@+id/ButtonHolder"
+        android:background="@drawable/roundbutton"/>
 
     <TextView android:text="@string/noTextFoundDefault"
         android:id="@+id/flagText"

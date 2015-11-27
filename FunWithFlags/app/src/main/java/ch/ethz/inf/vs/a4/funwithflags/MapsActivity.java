@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -1099,8 +1100,12 @@ public class MapsActivity extends AppCompatActivity {
         ratingTv.setText(String.valueOf(f.getVoteRateAbsolut()));
         TextView usernameTv = (TextView) popupView.findViewById(R.id.placeholderUsername);
         usernameTv.setText(f.getUserName());
+        ImageView smallPopup = (ImageView) popupView.findViewById(R.id.imageView);
+        float s=(float)69.0;
+        float v= (float) 97.0;
+        float[]hsv={f.getCategory().hue, s, v};
+        smallPopup.setBackgroundColor(Color.HSVToColor(hsv));
         final Button followUserButton = (Button) popupView.findViewById(R.id.followUserFromFlag);
-
         Button upVoteButton = (Button) popupView.findViewById(R.id.upVoteButton);
         Button downVoteButton = (Button) popupView.findViewById(R.id.downVoteButton);
         //straightforward, now handle the onclick listeners for all buttons
