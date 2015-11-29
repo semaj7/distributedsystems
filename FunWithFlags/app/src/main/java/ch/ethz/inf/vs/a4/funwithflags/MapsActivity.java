@@ -184,6 +184,9 @@ public class MapsActivity extends AppCompatActivity {
         toolbar.hide();
         profileButton.setVisibility(View.INVISIBLE);
         addFlagButton.setVisibility(View.INVISIBLE);
+        if (Data.filteringEnabled.size() > 0)
+            showAllButton.setVisibility(View.INVISIBLE);
+
     }
 
     private void hideWhitescreen(){
@@ -191,6 +194,9 @@ public class MapsActivity extends AppCompatActivity {
         toolbar.show();
         profileButton.setVisibility(View.VISIBLE);
         addFlagButton.setVisibility(View.VISIBLE);
+        if (Data.filteringEnabled.size() > 0)
+            showAllButton.setVisibility(View.VISIBLE);
+
     }
 
 
