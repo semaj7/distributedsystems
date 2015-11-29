@@ -41,6 +41,7 @@ public class ProfileActivity extends AppCompatActivity {
         return res.getString(R.string.user_name_not_found);
     }
 
+    /* no follow button here
     public void followUserClick(View v) {
 
         //TODO: implement this
@@ -50,10 +51,11 @@ public class ProfileActivity extends AppCompatActivity {
         String fU = String.format(res.getString(R.string.followedUser));
         fU = fU.replace("@name", getUserId());
         Toast.makeText(this, fU, Toast.LENGTH_LONG).show();
-    }
+    }*/
 
     public void logOut(View v) {
         ParseUser.logOut();
+        Toast.makeText(this, "You are logged out now", Toast.LENGTH_SHORT).show();
     }
 
     public void updateUI() {

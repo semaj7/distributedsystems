@@ -43,8 +43,6 @@
                 android:id="@+id/profileButton"
                 android:padding="5dp"
                 android:layout_marginTop="10dp"
-                android:layout_marginLeft="10dp"
-                android:paddingLeft="10dp"
                 android:src="@drawable/user_icon"
                 android:background="@drawable/roundbutton"
                 android:alpha="0.75"/>

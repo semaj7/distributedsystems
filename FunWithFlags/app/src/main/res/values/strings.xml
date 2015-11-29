@@ -27,7 +27,7 @@
     <string name="search_username_title">Search by Username:</string>
     <string name="showAll">Show all flags</string>
     <string name="flag_activity_title">Flag</string>
-    <string name="followUser">Follow User</string>
+    <string name="followUser">Follow</string>
     <string name="upVote">Upvote</string>
     <string name="downVote">Downvote</string>
     <string name="noTextFoundDefault">Could\'t find Text for this flag!</string>
@@ -108,4 +108,6 @@
     <string name="title_activity_close_flag_list">CloseFlagListActivity</string>
     <string name="user_name_not_found">No username found</string>
     <string name="show_close_flags">Show Close Flags</string>
+    <string name="drawer_open">drawer open</string>
+    <string name="drawer_close">drawer close</string>
 </resources>

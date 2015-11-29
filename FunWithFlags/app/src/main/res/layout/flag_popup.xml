@@ -19,7 +19,7 @@
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:alpha="0.5"
+        android:alpha="0.75"
         android:background="@color/background_floating_material_light"
         android:layout_alignBottom="@+id/upVoteButton"
         android:layout_alignParentEnd="true"
@@ -48,7 +48,8 @@
         android:padding="5dp"
         android:paddingRight="10dp"
         android:layout_above="@+id/FlagView"
-        android:layout_alignStart="@+id/textView" />
+        android:layout_alignStart="@+id/textView"
+        android:background="@drawable/roundbutton"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -95,7 +96,8 @@
         android:padding="5dp"
         android:paddingRight="10dp"
         android:layout_below="@+id/textView"
-        android:layout_toStartOf="@+id/FlagView" />
+        android:layout_toStartOf="@+id/FlagView"
+        android:background="@drawable/roundbutton"/>
 
     <Button
         android:layout_width="wrap_content"
@@ -105,7 +107,8 @@
         android:padding="5dp"
         android:paddingRight="10dp"
         android:layout_below="@+id/ratingTextView"
-        android:layout_toEndOf="@+id/ButtonHolder" />
+        android:layout_toEndOf="@+id/ButtonHolder"
+        android:background="@drawable/roundbutton"/>
 
     <TextView android:text="@string/noTextFoundDefault"
         android:id="@+id/flagText"

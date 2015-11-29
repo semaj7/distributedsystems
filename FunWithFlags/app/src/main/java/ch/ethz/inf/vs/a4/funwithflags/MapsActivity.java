@@ -6,10 +6,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
@@ -80,6 +82,7 @@ public class MapsActivity extends AppCompatActivity {
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private String slideMenuStrings[];
     private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mDrawerToggle;
     private ListView mDrawerList;
     private Button showAllButton;
     private ImageButton profileButton, addFlagButton;
@@ -130,6 +133,10 @@ public class MapsActivity extends AppCompatActivity {
         // todo: initialize app compat action bar, as to however it should be
         toolbar = getSupportActionBar();
         toolbar.setTitle(R.string.app_name);
+        toolbar.setDisplayShowHomeEnabled(true);
+        toolbar.setLogo(R.drawable.logo);
+        toolbar.setDisplayUseLogoEnabled(true);
+
 
         // initialize Navigation Drawer
         slideMenuStrings = Data.slideMenuStrings;
@@ -137,7 +144,17 @@ public class MapsActivity extends AppCompatActivity {
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
         mDrawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, slideMenuStrings));
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.drawable.ic_setting_dark,R.string.drawer_open, R.string.drawer_close){
+           public void onDrawerClosed(View view){
+               super.onDrawerClosed(view);
+               getActionBar().setTitle("Bla");
+           }
 
+            public void onDrawerOpened(View drawerView){
+                super.onDrawerOpened(drawerView);
+                getActionBar().setTitle("Drawer");
+            }
+        };
         //check if invoked with extras (from closeFlagActivity: value 1)
         Bundle b = getIntent().getExtras();
         if (b != null) {
@@ -186,6 +203,7 @@ public class MapsActivity extends AppCompatActivity {
         toolbar.hide();
         profileButton.setVisibility(View.INVISIBLE);
         addFlagButton.setVisibility(View.INVISIBLE);
+        showAllButton.setVisibility(View.INVISIBLE);
     }
 
     private void hideWhitescreen(){
@@ -193,6 +211,7 @@ public class MapsActivity extends AppCompatActivity {
         toolbar.show();
         profileButton.setVisibility(View.VISIBLE);
         addFlagButton.setVisibility(View.VISIBLE);
+        showAllButton.setVisibility(View.VISIBLE);
     }
 
 
@@ -358,22 +377,20 @@ public class MapsActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        boolean closedSomething = false;
-        if (flagPopUpWindow != null) {
-            if (flagPopUpWindow.isShowing()) {
-                flagPopUpWindow.dismiss();
-                closedSomething = true;
-            }
+        if(flagPopUpWindow.isShowing())
+        {
+            flagPopUpWindow.dismiss();
         }
-        if (closeByFlagsPopUpWindow != null) {
-            if (closeByFlagsPopUpWindow.isShowing()) {
+        else
+        {
+            if(closeByFlagsPopUpWindow.isShowing()) {
                 closeByFlagsPopUpWindow.dismiss();
                 hideWhitescreen();
-                closedSomething = true;
             }
+            else
+                finishActivity(0);
+                super.onBackPressed();
         }
-        if (!closedSomething) super.onBackPressed();
-
 
     }
 
@@ -1145,6 +1162,11 @@ public class MapsActivity extends AppCompatActivity {
         text.setText(f.getText());
         TextView ratingTv = (TextView) popupView.findViewById(R.id.ratingTextView);
         ratingTv.setText(String.valueOf(f.getVoteRateAbsolut()));
+        ImageView smallPopup = (ImageView) popupView.findViewById(R.id.imageView);
+        float s=(float)69.0;
+        float v= (float) 97.0;
+        float[]hsv={f.getCategory().hue, s, v};
+        smallPopup.setBackgroundColor(Color.HSVToColor(hsv));
         final Button followUserButton = (Button) popupView.findViewById(R.id.followUserFromFlag);
 
         Button upVoteButton = (Button) popupView.findViewById(R.id.upVoteButton);

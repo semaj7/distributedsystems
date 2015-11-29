@@ -18,21 +18,14 @@
         <TextView android:text="@string/ratingTextPlaceHolder"
             android:id="@+id/ratingTextView"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal" />
 
         <TextView android:text="@string/settedFlagsCountTextPlaceHolder"
             android:id="@+id/settedFlagsCountTextView"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <Button
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/followUser"
-            android:onClick="followUserClick"
-            android:padding="5dp"
-            android:layout_marginTop="20dp"
-            android:paddingRight="10dp"/>
+            android:layout_gravity="center_horizontal"/>
 
         <Button
             android:layout_width="wrap_content"
@@ -40,8 +33,10 @@
             android:text="@string/log_out"
             android:onClick="logOut"
             android:padding="5dp"
-            android:layout_marginTop="20dp"
-            android:paddingRight="10dp"/>
+            android:layout_marginTop="10dp"
+            android:background="@drawable/roundbutton"
+            android:backgroundTint="@color/common_action_bar_splitter"
+            android:layout_gravity="center_horizontal" />
 
     </LinearLayout>
 
