@@ -5,6 +5,7 @@ import android.content.ClipData;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.location.Location;
@@ -134,27 +135,29 @@ public class MapsActivity extends AppCompatActivity {
         toolbar = getSupportActionBar();
         toolbar.setTitle(R.string.app_name);
         toolbar.setDisplayShowHomeEnabled(true);
-        toolbar.setLogo(R.drawable.logo);
-        toolbar.setDisplayUseLogoEnabled(true);
-
-
+        //toolbar.setLogo(R.drawable.logo);
+        //toolbar.setDisplayUseLogoEnabled(true);
         // initialize Navigation Drawer
         slideMenuStrings = Data.slideMenuStrings;
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
         mDrawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, slideMenuStrings));
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.drawable.ic_setting_dark,R.string.drawer_open, R.string.drawer_close){
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.drawable.ic_setting_dark, R.string.drawer_open, R.string.drawer_close){
            public void onDrawerClosed(View view){
                super.onDrawerClosed(view);
-               getActionBar().setTitle("Bla");
+                toolbar.setTitle(R.string.app_name);
            }
 
             public void onDrawerOpened(View drawerView){
                 super.onDrawerOpened(drawerView);
-                getActionBar().setTitle("Drawer");
+                toolbar.setTitle("Options");
             }
         };
+        // Set the drawer toggle as the DrawerListener
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+        toolbar.setDisplayHomeAsUpEnabled(true);
+        toolbar.setHomeButtonEnabled(true);
         //check if invoked with extras (from closeFlagActivity: value 1)
         Bundle b = getIntent().getExtras();
         if (b != null) {
@@ -178,6 +181,20 @@ public class MapsActivity extends AppCompatActivity {
             }
         }
     }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        mDrawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
 
     private class MapLongClickListenerRefresh implements GoogleMap.OnMapLongClickListener {
         // this is pretty stupid... but sadly the only way i found to do it for now
@@ -409,6 +426,12 @@ public class MapsActivity extends AppCompatActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+        // Pass the event to ActionBarDrawerToggle, if it returns
+        // true, then it has handled the app icon touch event
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        // Handle your other action bar items...
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
@@ -1156,6 +1179,7 @@ public class MapsActivity extends AppCompatActivity {
     private void popUpFlag(final Flag f) {
         //todo: only show follow button if user does not already follow that user, or at least tell him he already follows that user, if we always show it.
         //inflate the popup layout we just created, make sure the name is correct
+        if(f.isInRange()){
         View popupView = getLayoutInflater().inflate(R.layout.flag_popup, null);
         //init controls
         TextView text = (TextView) popupView.findViewById(R.id.flagText);
@@ -1163,14 +1187,16 @@ public class MapsActivity extends AppCompatActivity {
         TextView ratingTv = (TextView) popupView.findViewById(R.id.ratingTextView);
         ratingTv.setText(String.valueOf(f.getVoteRateAbsolut()));
         ImageView smallPopup = (ImageView) popupView.findViewById(R.id.imageView);
-        float s=(float)69.0;
-        float v= (float) 97.0;
-        float[]hsv={f.getCategory().hue, s, v};
+        float s=(float)0.69;
+        float v= (float) 0.97;
+        float h= f.getCategory().hue;
+        float hsv[];
+        hsv=new float[]{h, s, v};
         smallPopup.setBackgroundColor(Color.HSVToColor(hsv));
-        final Button followUserButton = (Button) popupView.findViewById(R.id.followUserFromFlag);
+        final ImageButton followUserButton = (ImageButton) popupView.findViewById(R.id.followUserFromFlag);
 
-        Button upVoteButton = (Button) popupView.findViewById(R.id.upVoteButton);
-        Button downVoteButton = (Button) popupView.findViewById(R.id.downVoteButton);
+        ImageButton upVoteButton = (ImageButton) popupView.findViewById(R.id.upVoteButton);
+        ImageButton downVoteButton = (ImageButton) popupView.findViewById(R.id.downVoteButton);
         //straightforward, now handle the onclick listeners for all buttons
         upVoteButton.setOnClickListener(new View.OnClickListener(){
 
@@ -1227,6 +1253,15 @@ public class MapsActivity extends AppCompatActivity {
         //we inflated is fine
         flagPopUpWindow.setAnimationStyle(R.style.animation);
         flagPopUpWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
+        }
+        else{
+            View popupView = getLayoutInflater().inflate(R.layout.not_in_range_popup, null);
+            flagPopUpWindow = new PopupWindow(popupView, WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+            //this method shows the popup, the first param is just an anchor, passing in the view
+            //we inflated is fine
+            flagPopUpWindow.setAnimationStyle(R.style.animation);
+            flagPopUpWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
+        }
 
     }
 

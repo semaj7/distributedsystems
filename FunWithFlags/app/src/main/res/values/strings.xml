@@ -110,4 +110,8 @@
     <string name="show_close_flags">Show Close Flags</string>
     <string name="drawer_open">drawer open</string>
     <string name="drawer_close">drawer close</string>
+    <string name="fieldUsername">Written by: </string>
+    <string name="noRating">No Rating</string>
+    <string name="sorry">You can\'t read this flag. It isn\'t in your radius.\n You have to get closer to read it.</string>
+
 </resources>
