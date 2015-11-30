@@ -44,7 +44,13 @@ public class Server {
     //just downloads the flags and stores them in allFlags
     public static void getFlagsFromServer(final android.content.Context  context){
 
+        //TODO: get ALL flags! query is default limited to 100 objects.
+        //set the limit to 1000 and with skip download all
+        //for example do a while loop and always skip a 1000
+
         ParseQuery<ParseObject> flagQuery=new ParseQuery<ParseObject>("Flag");
+        flagQuery.setLimit(1000);
+        flagQuery.setSkip(0);
         flagQuery.findInBackground(new FindCallback<ParseObject>() {
             ArrayList<Flag> ret = new ArrayList<Flag>();
             @Override

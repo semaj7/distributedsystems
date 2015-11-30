@@ -53,7 +53,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.parse.FindCallback;
-import com.parse.GetCallback;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -394,21 +393,21 @@ public class MapsActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if(flagPopUpWindow.isShowing())
-        {
-            flagPopUpWindow.dismiss();
+        boolean closedSomething = false;
+        if (flagPopUpWindow != null) {
+            if (flagPopUpWindow.isShowing()) {
+                flagPopUpWindow.dismiss();
+                closedSomething = true;
+            }
         }
-        else
-        {
-            if(closeByFlagsPopUpWindow.isShowing()) {
+        if (closeByFlagsPopUpWindow != null) {
+            if (closeByFlagsPopUpWindow.isShowing()) {
                 closeByFlagsPopUpWindow.dismiss();
                 hideWhitescreen();
+                closedSomething = true;
             }
-            else
-                finishActivity(0);
-                super.onBackPressed();
         }
-
+        if (!closedSomething) super.onBackPressed();
     }
 
     @Override
@@ -423,7 +422,7 @@ public class MapsActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
+            // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         // Pass the event to ActionBarDrawerToggle, if it returns
@@ -1310,7 +1309,11 @@ public class MapsActivity extends AppCompatActivity {
 
     void getFlags(){
 
+        //TODO: merge this with the server class!
+       // Server.getFlagsFromServer(this);
+
         ParseQuery<ParseObject> flagQuery=new ParseQuery<ParseObject>("Flag");
+        flagQuery.setLimit(1000);
         flagQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> flags, com.parse.ParseException e) {
