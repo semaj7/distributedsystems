@@ -20,52 +20,73 @@
 
     <ImageView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="350dp"
         android:alpha="0.75"
         android:background="@color/background_floating_material_light"
-        android:layout_toEndOf="@+id/flagText"
-
-        android:layout_alignParentStart="true"
         android:id="@+id/imageView"
+        android:layout_centerVertical="true"
+        android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
-        android:layout_alignBottom="@+id/upVoteButton"
-        android:layout_centerHorizontal="true"
-        android:layout_alignTop="@+id/flagText" />
+        android:layout_alignStart="@+id/flagView"
+        android:layout_alignEnd="@+id/upVoteButton" />
 
-    <LinearLayout
-        android:id="@+id/TextHolder"
+
+    <ImageView
+        android:id="@+id/flagView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/followUserFromFlag"
-        android:layout_centerHorizontal="true"
-        android:orientation="horizontal" >
+        android:background="@drawable/ic_action_place"
+        android:layout_alignTop="@+id/imageView"
+        android:layout_centerHorizontal="true" />
 
-    </LinearLayout>
-
-
-
-    <ImageButton
-        android:id="@+id/followUserFromFlag"
+    <TextView android:text="@string/noTextFoundDefault"
+        android:id="@+id/flagText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_action_add_person"
-        android:padding="5dp"
-        android:paddingRight="10dp"
-        android:background="@drawable/roundbutton"
-        android:layout_above="@+id/FlagView"
-        android:layout_alignStart="@+id/addFavourite" />
+        android:textColor="#000000"
+        android:layout_below="@+id/flagView"
+        android:layout_centerHorizontal="true" />
 
     <ImageButton
         android:id="@+id/addFavourite"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_action_favorite"
-        android:padding="5dp"
-        android:paddingRight="10dp"
         android:background="@drawable/roundbutton"
-        android:layout_above="@+id/textViewUsername"
+        android:layout_marginTop="24dp"
+        android:layout_below="@+id/flagText"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="33dp" />
+        android:padding="5dp"
+        android:paddingRight="10dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/fieldUsername"
+        android:textColor="#000000"
+        android:id="@+id/textViewUsername"
+        android:layout_marginTop="30dp"
+        android:layout_below="@+id/addFavourite"
+        android:layout_centerHorizontal="true" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:text="@string/userName"
+        android:id="@+id/placeholderUsername"
+        android:textColor="#000000"
+        android:layout_below="@+id/textViewUsername"
+        android:layout_centerHorizontal="true" />
+
+    <ImageButton
+        android:id="@+id/followUserFromFlag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_action_add_person"
+        android:background="@drawable/roundbutton"
+        android:layout_below="@+id/placeholderUsername"
+        android:layout_centerHorizontal="true"
+        android:padding="5dp"
+        android:paddingRight="10dp"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -73,8 +94,9 @@
         android:text="@string/rating"
         android:textColor="#000000"
         android:id="@+id/textView"
-        android:layout_below="@+id/FlagView"
-        android:layout_toStartOf="@+id/FlagView" />
+        android:layout_marginTop="23dp"
+        android:layout_below="@+id/followUserFromFlag"
+        android:layout_centerHorizontal="true" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -82,28 +104,8 @@
         android:id="@+id/ratingTextView"
         android:text="@string/noRating"
         android:textColor="#000000"
-        android:layout_below="@+id/FlagView"
-        android:layout_alignEnd="@+id/flagText" />
-
-    <ImageView
-        android:id="@+id/FlagView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/logo"
-        android:layout_centerVertical="true"
+        android:layout_below="@+id/textView"
         android:layout_centerHorizontal="true" />
-
-    <!--The button holder for our upvote and downvote buttons.
-    Horizontally stacking. Change it anyway you want-->
-    <LinearLayout
-        android:id="@+id/ButtonHolder"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/FlagView"
-        android:layout_centerHorizontal="true"
-        android:orientation="horizontal" >
-
-    </LinearLayout>
 
     <ImageButton
         android:layout_width="wrap_content"
@@ -113,8 +115,8 @@
         android:padding="5dp"
         android:paddingRight="10dp"
         android:background="@drawable/roundbutton"
-        android:layout_below="@+id/textView"
-        android:layout_toStartOf="@+id/FlagView" />
+        android:layout_below="@+id/ratingTextView"
+        android:layout_toStartOf="@+id/textView" />
 
     <ImageButton
         android:layout_width="wrap_content"
@@ -124,34 +126,8 @@
         android:padding="5dp"
         android:paddingRight="10dp"
         android:background="@drawable/roundbutton"
-        android:layout_alignTop="@+id/upVoteButton"
-        android:layout_toEndOf="@+id/FlagView" />
-
-    <TextView android:text="@string/noTextFoundDefault"
-        android:id="@+id/flagText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="#000000"
-        android:layout_above="@+id/addFavourite"
-        android:layout_centerHorizontal="true" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/fieldUsername"
-        android:textColor="#000000"
-        android:id="@+id/textViewUsername"
-        android:layout_above="@+id/placeholderUsername"
-        android:layout_toStartOf="@+id/TextHolder" />
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/placeholderUsername"
-        android:textColor="#000000"
-        android:layout_above="@+id/followUserFromFlag"
-        android:layout_toEndOf="@+id/downVoteButton"
-        android:layout_alignTop="@+id/followUserFromFlag" />
-
+        android:layout_below="@+id/ratingTextView"
+        android:layout_toEndOf="@+id/textView" />
 
 </RelativeLayout>
 

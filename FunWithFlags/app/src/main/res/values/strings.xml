@@ -13,7 +13,7 @@
     <string name="ratingTextPlaceHolder">No ratings found.</string>
     <string name="settedFlagsCountTextPlaceHolder">This user has not yet set any flags.</string>
     <string name="ratingText">Your current rating is @rating. Good job!</string>
-    <string name="rating">Rating:\t</string>
+    <string name="rating">Rating:</string>
     <string name="settedFlagsText">You have already set @count flags! That\'s fun!</string>
     <string name="followedUser">You are now following @name. What a stalker!</string>
     <string name="SportsName">Sports</string>

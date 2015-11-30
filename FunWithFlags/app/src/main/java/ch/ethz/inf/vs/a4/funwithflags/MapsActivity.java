@@ -56,7 +56,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.parse.FindCallback;
-import com.parse.GetCallback;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -80,6 +79,7 @@ public class MapsActivity extends AppCompatActivity {
 
     public static final float NON_CAMERA_MOVEMENT_TIMEOUT = 2.5f;
     public static final int TOP_RANKED_FLAGS_AMOUNT = 4;//TODO: discuss this number together, also should the top ranked flag's content always be visible? this could give some insight on what a good flag should contain, also it is quite unlickely that someone would travel the world for some random good ranked flags, just to see their content..
+    public static final int MAX_NUMBER_OF_FAVOURITES = 4; // a low value makes testing easier :)
     private static final int FAVOURITE_DIALOG = 0;
     private static final int RANKING_DIALOG = 1;
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
@@ -394,21 +394,21 @@ public class MapsActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if(flagPopUpWindow.isShowing())
-        {
-            flagPopUpWindow.dismiss();
+        boolean closedSomething = false;
+        if (flagPopUpWindow != null) {
+            if (flagPopUpWindow.isShowing()) {
+                flagPopUpWindow.dismiss();
+                closedSomething = true;
+            }
         }
-        else
-        {
-            if(closeByFlagsPopUpWindow.isShowing()) {
+        if (closeByFlagsPopUpWindow != null) {
+            if (closeByFlagsPopUpWindow.isShowing()) {
                 closeByFlagsPopUpWindow.dismiss();
                 hideWhitescreen();
+                closedSomething = true;
             }
-            else
-                finishActivity(0);
-                super.onBackPressed();
         }
-
+        if (!closedSomething) super.onBackPressed();
     }
 
     @Override
@@ -423,7 +423,7 @@ public class MapsActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
+            // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         // Pass the event to ActionBarDrawerToggle, if it returns
@@ -1076,7 +1076,7 @@ public class MapsActivity extends AppCompatActivity {
                     Flag f = new Flag(null,getCurrentLoggedInUserName(), inputText, currentPosition, cat[0], new Timestamp(System.currentTimeMillis()), getApplicationContext());
                     //TODO: get the flags ID somewhere
                     // f.setID(ID);
-                    submitFlag(f);
+                    Server.submitFlag(f);
 
 
                     f.isOwner = true;
@@ -1194,14 +1194,17 @@ public class MapsActivity extends AppCompatActivity {
         //todo: only show follow button if user does not already follow that user, or at least tell him he already follows that user, if we always show it.
         //inflate the popup layout we just created, make sure the name is correct
         if(f.isInRange()){
+
             View popupView = getLayoutInflater().inflate(R.layout.flag_popup, null);
             //init controls
             TextView text = (TextView) popupView.findViewById(R.id.flagText);
             text.setText(f.getText());
             TextView ratingTv = (TextView) popupView.findViewById(R.id.ratingTextView);
             ratingTv.setText(String.valueOf(f.getVoteRateAbsolut()));
+            TextView username = (TextView) popupView.findViewById(R.id.placeholderUsername);
+            username.setText(f.getUserName());
             ImageView smallPopup = (ImageView) popupView.findViewById(R.id.imageView);
-            float s=(float)0.69;
+            float s=(float)0.5;
             float v= (float) 0.97;
             float h= f.getCategory().hue;
             float hsv[];
@@ -1418,6 +1421,54 @@ public class MapsActivity extends AppCompatActivity {
 
     }
 
+
+
+    void getFlags(){
+
+        //TODO: merge this with the server class!
+       // Server.getFlagsFromServer(this);
+
+        ParseQuery<ParseObject> flagQuery=new ParseQuery<ParseObject>("Flag");
+        flagQuery.setLimit(1000);
+        flagQuery.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> flags, com.parse.ParseException e) {
+                if (e == null) {
+                    ArrayList<Flag> ret = new ArrayList<Flag>();
+                    String ID;
+                    String userName;
+                    String text;
+                    LatLng latLng;
+                    Category category;
+                    Date date;
+                    ParseGeoPoint geoPoint;
+                            for (int i = 0; i < flags.size(); i++) {
+                                /*
+                                from the report:
+                                Flags(flagId:Int, userName:String, content:String, latitude:Int,
+                                longitude:Int, categoryName:String, date:Date)
+                                */
+                                ID = (String) flags.get(i).getObjectId();
+                                userName = (String) flags.get(i).get("userName");
+                                text = (String) flags.get(i).get("content");
+                                geoPoint = (ParseGeoPoint) flags.get(i).get("geoPoint");
+                                latLng = new LatLng(geoPoint.getLatitude(), geoPoint.getLongitude());
+                                category = Category.getByName((String) flags.get(i).get("categoryName"));
+                                date = (Date) flags.get(i).get("date");
+
+                                ret.add(new Flag(ID, userName, text, latLng, category, date, getApplicationContext()));
+                            }
+
+                            dataSetChanged(ret);
+
+                        }
+
+                        setUpMap();
+                    }
+
+                });
+            }
+
     private void addToData(Flag f) {
 
         Data.allFlags.add(f);
@@ -1459,58 +1510,7 @@ public class MapsActivity extends AppCompatActivity {
         Data.closeFlags = new ArrayList<Flag>(closeFlags);
     }
 
-    //PASCAL: ke ahnig wo dir dää code weit, aber i tues iz mau da ine.
-    //ANDRES: jo do isch es denkt :)
-    void getFlags(){
 
-        //TODO: please add all the retrieved Flags into Data.allFlags()
-
-        ParseQuery<ParseObject> flagQuery=new ParseQuery<ParseObject>("Flag");
-        flagQuery.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> flags, com.parse.ParseException e) {
-                if (e == null) {
-                    ArrayList<Flag> ret = new ArrayList<Flag>();
-                    String ID;
-                    String userName;
-                    String text;
-                    LatLng latLng;
-                    Category category;
-                    Date date;
-
-                    ParseGeoPoint geoPoint;
-
-                    for (int i = 0; i < flags.size(); i++) {
-                            /*
-                            from the report:
-                            Flags(flagId:Int, userName:String, content:String, latitude:Int,
-                            longitude:Int, categoryName:String, date:Date)
-                            */
-                        ID = (String) flags.get(i).getObjectId();
-                        userName = (String) flags.get(i).get("userName");
-                        text = (String) flags.get(i).get("content");
-                        geoPoint = (ParseGeoPoint) flags.get(i).get("geoPoint");
-                        latLng = new LatLng(geoPoint.getLatitude(), geoPoint.getLongitude());
-                        category = Category.getByName((String) flags.get(i).get("categoryName"));
-                        date = (Date) flags.get(i).get("date");
-
-                        ret.add(new Flag(ID, userName, text, latLng, category, date, getApplicationContext()));
-                    }
-
-                    dataSetChanged(ret);
-
-                }
-
-                setUpMap();
-            }
-
-        });
-        // commented out next line in order to run the code
-
-        //ParseQuery
-
-
-    }
 
     public void dataSetChanged(List<Flag> flags) {
         Data.setAllFlags(flags);
@@ -1518,56 +1518,27 @@ public class MapsActivity extends AppCompatActivity {
         updateMyFlagsFromAll();
     }
 
-    void submitFlag(Flag f){
-
-        /*
-        From the Report:
-
-        Flags(flagId:Int, userName:String, content:String, latitude:Int,
-                longitude:Int, categoryName:String, date:Date)
-        */
-
-        final ParseObject parseFlag = new ParseObject("Flag");
 
 
-        //parseFlag.put("flagId",f. TODO);
-        parseFlag.put("userName",f.getUserName());
-        parseFlag.put("content",f.getText());
-        parseFlag.put("geoPoint",new ParseGeoPoint(f.getLatLng().latitude, f.getLatLng().longitude));
-        parseFlag.put("categoryName",f.getCategory().name);
-        parseFlag.put("date", f.getDate());
-        parseFlag.saveInBackground();
-
-        //TODO: when this saveInBackground completed, execute:
-        //getFlags();
-
-    }
-
-    void deleteFlagFromServer(Flag f){
-        //don't forget to remove all the local references to this flag, by e.g. calling deleteFlag
-        ParseQuery<ParseObject> flagQuery=new ParseQuery<ParseObject>("Flag");
-        flagQuery.getInBackground(f.getID(), new GetCallback<ParseObject>() {
-            @Override
-            public void done(ParseObject object, com.parse.ParseException e) {
-                try {
-                    object.delete();
-                } catch (com.parse.ParseException e1) {
-                    e1.printStackTrace();
-                }
-            }
-        });
 
 
-    }
 
     void deleteFlag(Flag f){
-        // TODO: 17.11.15
-        //this is overdue!!!!!!!!!!!!!!!!!!!!
-
-        Data.flagMarkerHashMap.remove(f);
-
-
+        //is user authorized?
+        if(f.getUserName().equals(getCurrentLoggedInUserName())) {
+            //delete locally TODO: hope i have not forgotten some place where the flag is stored
+            Data.flagMarkerHashMap.remove(f);
+            Data.allFlags.remove(f);
+            Data.closeFlags.remove(f);
+            Data.myFlags.remove(f);
+            //if already uploaded: delete also from server
+            if (f.getID() != null) {
+                Server.deleteFlagFromServer(f);
+            }
+        }
     }
+
+
 
 
 }
