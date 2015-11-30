@@ -220,7 +220,8 @@ public class MapsActivity extends AppCompatActivity {
         toolbar.hide();
         profileButton.setVisibility(View.INVISIBLE);
         addFlagButton.setVisibility(View.INVISIBLE);
-        showAllButton.setVisibility(View.INVISIBLE);
+        if(Data.filteringEnabled.size() >= 1)
+            showAllButton.setVisibility(View.INVISIBLE);
     }
 
     private void hideWhitescreen(){
@@ -228,7 +229,8 @@ public class MapsActivity extends AppCompatActivity {
         toolbar.show();
         profileButton.setVisibility(View.VISIBLE);
         addFlagButton.setVisibility(View.VISIBLE);
-        showAllButton.setVisibility(View.VISIBLE);
+        if(Data.filteringEnabled.size() >= 1)
+            showAllButton.setVisibility(View.VISIBLE);
     }
 
 
@@ -472,10 +474,18 @@ public class MapsActivity extends AppCompatActivity {
                         // get flags close to marker that got clicked
                         LatLng markerPos = marker.getPosition();
                         List<Flag> flagsAtApproxPosition = filterFlagsByApproximatePositions(Data.allFlags, markerPos);
-                        chooseFlagTextDialog(flagsAtApproxPosition);
-
+                        if (flagsAtApproxPosition.get(0).isInRange())
+                            chooseFlagTextDialog(flagsAtApproxPosition);
+                        else {
+                            View popupView = getLayoutInflater().inflate(R.layout.not_in_range_popup, null);
+                            flagPopUpWindow = new PopupWindow(popupView, WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+                            //this method shows the popup, the first param is just an anchor, passing in the view
+                            //we inflated is fine
+                            flagPopUpWindow.setAnimationStyle(R.style.animation);
+                            flagPopUpWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
+                        }
                         //this is used to show the text on top of the marker
-                      //  marker.showInfoWindow();
+                        //  marker.showInfoWindow();
                         return true;
                     }
                 });
