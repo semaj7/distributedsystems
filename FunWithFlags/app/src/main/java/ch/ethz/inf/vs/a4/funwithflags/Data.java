@@ -73,7 +73,7 @@ public final class Data {
         if(cameraPosition == null)
             cameraPosition = new LatLng(0.0, 0.0);
         if(!(camLatGrid == (int) (toTest.latitude) / 2) && (camLongGrid == (int) (toTest.longitude) /2)) {
-            System.out.println("debug; camera grid change. last grid ["+ camLatGrid +"]["+ camLongGrid +"]. tested grid: ["+ ((int) (toTest.latitude) / 2) +"]["+ ((int) (toTest.longitude) / 2) +"]");
+            System.out.println("debug; camera grid change. last grid [" + camLatGrid + "][" + camLongGrid + "]. tested grid: [" + ((int) (toTest.latitude) / 2) + "][" + ((int) (toTest.longitude) / 2) + "]");
             return false;
         }
         System.out.println("debug; still in same sector");
@@ -213,5 +213,22 @@ public final class Data {
             }
         }
         return null;
+    }
+
+    public static boolean deleteIthFavourite(int favouriteNRtoDelete) {
+        if (favouriteNRtoDelete >= 0 && favouriteNRtoDelete < MapsActivity.MAX_NUMBER_OF_FAVOURITES) {
+            favouriteFlags[favouriteNRtoDelete] = null;
+            return true;
+        }
+        return false;
+    }
+
+    public static void deleteFavouriteFlag(Flag f) {
+        for(int i = 0 ; i < MapsActivity.MAX_NUMBER_OF_FAVOURITES; i ++)
+            if(favouriteFlags[i].equals(f)) {
+                deleteIthFavourite(i);
+                return;
+            }
+
     }
 }

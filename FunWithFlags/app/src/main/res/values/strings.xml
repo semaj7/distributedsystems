@@ -113,5 +113,14 @@
     <string name="fieldUsername">Written by: </string>
     <string name="noRating">No Rating</string>
     <string name="sorry">You can\'t read this flag. It isn\'t in your radius.\n You have to get closer to read it.</string>
+    <string name="Delete">Delete</string>
+    <string name="noFavourtieSelectedToDeleteYet">Select a flag first</string>
+    <string name="deleteFavouriteDialogTitle">Too many favourites!</string>
+    <string name="deleteFavouriteDialogMessage">Before adding a new favourite, choose one of your old ones to delete</string>
+    <string name="newFavouriteSuccessToast">This flag was successfully added to your favourites</string>
+    <string name="newFollowSuccessToast">you are now following @</string>
+    <string name="upVoteSuccessToast">you have successfully upvoted this flag</string>
+    <string name="downVoteSuccessToast">you have successfully downvoted this flag</string>
+    <string name="unFavouriteSuccessToast">this flag no longer is in your favourite\'s list</string>
 
 </resources>

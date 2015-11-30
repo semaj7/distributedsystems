@@ -8,10 +8,12 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.provider.ContactsContract;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -29,6 +31,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -76,7 +79,6 @@ public class MapsActivity extends AppCompatActivity {
     public static final double MAX_FLAG_OVERLAPPING_KM = 0.005; // in kilometers, so its 5 meters
 
     public static final float NON_CAMERA_MOVEMENT_TIMEOUT = 2.5f;
-    public static final int MAX_NUMBER_OF_FAVOURITES = 20;
     public static final int TOP_RANKED_FLAGS_AMOUNT = 4;//TODO: discuss this number together, also should the top ranked flag's content always be visible? this could give some insight on what a good flag should contain, also it is quite unlickely that someone would travel the world for some random good ranked flags, just to see their content..
     private static final int FAVOURITE_DIALOG = 0;
     private static final int RANKING_DIALOG = 1;
@@ -100,6 +102,7 @@ public class MapsActivity extends AppCompatActivity {
 
     //initialize this with a flag if you want to animate to a flag after setting up the map, otherwise null
     private Flag goToFlag;
+    private int favouriteNRtoDelete;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,6 +140,7 @@ public class MapsActivity extends AppCompatActivity {
         toolbar.setDisplayShowHomeEnabled(true);
         //toolbar.setLogo(R.drawable.logo);
         //toolbar.setDisplayUseLogoEnabled(true);
+
         // initialize Navigation Drawer
         slideMenuStrings = Data.slideMenuStrings;
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -158,28 +162,22 @@ public class MapsActivity extends AppCompatActivity {
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         toolbar.setDisplayHomeAsUpEnabled(true);
         toolbar.setHomeButtonEnabled(true);
-        //check if invoked with extras (from closeFlagActivity: value 1)
-        Bundle b = getIntent().getExtras();
-        if (b != null) {
-            int value = b.getInt("otherActivity");
-            switch (value) {
-                case 1:
-                    //closeFlagActivity
-                    if (Data.showMeThisCloseFlagPleaseInOtherActivity.size() > 0) {
-                        Flag showFlag = Data.showMeThisCloseFlagPleaseInOtherActivity.get(0);
-                        Data.showMeThisCloseFlagPleaseInOtherActivity.removeAll(Data.showMeThisCloseFlagPleaseInOtherActivity);
-                        goToFlag = showFlag;
 
-                    }
-                    else {
-                        //something went wrong
-                    }
-                    break;
-                default:
-                    //do nothing
-                    break;
-            }
+        // get Server Data
+        if(isLoggedIn()) {
+            getFavouritesFromServer();
+            getTopFlagsFromServer();
         }
+    }
+
+    private void getTopFlagsFromServer() {
+        // todo: implement this
+        // Data.topRankedFlags = someParseMagicGivesMeTopFlags();
+    }
+
+    private void getFavouritesFromServer() {
+        // todo: implement this
+        //Data.favouriteFlags = someParseMagicGivesMeFavsOf(Data.user.getUsername());
     }
 
     @Override
@@ -474,16 +472,8 @@ public class MapsActivity extends AppCompatActivity {
                         // get flags close to marker that got clicked
                         LatLng markerPos = marker.getPosition();
                         List<Flag> flagsAtApproxPosition = filterFlagsByApproximatePositions(Data.allFlags, markerPos);
-                        if (flagsAtApproxPosition.get(0).isInRange())
-                            chooseFlagTextDialog(flagsAtApproxPosition);
-                        else {
-                            View popupView = getLayoutInflater().inflate(R.layout.not_in_range_popup, null);
-                            flagPopUpWindow = new PopupWindow(popupView, WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
-                            //this method shows the popup, the first param is just an anchor, passing in the view
-                            //we inflated is fine
-                            flagPopUpWindow.setAnimationStyle(R.style.animation);
-                            flagPopUpWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
-                        }
+                        chooseFlagTextDialog(flagsAtApproxPosition);
+
                         //this is used to show the text on top of the marker
                         //  marker.showInfoWindow();
                         return true;
@@ -612,35 +602,49 @@ public class MapsActivity extends AppCompatActivity {
 
     private void chooseFlagTextDialog(final List<Flag> closeByFlags) {
 
-        //only do this if we have actually more than 1 flag to select from
-        if (closeByFlags.size() > 1){
-            // Set up the array to display the flag texts
-            final String[] flagEntries = new String[closeByFlags.size()];
-            for (int i = 0; i < closeByFlags.size(); i++) {
-                flagEntries[i] = closeByFlags.get(i).getText();
-            }
+        if(closeByFlags.get(0).isInRange()) {
 
-            //build and show dialog
-            AlertDialog.Builder alert = new AlertDialog.Builder(this);
-            alert.setTitle(R.string.closeByFlagsDialogTitle);
-
-            //alert.setMessage(R.string.closeByFlagsDialogMessage);
-            alert.setItems(flagEntries, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int whichEntry) {
-                    System.out.println("DEBUG: markerListener, onClick: clicked entry nr: " + whichEntry);
-                    // todo: do what ever we want to do with the clicked "flag"(text)
-                    goToMarker(closeByFlags.get(whichEntry));
-                    popUpFlag(closeByFlags.get(whichEntry));
-                    dialog.dismiss();
+            //only do this if we have actually more than 1 flag to select from
+            if (closeByFlags.size() > 1) {
+                // Set up the array to display the flag texts
+                final String[] flagEntries = new String[closeByFlags.size()];
+                for (int i = 0; i < closeByFlags.size(); i++) {
+                    flagEntries[i] = closeByFlags.get(i).getText();
                 }
-            });
-            alert.show();
-        }
-        else if (closeByFlags.size() == 1) {
+
+                //build and show dialog
+                AlertDialog.Builder alert = new AlertDialog.Builder(this);
+                alert.setTitle(R.string.closeByFlagsDialogTitle);
+
+                //alert.setMessage(R.string.closeByFlagsDialogMessage);
+                alert.setItems(flagEntries, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int whichEntry) {
+                        System.out.println("DEBUG: markerListener, onClick: clicked entry nr: " + whichEntry);
+                        // todo: do what ever we want to do with the clicked "flag"(text)
+                        goToMarker(closeByFlags.get(whichEntry));
+                        popUpFlag(closeByFlags.get(whichEntry));
+                        dialog.dismiss();
+                    }
+                });
+                alert.show();
+            } else if (closeByFlags.size() == 1) {
+                goToMarker(closeByFlags.get(0));
+                popUpFlag(closeByFlags.get(0));
+            }
+        } else {
             goToMarker(closeByFlags.get(0));
-            popUpFlag(closeByFlags.get(0));
+            notInRangePopUp();
         }
+    }
+
+    public void notInRangePopUp(){
+        View popupView = getLayoutInflater().inflate(R.layout.not_in_range_popup, null);
+        flagPopUpWindow = new PopupWindow(popupView, WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+        //this method shows the popup, the first param is just an anchor, passing in the view
+        //we inflated is fine
+        flagPopUpWindow.setAnimationStyle(R.style.animation);
+        flagPopUpWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
     }
 
     private List<Flag> filterFlagsByUserName(List<Flag> flagsToFilter, String userName) {
@@ -1190,88 +1194,186 @@ public class MapsActivity extends AppCompatActivity {
         //todo: only show follow button if user does not already follow that user, or at least tell him he already follows that user, if we always show it.
         //inflate the popup layout we just created, make sure the name is correct
         if(f.isInRange()){
-        View popupView = getLayoutInflater().inflate(R.layout.flag_popup, null);
-        //init controls
-        TextView text = (TextView) popupView.findViewById(R.id.flagText);
-        text.setText(f.getText());
-        TextView ratingTv = (TextView) popupView.findViewById(R.id.ratingTextView);
-        ratingTv.setText(String.valueOf(f.getVoteRateAbsolut()));
-        ImageView smallPopup = (ImageView) popupView.findViewById(R.id.imageView);
-        float s=(float)0.69;
-        float v= (float) 0.97;
-        float h= f.getCategory().hue;
-        float hsv[];
-        hsv=new float[]{h, s, v};
-        smallPopup.setBackgroundColor(Color.HSVToColor(hsv));
-        final ImageButton followUserButton = (ImageButton) popupView.findViewById(R.id.followUserFromFlag);
+            View popupView = getLayoutInflater().inflate(R.layout.flag_popup, null);
+            //init controls
+            TextView text = (TextView) popupView.findViewById(R.id.flagText);
+            text.setText(f.getText());
+            TextView ratingTv = (TextView) popupView.findViewById(R.id.ratingTextView);
+            ratingTv.setText(String.valueOf(f.getVoteRateAbsolut()));
+            ImageView smallPopup = (ImageView) popupView.findViewById(R.id.imageView);
+            float s=(float)0.69;
+            float v= (float) 0.97;
+            float h= f.getCategory().hue;
+            float hsv[];
+            hsv=new float[]{h, s, v};
+            smallPopup.setBackgroundColor(Color.HSVToColor(hsv));
 
-        ImageButton upVoteButton = (ImageButton) popupView.findViewById(R.id.upVoteButton);
-        ImageButton downVoteButton = (ImageButton) popupView.findViewById(R.id.downVoteButton);
-        //straightforward, now handle the onclick listeners for all buttons
-        upVoteButton.setOnClickListener(new View.OnClickListener(){
-
-            @Override
-            public void onClick(View v) {
-                f.upVote();
-                System.out.println("debug, got upvoted, now is at: "+ f.getVoteRateAbsolut());
-                flagPopUpWindow.dismiss();
+            ImageButton favouriteFlagButton = (ImageButton) popupView.findViewById(R.id.addFavourite);
+            if(Data.containsFlag(f, Data.favouriteFlags)) {
+                // todo: julia: change to red favourite button here
+            } else {
+                // todo: julia: change to gray favourite button here
             }
-        });
-        downVoteButton.setOnClickListener(new View.OnClickListener() {
+            ImageButton followUserButton = (ImageButton) popupView.findViewById(R.id.followUserFromFlag);
+            ImageButton upVoteButton = (ImageButton) popupView.findViewById(R.id.upVoteButton);
+            ImageButton downVoteButton = (ImageButton) popupView.findViewById(R.id.downVoteButton);
+            //straightforward, now handle the onclick listeners for all buttons
+            final Resources res = getResources();
+            upVoteButton.setOnClickListener(new View.OnClickListener(){
 
-            @Override
-            public void onClick(View v) {
-                if(f.downVote()){
-                    // ratio too bad, delete this flag
-                    deleteFlag(f);
-                } else {
-                    System.out.println("debug, got downvoted, now is at: " + f.getVoteRateAbsolut());
+                @Override
+                public void onClick(View v) {
+                    f.upVote();
+                    System.out.println("debug, got upvoted, now is at: "+ f.getVoteRateAbsolut());
+                    Toast.makeText(getApplicationContext(), String.format(res.getString(R.string.upVoteSuccessToast)) , Toast.LENGTH_SHORT).show();
                 }
-                flagPopUpWindow.dismiss();
+            });
+            downVoteButton.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    if(f.downVote()){
+                        // ratio too bad, delete this flag
+                        deleteFlag(f);
+                    } else {
+                        System.out.println("debug, got downvoted, now is at: " + f.getVoteRateAbsolut());
+                    }
+                    Toast.makeText(getApplicationContext(), String.format(res.getString(R.string.downVoteSuccessToast)) , Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            followUserButton.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    followUser(f.getUserName());
+                    String toastMessage = String.format(res.getString(R.string.newFollowSuccessToast));
+                    toastMessage.replace("@", f.getUserName());
+                    Toast.makeText(getApplicationContext(), toastMessage, Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            favouriteFlagButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (Data.containsFlag(f, Data.favouriteFlags)) {
+                        // user wants to unfavourite the flag
+                        Data.deleteFavouriteFlag(f);
+                        // todo: julia: change back to gray favourite button here
+                        Toast.makeText(getApplicationContext(), String.format(res.getString(R.string.unFavouriteSuccessToast)), Toast.LENGTH_SHORT).show();
+                    } else {
+                        if (!Data.addFavourite(f)) {
+                            // Favourites was full, and f was not added, the user should delete one of his favourite flags first
+                            System.out.println("debug, fav was full should now show dialog");
+                            deleteFavouriteFlagDialogAndReplace(f);
+                            // todo: julia: change to red favourite button here
+                        } else
+                            Toast.makeText(getApplicationContext(), String.format(res.getString(R.string.newFavouriteSuccessToast)), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
+             //blur background
+            //TODO: fix this that also the google maps is blurred
+    /*
+          //  final View content = this.findViewById(android.R.id.content).getRootView();
+            final View content = this.findViewById(android.R.id.content).getRootView();
+            View v1 = getWindow().getDecorView().getRootView();
+
+
+            if (v1.getWidth() > 0) {
+                Bitmap image = BlurBuilder.blur(v1);
+                ImageView background = (ImageView) popupView.findViewById(R.id.backgroundPopUp);
+                background.setImageBitmap(image);
             }
-        });
-
-        followUserButton.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                followUser(f.getUserName());
-                flagPopUpWindow.dismiss();
-            }
-        });
-
-         //blur background
-        //TODO: fix this that also the google maps is blurred
-/*
-      //  final View content = this.findViewById(android.R.id.content).getRootView();
-        final View content = this.findViewById(android.R.id.content).getRootView();
-        View v1 = getWindow().getDecorView().getRootView();
 
 
-        if (v1.getWidth() > 0) {
-            Bitmap image = BlurBuilder.blur(v1);
-            ImageView background = (ImageView) popupView.findViewById(R.id.backgroundPopUp);
-            background.setImageBitmap(image);
-        }
+            */
 
 
-        */
-
-
-        flagPopUpWindow = new PopupWindow(popupView, WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
-        //this method shows the popup, the first param is just an anchor, passing in the view
-        //we inflated is fine
-        flagPopUpWindow.setAnimationStyle(R.style.animation);
-        flagPopUpWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
-        }
-        else{
-            View popupView = getLayoutInflater().inflate(R.layout.not_in_range_popup, null);
             flagPopUpWindow = new PopupWindow(popupView, WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
             //this method shows the popup, the first param is just an anchor, passing in the view
             //we inflated is fine
             flagPopUpWindow.setAnimationStyle(R.style.animation);
             flagPopUpWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
+        } else {
+            notInRangePopUp();
         }
+
+    }
+
+    private class ItemHighlighterListener implements AdapterView.OnItemClickListener {
+
+        private View oldSelection = null;
+
+        public void clearSelection() {
+            if(oldSelection != null) {
+                oldSelection.setBackgroundColor(getResources().getColor(R.color.default_color));
+            }
+        }
+
+        public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
+            clearSelection();
+            oldSelection = view;
+            view.setBackgroundColor(getResources().getColor(R.color.pressed_color));
+            favouriteNRtoDelete = pos;
+        }
+    }
+
+    private void deleteFavouriteFlagDialogAndReplace(final Flag flag) {
+
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle(R.string.deleteFavouriteDialogTitle);
+        alert.setMessage(R.string.deleteFavouriteDialogMessage);
+
+        String[] favouriteText = new String[MAX_NUMBER_OF_FAVOURITES];
+        for(int i = 0 ; i < MAX_NUMBER_OF_FAVOURITES; i ++){
+            if(Data.favouriteFlags[i] != null )
+                favouriteText[i] = Data.favouriteFlags[i].getText();
+            else // should theoretically never happen
+                favouriteText[i] = "";
+        }
+        favouriteNRtoDelete = -1;
+        final Resources res = getResources();
+
+        final ListView favs = new ListView(this);
+        final ArrayAdapter<String> adapter =new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, favouriteText);
+        favs.setAdapter(adapter);
+        favs.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+        favs.setBackground(getApplicationContext().getResources().getDrawable(R.drawable.bg_key));
+        favs.setOnItemClickListener(new ItemHighlighterListener());
+        alert.setView(favs);
+
+        alert.setPositiveButton(String.format(res.getString(R.string.Delete)), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (favouriteNRtoDelete == -1) {
+                    Toast.makeText(getApplicationContext(), String.format(res.getString(R.string.noFavourtieSelectedToDeleteYet)), Toast.LENGTH_SHORT).show();
+                } else {
+                    if (Data.deleteIthFavourite(favouriteNRtoDelete))
+                        if(Data.addFavourite(flag))
+                            dialog.dismiss();
+                        else{
+                            // something went wrong :/
+                            System.out.println("Debug, unable to add new favourite");
+                        }
+                    else {
+                        // something went wrong :/
+                        System.out.println("Debug, unable to delete favourite");
+                    }
+                }
+
+            }
+        });
+
+        alert.setNegativeButton(String.format(res.getString(R.string.Cancel)), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        alert.show();
 
     }
 

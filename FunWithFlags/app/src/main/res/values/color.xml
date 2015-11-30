@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- todo: add all the colors here -->
+
+
+    <color name="pressed_color">#11f1f1</color>
+    <color name="default_color">#ffffff</color>
+
+</resources>
