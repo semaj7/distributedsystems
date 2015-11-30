@@ -1062,7 +1062,7 @@ public class MapsActivity extends AppCompatActivity {
                     Flag f = new Flag(null,getCurrentLoggedInUserName(), inputText, currentPosition, cat[0], new Timestamp(System.currentTimeMillis()), getApplicationContext());
                     //TODO: get the flags ID somewhere
                     // f.setID(ID);
-                    submitFlag(f);
+                    Server.submitFlag(f);
 
 
                     f.isOwner = true;
@@ -1399,30 +1399,7 @@ public class MapsActivity extends AppCompatActivity {
         updateMyFlagsFromAll();
     }
 
-    void submitFlag(Flag f){
 
-        /*
-        From the Report:
-
-        Flags(flagId:Int, userName:String, content:String, latitude:Int,
-                longitude:Int, categoryName:String, date:Date)
-        */
-
-        final ParseObject parseFlag = new ParseObject("Flag");
-
-
-        //parseFlag.put("flagId",f. TODO);
-        parseFlag.put("userName",f.getUserName());
-        parseFlag.put("content",f.getText());
-        parseFlag.put("geoPoint",new ParseGeoPoint(f.getLatLng().latitude, f.getLatLng().longitude));
-        parseFlag.put("categoryName",f.getCategory().name);
-        parseFlag.put("date", f.getDate());
-        parseFlag.saveInBackground();
-
-        //TODO: when this saveInBackground completed, execute:
-        //getFlags();
-
-    }
 
 
 

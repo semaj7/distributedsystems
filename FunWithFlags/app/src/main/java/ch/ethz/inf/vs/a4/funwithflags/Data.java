@@ -51,8 +51,11 @@ public final class Data {
     //private static boolean[][] cameraGrid; // [latitude][longitude]
 
     // todo: get and put this information (fav, and top) from server, keep stuff consistent
-    public final static Flag[] favouriteFlags = new Flag[MapsActivity.MAX_NUMBER_OF_FAVOURITES];
-    public final static Flag[] topRankedFlags = new Flag[MapsActivity.TOP_RANKED_FLAGS_AMOUNT];
+    public static Flag[] favouriteFlags = new Flag[MapsActivity.MAX_NUMBER_OF_FAVOURITES];
+    public static Flag[] topRankedFlags = new Flag[MapsActivity.TOP_RANKED_FLAGS_AMOUNT];
+    public static List<Flag>favouriteFlagsList = new ArrayList<Flag>();
+    public static List<Flag>topRankedFlagsList = new ArrayList<Flag>();
+
 
     public static final void cameraPositionUpdate(LatLng newPosition){
 
