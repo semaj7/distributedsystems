@@ -1181,12 +1181,14 @@ public class MapsActivity extends AppCompatActivity {
         if(f.isInRange()){
         View popupView = getLayoutInflater().inflate(R.layout.flag_popup, null);
         //init controls
+        TextView username = (TextView) popupView.findViewById(R.id.placeholderUsername);
+        username.setText(f.getUserName());
         TextView text = (TextView) popupView.findViewById(R.id.flagText);
         text.setText(f.getText());
         TextView ratingTv = (TextView) popupView.findViewById(R.id.ratingTextView);
         ratingTv.setText(String.valueOf(f.getVoteRateAbsolut()));
         ImageView smallPopup = (ImageView) popupView.findViewById(R.id.imageView);
-        float s=(float)0.69;
+        float s=(float)0.5;
         float v= (float) 0.97;
         float h= f.getCategory().hue;
         float hsv[];
