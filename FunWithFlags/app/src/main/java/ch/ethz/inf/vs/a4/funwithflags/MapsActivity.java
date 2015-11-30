@@ -165,9 +165,35 @@ public class MapsActivity extends AppCompatActivity {
 
         // get Server Data
         if(isLoggedIn()) {
+            getFollowingUsersFromServer();
+            getUpvotesFromServer();
+            getDownvotesFromServer();
             getFavouritesFromServer();
             getTopFlagsFromServer();
+            calculateUserRating();
         }
+    }
+
+    public void calculateUserRating() {
+
+        for(Flag f : Data.myFlags){
+            Data.userRating += f.getVoteRateAbsolut();
+        }
+    }
+
+    private void getDownvotesFromServer() {
+        // todo: implement this
+        // Data.downvotedFlags = someParseMagicGivesMeDownvotedFlags();
+    }
+
+    private void getUpvotesFromServer() {
+        // todo: implement this
+        // Data.upvotedFlags = someParseMagicGivesMeUpvotedFlags();
+    }
+
+    private void getFollowingUsersFromServer() {
+        // todo: implement this
+        // Data.followingUsers = someParseMagicGivesMeFollowingUsernames();
     }
 
     private void getTopFlagsFromServer() {
@@ -848,7 +874,7 @@ public class MapsActivity extends AppCompatActivity {
                                         "#" + String.valueOf(i+1)+ "\n" +
                                         res.getString(R.string.userName) + ": " + f.getUserName() + "\n" +
                                         res.getString(R.string.time) + ": " + time + "\n" +
-                                        res.getString(R.string.upVoteRatio) + ": " + f.getVoteRate() + "\n" +
+                                        res.getString(R.string.upVoteRatio) + ": " + f.getVoteRateAbsolut() + "\n" +
                                         res.getString(R.string.category) + ": " + f.getCategory().name + "\n" ;
                         nonNullFlagData.add(Data.ithRanked(i));
                     }
@@ -1081,13 +1107,8 @@ public class MapsActivity extends AppCompatActivity {
 
                     f.isOwner = true;
                     addToData(f);
+                    Data.myFlags.add(f);
                     displayFlag(f);
-
-
-
-                    if(!Data.addFavourite(f)) // todo: this is just for testing, remove when adding to favourites is implemented
-                        Toast.makeText(getApplicationContext(), "could not add to favourites", Toast.LENGTH_SHORT).show();
-
                 }
             });
 
@@ -1174,10 +1195,8 @@ public class MapsActivity extends AppCompatActivity {
 
     public void switchToProfile(View v) {
 
-
-
         if(isLoggedIn()) {
-
+            calculateUserRating();
             Intent newIntent = new Intent(this, ProfileActivity.class);
             startActivity(newIntent);
         } else {
@@ -1199,7 +1218,7 @@ public class MapsActivity extends AppCompatActivity {
             //init controls
             TextView text = (TextView) popupView.findViewById(R.id.flagText);
             text.setText(f.getText());
-            TextView ratingTv = (TextView) popupView.findViewById(R.id.ratingTextView);
+            final TextView ratingTv = (TextView) popupView.findViewById(R.id.ratingTextView);
             ratingTv.setText(String.valueOf(f.getVoteRateAbsolut()));
             TextView username = (TextView) popupView.findViewById(R.id.placeholderUsername);
             username.setText(f.getUserName());
@@ -1217,7 +1236,12 @@ public class MapsActivity extends AppCompatActivity {
             } else {
                 // todo: julia: change to gray favourite button here
             }
-            ImageButton followUserButton = (ImageButton) popupView.findViewById(R.id.followUserFromFlag);
+            final ImageButton followUserButton = (ImageButton) popupView.findViewById(R.id.followUserFromFlag);
+            if(Data.followingUsers.contains(f.getUserName())){
+                // user already follows this user, so show unfollow icon
+                // todo: julia: do bruchts no es unfollow icon, anstatt s add flag
+                followUserButton.setImageDrawable(getApplicationContext().getResources().getDrawable(R.drawable.add_flag));
+            }
             ImageButton upVoteButton = (ImageButton) popupView.findViewById(R.id.upVoteButton);
             ImageButton downVoteButton = (ImageButton) popupView.findViewById(R.id.downVoteButton);
             //straightforward, now handle the onclick listeners for all buttons
@@ -1227,7 +1251,8 @@ public class MapsActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     f.upVote();
-                    System.out.println("debug, got upvoted, now is at: "+ f.getVoteRateAbsolut());
+                    System.out.println("debug, got upvoted, now is at: " + f.getVoteRateAbsolut());
+                    ratingTv.setText(String.valueOf(f.getVoteRateAbsolut()));
                     Toast.makeText(getApplicationContext(), String.format(res.getString(R.string.upVoteSuccessToast)) , Toast.LENGTH_SHORT).show();
                 }
             });
@@ -1235,13 +1260,16 @@ public class MapsActivity extends AppCompatActivity {
 
                 @Override
                 public void onClick(View v) {
-                    if(f.downVote()){
+                    if (f.downVote()) {
                         // ratio too bad, delete this flag
                         deleteFlag(f);
+                        flagPopUpWindow.dismiss();
+                        refresh();
                     } else {
                         System.out.println("debug, got downvoted, now is at: " + f.getVoteRateAbsolut());
                     }
-                    Toast.makeText(getApplicationContext(), String.format(res.getString(R.string.downVoteSuccessToast)) , Toast.LENGTH_SHORT).show();
+                    ratingTv.setText(String.valueOf(f.getVoteRateAbsolut()));
+                    Toast.makeText(getApplicationContext(), String.format(res.getString(R.string.downVoteSuccessToast)), Toast.LENGTH_SHORT).show();
                 }
             });
 
@@ -1249,10 +1277,23 @@ public class MapsActivity extends AppCompatActivity {
 
                 @Override
                 public void onClick(View v) {
-                    followUser(f.getUserName());
-                    String toastMessage = String.format(res.getString(R.string.newFollowSuccessToast));
-                    toastMessage.replace("@", f.getUserName());
-                    Toast.makeText(getApplicationContext(), toastMessage, Toast.LENGTH_SHORT).show();
+                    if(Data.followingUsers.contains(f.getUserName())){
+                        // unfollow
+                        // todo: sync this with server
+                        Data.followingUsers.remove(f.getUserName());
+                        followUserButton.setImageDrawable(getApplicationContext().getResources().getDrawable(R.drawable.ic_action_add_person));
+                        String toastMessage = String.format(res.getString(R.string.unFollowSuccessToast));
+                        toastMessage = toastMessage.replace("@", f.getUserName());
+                        Toast.makeText(getApplicationContext(), toastMessage, Toast.LENGTH_SHORT).show();
+                    } else {
+                        // follow
+                        Data.follow(f.getUserName());
+                        // todo: julia: do au ersetze met unfollow bitte :)
+                        followUserButton.setImageDrawable(getApplicationContext().getResources().getDrawable(R.drawable.add_flag));
+                        String toastMessage = String.format(res.getString(R.string.newFollowSuccessToast));
+                        toastMessage = toastMessage.replace("@", f.getUserName());
+                        Toast.makeText(getApplicationContext(), toastMessage, Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
 
@@ -1380,10 +1421,6 @@ public class MapsActivity extends AppCompatActivity {
 
     }
 
-    public void followUser(String userName){
-        //TODO: implement this
-    }
-
 
 
     /**
@@ -1470,7 +1507,6 @@ public class MapsActivity extends AppCompatActivity {
             }
 
     private void addToData(Flag f) {
-
         Data.allFlags.add(f);
         if (!Data.filteringEnabled.isEmpty()) {
             if (Data.filteringEnabled.contains(f.getCategory())) {
@@ -1492,7 +1528,11 @@ public class MapsActivity extends AppCompatActivity {
 
     public void updateMyFlagsFromAll() {
 
-      //TODO
+        Data.myFlags = new ArrayList<Flag>();
+        for(Flag f: Data.allFlags){
+            if(f.getUserName().equals(Data.user.getUsername()))
+                Data.myFlags.add(f);
+        }
     }
 
     public void updateCloseFlagsFromAll() {
@@ -1524,8 +1564,9 @@ public class MapsActivity extends AppCompatActivity {
 
 
     void deleteFlag(Flag f){
+        // edit: a flag might also get deleted from a downvote, even when it is not the current users flag. this should not be tested here
         //is user authorized?
-        if(f.getUserName().equals(getCurrentLoggedInUserName())) {
+        //if(f.getUserName().equals(getCurrentLoggedInUserName())) {
             //delete locally TODO: hope i have not forgotten some place where the flag is stored
             Data.flagMarkerHashMap.remove(f);
             Data.allFlags.remove(f);
@@ -1535,7 +1576,7 @@ public class MapsActivity extends AppCompatActivity {
             if (f.getID() != null) {
                 Server.deleteFlagFromServer(f);
             }
-        }
+        //}
     }
 
 

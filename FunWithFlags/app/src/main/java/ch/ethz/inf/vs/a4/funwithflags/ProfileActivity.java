@@ -68,9 +68,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     public void setRatingTextView() {
 
-        int rating = 0;
-
-        //TODO: set rating from server
+        int rating = Data.userRating;
 
         Resources res = getResources();
         String ratingText = String.format(res.getString(R.string.ratingText));
@@ -82,9 +80,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     public void setSettedFlagsTextView() {
 
-        int settedFlags = 0;
-
-        //TODO: setted flags from server
+        int settedFlags = Data.myFlags.size();
 
         Resources res = getResources();
         String setFText = String.format(res.getString(R.string.settedFlagsText));

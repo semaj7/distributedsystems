@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created by Andres on 13.11.15.
@@ -25,6 +26,14 @@ public final class Data {
 
     //these act as a combination of static boolean and only have 1 value or none in the list
     public final static List<Category> filteringEnabled = new ArrayList<Category>();
+
+    public static int userRating;
+
+    public final static List<Flag> downvotedFlags = new ArrayList<Flag>();
+
+    public final static List<Flag> upvotedFlags = new ArrayList<Flag>();
+
+    public final static List<String> followingUsers = new ArrayList<String>();
 
     public final static String[] slideMenuStrings = new String[]{"Search", "Favourites", "Filters","Ranking", "What's new","Settings"};
 
@@ -205,7 +214,17 @@ public final class Data {
 
     public static void setAllFlags(List<Flag> flags){
         allFlags.clear();
+        myFlags.clear();
         allFlags=new ArrayList<Flag>(flags);
+        myFlags=new ArrayList<Flag>(flags);
+        for(Flag flag: flags){
+            if((flag.getUserName().equals(user.getUsername())) && !myFlags.contains(flag)) {
+                myFlags.add(flag);
+                System.out.println("debug: adding "+flag.getUserName()+" to "+user.getUsername()+" s myflags list");
+            }
+            if(!allFlags.contains(flag))
+                allFlags.add(flag);
+        }
     }
 
     public static final Flag ithRanked(int i){
@@ -234,5 +253,28 @@ public final class Data {
                 return;
             }
 
+    }
+
+    public static void putUpvoted(Flag flag) {
+        if(downvotedFlags.contains(flag)) {
+            downvotedFlags.remove(flag);
+            // todo: delete users downvote on server
+        }
+        upvotedFlags.add(flag);
+        // todo: add users upvote to server
+    }
+
+    public static void putDownvoted(Flag flag){
+        if(upvotedFlags.contains(flag)) {
+            upvotedFlags.remove(flag);
+            // todo: delete users upvote on server
+        }
+        downvotedFlags.add(flag);
+        // todo: add users downvote to server
+    }
+
+    public final static void follow(String username){
+        // todo: also add this relation to the server
+        followingUsers.add(username);
     }
 }

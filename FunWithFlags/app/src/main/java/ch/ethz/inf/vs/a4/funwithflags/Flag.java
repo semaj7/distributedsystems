@@ -5,6 +5,7 @@ import android.location.Location;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.parse.ParseGeoPoint;
+import com.parse.ParseUser;
 
 import java.util.Date;
 
@@ -33,7 +34,7 @@ public class Flag {
   //  private static GPSTracker gpsTracker; //this is static so that all flags can use the same gpsTracker (otherwise overkill)
 
     public static String NOT_IN_RANGE_MESSAGE;
-    private static final float MINIMAL_UP_TO_DOWN_VOTE_RATIO = 0.4f; // todo: maybe find a better value for this
+    private static final int MINIMAL_UP_TO_DOWN_VOTE_RATIO = -5; // todo: maybe find a better value for this
 
     public Flag(String ID,String userName, String text, LatLng latLng, Category category, Date date, Context context){
 
@@ -52,21 +53,30 @@ public class Flag {
     }
 
     public void upVote(){
-        //TODO: implement parse logic here
-        upVotes++;
+        if(Data.downvotedFlags.contains(this))
+            downVotes --;
+        if(!Data.upvotedFlags.contains(this))
+            upVotes++;
+        Data.putUpvoted(this);
         Data.checkIfTopAndAdd(this);
     }
 
     // this function returns true if that downvote lead a the point where the ratio got too bad, and the flag should get deleted, this should be checked everytime the method is used
     public boolean downVote(){
-        downVotes++;
-        if (getVoteRate() <= MINIMAL_UP_TO_DOWN_VOTE_RATIO)
+        if(Data.upvotedFlags.contains(this))
+            upVotes--;
+        if(!Data.downvotedFlags.contains(this))
+            downVotes++;
+        if (getVoteRateAbsolut() <= MINIMAL_UP_TO_DOWN_VOTE_RATIO)
             return true;
+        Data.putDownvoted(this);
         return false;
     }
 
     public int getVoteRateAbsolut(){ return (upVotes - downVotes); }
-    public float getVoteRate(){ return (downVotes != 0 ) ? (upVotes / downVotes) : upVotes; }
+
+    //public float getVoteRate(){ return (downVotes != 0 ) ? (upVotes / downVotes) : upVotes; }
+
     public void setLatLng(LatLng latLng){
         this.latLng = latLng;
     }

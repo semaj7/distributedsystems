@@ -122,5 +122,6 @@
     <string name="upVoteSuccessToast">you have successfully upvoted this flag</string>
     <string name="downVoteSuccessToast">you have successfully downvoted this flag</string>
     <string name="unFavouriteSuccessToast">this flag no longer is in your favourite\'s list</string>
+    <string name="unFollowSuccessToast">you are no longer following @</string>
 
 </resources>
