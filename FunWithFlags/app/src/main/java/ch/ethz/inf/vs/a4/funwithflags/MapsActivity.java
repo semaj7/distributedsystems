@@ -1306,6 +1306,50 @@ public class MapsActivity extends AppCompatActivity {
 
     }
 
+
+
+    void getFlags(){
+
+        ParseQuery<ParseObject> flagQuery=new ParseQuery<ParseObject>("Flag");
+        flagQuery.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> flags, com.parse.ParseException e) {
+                if (e == null) {
+                    ArrayList<Flag> ret = new ArrayList<Flag>();
+                    String ID;
+                    String userName;
+                    String text;
+                    LatLng latLng;
+                    Category category;
+                    Date date;
+                    ParseGeoPoint geoPoint;
+                            for (int i = 0; i < flags.size(); i++) {
+                                /*
+                                from the report:
+                                Flags(flagId:Int, userName:String, content:String, latitude:Int,
+                                longitude:Int, categoryName:String, date:Date)
+                                */
+                                ID = (String) flags.get(i).getObjectId();
+                                userName = (String) flags.get(i).get("userName");
+                                text = (String) flags.get(i).get("content");
+                                geoPoint = (ParseGeoPoint) flags.get(i).get("geoPoint");
+                                latLng = new LatLng(geoPoint.getLatitude(), geoPoint.getLongitude());
+                                category = Category.getByName((String) flags.get(i).get("categoryName"));
+                                date = (Date) flags.get(i).get("date");
+
+                                ret.add(new Flag(ID, userName, text, latLng, category, date, getApplicationContext()));
+                            }
+
+                            dataSetChanged(ret);
+
+                        }
+
+                        setUpMap();
+                    }
+
+                });
+            }
+
     private void addToData(Flag f) {
 
         Data.allFlags.add(f);
@@ -1347,58 +1391,7 @@ public class MapsActivity extends AppCompatActivity {
         Data.closeFlags = new ArrayList<Flag>(closeFlags);
     }
 
-    //PASCAL: ke ahnig wo dir dää code weit, aber i tues iz mau da ine.
-    //ANDRES: jo do isch es denkt :)
-    void getFlags(){
 
-        //TODO: please add all the retrieved Flags into Data.allFlags()
-
-        ParseQuery<ParseObject> flagQuery=new ParseQuery<ParseObject>("Flag");
-        flagQuery.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> flags, com.parse.ParseException e) {
-                if (e == null) {
-                    ArrayList<Flag> ret = new ArrayList<Flag>();
-                    String ID;
-                    String userName;
-                    String text;
-                    LatLng latLng;
-                    Category category;
-                    Date date;
-
-                    ParseGeoPoint geoPoint;
-
-                    for (int i = 0; i < flags.size(); i++) {
-                            /*
-                            from the report:
-                            Flags(flagId:Int, userName:String, content:String, latitude:Int,
-                            longitude:Int, categoryName:String, date:Date)
-                            */
-                        ID = (String) flags.get(i).getObjectId();
-                        userName = (String) flags.get(i).get("userName");
-                        text = (String) flags.get(i).get("content");
-                        geoPoint = (ParseGeoPoint) flags.get(i).get("geoPoint");
-                        latLng = new LatLng(geoPoint.getLatitude(), geoPoint.getLongitude());
-                        category = Category.getByName((String) flags.get(i).get("categoryName"));
-                        date = (Date) flags.get(i).get("date");
-
-                        ret.add(new Flag(ID, userName, text, latLng, category, date, getApplicationContext()));
-                    }
-
-                    dataSetChanged(ret);
-
-                }
-
-                setUpMap();
-            }
-
-        });
-        // commented out next line in order to run the code
-
-        //ParseQuery
-
-
-    }
 
     public void dataSetChanged(List<Flag> flags) {
         Data.setAllFlags(flags);
@@ -1431,31 +1424,25 @@ public class MapsActivity extends AppCompatActivity {
 
     }
 
-    void deleteFlagFromServer(Flag f){
-        //don't forget to remove all the local references to this flag, by e.g. calling deleteFlag
-        ParseQuery<ParseObject> flagQuery=new ParseQuery<ParseObject>("Flag");
-        flagQuery.getInBackground(f.getID(), new GetCallback<ParseObject>() {
-            @Override
-            public void done(ParseObject object, com.parse.ParseException e) {
-                try {
-                    object.delete();
-                } catch (com.parse.ParseException e1) {
-                    e1.printStackTrace();
-                }
-            }
-        });
 
 
-    }
 
     void deleteFlag(Flag f){
-        // TODO: 17.11.15
-        //this is overdue!!!!!!!!!!!!!!!!!!!!
-
-        Data.flagMarkerHashMap.remove(f);
-
-
+        //is user authorized?
+        if(f.getUserName().equals(getCurrentLoggedInUserName())) {
+            //delete locally TODO: hope i have not forgotten some place where the flag is stored
+            Data.flagMarkerHashMap.remove(f);
+            Data.allFlags.remove(f);
+            Data.closeFlags.remove(f);
+            Data.myFlags.remove(f);
+            //if already uploaded: delete also from server
+            if (f.getID() != null) {
+                Server.deleteFlagFromServer(f);
+            }
+        }
     }
+
+
 
 
 }
