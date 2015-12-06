@@ -8,12 +8,10 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Vibrator;
-import android.provider.ContactsContract;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -31,7 +29,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -1230,17 +1227,21 @@ public class MapsActivity extends AppCompatActivity {
             hsv=new float[]{h, s, v};
             smallPopup.setBackgroundColor(Color.HSVToColor(hsv));
 
-            ImageButton favouriteFlagButton = (ImageButton) popupView.findViewById(R.id.addFavourite);
+            final ImageButton favouriteFlagButton = (ImageButton) popupView.findViewById(R.id.addFavourite);
             if(Data.containsFlag(f, Data.favouriteFlags)) {
                 // todo: julia: change to red favourite button here
+                favouriteFlagButton.setImageDrawable(getApplicationContext().getResources().getDrawable(R.drawable.ic_action_favorite_red2));
+
             } else {
                 // todo: julia: change to gray favourite button here
+                favouriteFlagButton.setImageDrawable(getApplicationContext().getResources().getDrawable(R.drawable.ic_action_favorite));
+
             }
             final ImageButton followUserButton = (ImageButton) popupView.findViewById(R.id.followUserFromFlag);
             if(Data.followingUsers.contains(f.getUserName())){
                 // user already follows this user, so show unfollow icon
                 // todo: julia: do bruchts no es unfollow icon, anstatt s add flag
-                followUserButton.setImageDrawable(getApplicationContext().getResources().getDrawable(R.drawable.add_flag));
+                followUserButton.setImageDrawable(getApplicationContext().getResources().getDrawable(R.drawable.ic_action_remove));
             }
             ImageButton upVoteButton = (ImageButton) popupView.findViewById(R.id.upVoteButton);
             ImageButton downVoteButton = (ImageButton) popupView.findViewById(R.id.downVoteButton);
@@ -1289,7 +1290,7 @@ public class MapsActivity extends AppCompatActivity {
                         // follow
                         Data.follow(f.getUserName());
                         // todo: julia: do au ersetze met unfollow bitte :)
-                        followUserButton.setImageDrawable(getApplicationContext().getResources().getDrawable(R.drawable.add_flag));
+                        followUserButton.setImageDrawable(getApplicationContext().getResources().getDrawable(R.drawable.ic_action_remove));
                         String toastMessage = String.format(res.getString(R.string.newFollowSuccessToast));
                         toastMessage = toastMessage.replace("@", f.getUserName());
                         Toast.makeText(getApplicationContext(), toastMessage, Toast.LENGTH_SHORT).show();
@@ -1304,6 +1305,7 @@ public class MapsActivity extends AppCompatActivity {
                         // user wants to unfavourite the flag
                         Data.deleteFavouriteFlag(f);
                         // todo: julia: change back to gray favourite button here
+                        favouriteFlagButton.setImageDrawable(getApplicationContext().getResources().getDrawable(R.drawable.ic_action_favorite));
                         Toast.makeText(getApplicationContext(), String.format(res.getString(R.string.unFavouriteSuccessToast)), Toast.LENGTH_SHORT).show();
                     } else {
                         if (!Data.addFavourite(f)) {
@@ -1311,6 +1313,7 @@ public class MapsActivity extends AppCompatActivity {
                             System.out.println("debug, fav was full should now show dialog");
                             deleteFavouriteFlagDialogAndReplace(f);
                             // todo: julia: change to red favourite button here
+                            favouriteFlagButton.setImageDrawable(getApplicationContext().getResources().getDrawable(R.drawable.ic_action_favorite_red2));
                         } else
                             Toast.makeText(getApplicationContext(), String.format(res.getString(R.string.newFavouriteSuccessToast)), Toast.LENGTH_SHORT).show();
                     }
