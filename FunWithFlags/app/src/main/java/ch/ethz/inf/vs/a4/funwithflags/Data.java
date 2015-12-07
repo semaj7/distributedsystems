@@ -45,7 +45,7 @@ public final class Data {
 
     public static ArrayList<Flag>closeFlags = new ArrayList<Flag>();
 
-    public static List<Flag>myFlags = new ArrayList<Flag>();
+    public static ArrayList<Flag>myFlags = new ArrayList<Flag>();
 
     //following the KISS principle:
     public final static List<Flag>showMeThisCloseFlagPleaseInOtherActivity = new ArrayList<Flag>();
@@ -274,7 +274,35 @@ public final class Data {
     }
 
     public final static void follow(String username){
-        // todo: also add this relation to the server
+        // todo: also do this relation to the server
         followingUsers.add(username);
     }
+
+    public final static void unFollow(String username){
+        // todo: also do this relation to the server
+        if(followingUsers.contains(username))
+            followingUsers.remove(username);
+    }
+
+    public static ArrayList<Flag> flagsSortedByRating(ArrayList<Flag> flags) {
+        if (flags.size() <= 1)
+            return flags;
+        int rotationplacement = r.nextInt(flags.size());
+        Flag rotation = flags.get(rotationplacement);
+        flags.remove(rotationplacement);
+        ArrayList<Flag> lower = new ArrayList<Flag>();
+        ArrayList<Flag> higher = new ArrayList<Flag>();
+        for (Flag f : flags)
+            if (f.getVoteRateAbsolut() > (rotation.getVoteRateAbsolut()))
+                lower.add(f);
+            else
+                higher.add(f);
+        flagsSortedByRating(lower);
+        flagsSortedByRating(higher);
+
+        flags.clear();
+        flags.addAll(lower);
+        flags.add(rotation);
+        flags.addAll(higher);
+        return flags;    }
 }

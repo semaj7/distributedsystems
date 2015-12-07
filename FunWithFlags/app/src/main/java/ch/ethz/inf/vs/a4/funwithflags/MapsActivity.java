@@ -173,6 +173,7 @@ public class MapsActivity extends AppCompatActivity {
 
     public void calculateUserRating() {
 
+        Data.userRating = 0;
         for(Flag f : Data.myFlags){
             Data.userRating += f.getVoteRateAbsolut();
         }
@@ -625,7 +626,7 @@ public class MapsActivity extends AppCompatActivity {
 
     private void chooseFlagTextDialog(final List<Flag> closeByFlags) {
 
-        if(closeByFlags.get(0).isInRange()) {
+        if(closeByFlags.get(0).isVisible()) {
 
             //only do this if we have actually more than 1 flag to select from
             if (closeByFlags.size() > 1) {
@@ -1209,7 +1210,7 @@ public class MapsActivity extends AppCompatActivity {
     private void popUpFlag(final Flag f) {
         //todo: only show follow button if user does not already follow that user, or at least tell him he already follows that user, if we always show it.
         //inflate the popup layout we just created, make sure the name is correct
-        if(f.isInRange()){
+        if(f.isVisible()){
 
             View popupView = getLayoutInflater().inflate(R.layout.flag_popup, null);
             //init controls
@@ -1280,8 +1281,7 @@ public class MapsActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     if(Data.followingUsers.contains(f.getUserName())){
                         // unfollow
-                        // todo: sync this with server
-                        Data.followingUsers.remove(f.getUserName());
+                        Data.unFollow(f.getUserName());
                         followUserButton.setImageDrawable(getApplicationContext().getResources().getDrawable(R.drawable.ic_action_add_person));
                         String toastMessage = String.format(res.getString(R.string.unFollowSuccessToast));
                         toastMessage = toastMessage.replace("@", f.getUserName());
@@ -1314,8 +1314,12 @@ public class MapsActivity extends AppCompatActivity {
                             deleteFavouriteFlagDialogAndReplace(f);
                             // todo: julia: change to red favourite button here
                             favouriteFlagButton.setImageDrawable(getApplicationContext().getResources().getDrawable(R.drawable.ic_action_favorite_red2));
-                        } else
+                        }
+                        if(Data.containsFlag(f, Data.favouriteFlags)) {
                             Toast.makeText(getApplicationContext(), String.format(res.getString(R.string.newFavouriteSuccessToast)), Toast.LENGTH_SHORT).show();
+                            // todo: julia: change to red favourite button here
+                            favouriteFlagButton.setImageDrawable(getApplicationContext().getResources().getDrawable(R.drawable.ic_action_favorite_red2));
+                        }
                     }
                 }
             });
@@ -1570,15 +1574,15 @@ public class MapsActivity extends AppCompatActivity {
         // edit: a flag might also get deleted from a downvote, even when it is not the current users flag. this should not be tested here
         //is user authorized?
         //if(f.getUserName().equals(getCurrentLoggedInUserName())) {
-            //delete locally TODO: hope i have not forgotten some place where the flag is stored
-            Data.flagMarkerHashMap.remove(f);
-            Data.allFlags.remove(f);
-            Data.closeFlags.remove(f);
-            Data.myFlags.remove(f);
-            //if already uploaded: delete also from server
-            if (f.getID() != null) {
-                Server.deleteFlagFromServer(f);
-            }
+        //delete locally TODO: hope i have not forgotten some place where the flag is stored
+        Data.flagMarkerHashMap.remove(f);
+        Data.allFlags.remove(f);
+        Data.closeFlags.remove(f);
+        Data.myFlags.remove(f);
+        //if already uploaded: delete also from server
+        if (f.getID() != null) {
+            Server.deleteFlagFromServer(f);
+        }
         //}
     }
 

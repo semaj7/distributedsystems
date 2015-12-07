@@ -87,7 +87,7 @@ public class Flag {
         this.text = text;
     }
     public String getText(){
-        if (isInRange())
+        if (isVisible())
             return text;
         else {
             return NOT_IN_RANGE_MESSAGE;
@@ -134,10 +134,14 @@ public class Flag {
         return false;
     }
 
-    public boolean isInRange(Location lastLocation) {
-
-        if(Data.containsFlag(this, Data.favouriteFlags) /*| Data.containsFlag(this, Data.topRankedFlags)*/)
+    public boolean isVisible(){
+        if(Data.containsFlag(this, Data.favouriteFlags) | Data.user.getUsername().equals(this.getUserName())
+        /*| Data.containsFlag(this, Data.topRankedFlags)*/)
             return true;
+        return isInRange();
+    }
+
+    public boolean isInRange(Location lastLocation) {
 
         ParseGeoPoint phoneGeoPoint = new ParseGeoPoint(lastLocation.getLatitude(), lastLocation.getLongitude());
         ParseGeoPoint flagGeoPoint = new ParseGeoPoint(getLatLng().latitude, getLatLng().longitude);

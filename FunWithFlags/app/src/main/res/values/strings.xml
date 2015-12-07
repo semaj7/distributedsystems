@@ -123,5 +123,19 @@
     <string name="downVoteSuccessToast">you have successfully downvoted this flag</string>
     <string name="unFavouriteSuccessToast">this flag no longer is in your favourite\'s list</string>
     <string name="unFollowSuccessToast">you are no longer following @</string>
+    <string name="ratedFlagsDialogTitle">Your best rated flags</string>
+    <string name="ratedFlagsDialogMessage">what would you like to do with those?</string>
+    <string name="myFlagsDialogTitle">Your flags</string>
+    <string name="myFlagsDialogMessage">What would you like to do with them?</string>
+    <string name="unfollow">unfollow</string>
+    <string name="nothingSelectedToDeleteYet">Nothing selected...</string>
+    <string name="followingUsersTextPlaceHolder">You are not following any other users at the moment</string>
+    <string name="followerUsersTextPlaceHolder">Sorry, nobody is currently following you</string>
+    <string name="followingUsersDialogTitle">You are following these users!</string>
+    <string name="followingUsersDialogMessage">what would you like to do with them?</string>
+    <string name="followerUsersDialogTitle">These users follow you</string>
+    <string name="followerUsersDialogMessage">Have a good look!</string>
+    <string name="followingText">You are following @ users already!</string>
+    <string name="followerText">There are @ users following you!</string>
 
 </resources>

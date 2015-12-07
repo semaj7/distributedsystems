@@ -5,27 +5,65 @@
     android:layout_height="wrap_content"
     android:id="@+id/refresh_profile">
 
-    <LinearLayout
+    <FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/frameLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:orientation="vertical"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingTop="@dimen/activity_vertical_margin"
-        android:paddingBottom="@dimen/activity_vertical_margin"
-        tools:context="ch.ethz.inf.vs.a4.funwithflags.ProfileActivity">
+        tools:context=".MapActivity" >
 
-        <TextView android:text="@string/ratingTextPlaceHolder"
-            android:id="@+id/ratingTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal" />
+        <!-- todo: find a nice star icon to put in here, instead of the transparent emptiness full of nothing -->
+        <Button
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_gravity="top|left"
+            android:layout_marginLeft="25dp"
+            android:layout_marginTop="30dp"
+            android:id="@+id/ratingButton"
+            android:text="@string/ratingTextPlaceHolder"
+            android:background="@color/transparent"
+            android:onClick="showInfoDialog"
+            />
 
-        <TextView android:text="@string/settedFlagsCountTextPlaceHolder"
-            android:id="@+id/settedFlagsCountTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"/>
+        <!-- todo: find a nice marker icon to put in here, instead of the transparent emptiness full of nothing -->
+        <Button
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_gravity="top|right"
+            android:layout_marginRight="25dp"
+            android:layout_marginTop="30dp"
+            android:id="@+id/settedFlagsCountButton"
+            android:text="@string/settedFlagsCountTextPlaceHolder"
+            android:background="@color/transparent"
+            android:onClick="showInfoDialog"
+            />
+
+        <!-- todo: find a nice following icon to put in here, instead of the transparent emptiness full of nothing -->
+        <Button
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_gravity="center|left"
+            android:layout_marginLeft="25dp"
+            android:layout_marginTop="25dp"
+            android:id="@+id/followingUsersButton"
+            android:text="@string/followingUsersTextPlaceHolder"
+            android:background="@color/transparent"
+            android:onClick="showInfoDialog"
+            />
+
+        <!-- todo: find a nice follower icon to put in here, instead of the transparent emptiness full of nothing -->
+        <Button
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_gravity="center|right"
+            android:layout_marginRight="25dp"
+            android:layout_marginTop="25dp"
+            android:id="@+id/followersButton"
+            android:text="@string/settedFlagsCountTextPlaceHolder"
+            android:background="@color/transparent"
+            android:onClick="showInfoDialog"
+            />
 
         <Button
             android:layout_width="wrap_content"
@@ -33,12 +71,12 @@
             android:text="@string/log_out"
             android:onClick="logOut"
             android:padding="5dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginBottom="50dp"
             android:background="@drawable/roundbutton"
             android:backgroundTint="@color/common_action_bar_splitter"
-            android:layout_gravity="center_horizontal" />
+            android:layout_gravity="center_horizontal|bottom" />
 
-    </LinearLayout>
+    </FrameLayout>
 
 
 
