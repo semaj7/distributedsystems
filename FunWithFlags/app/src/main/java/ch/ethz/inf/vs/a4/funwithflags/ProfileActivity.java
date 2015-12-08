@@ -252,37 +252,62 @@ public class ProfileActivity extends AppCompatActivity {
         int rating = 0;
 
         Resources res = getResources();
-        String ratingText = String.format(res.getString(R.string.followerText));
-        ratingText = ratingText.replace("@", String.valueOf(rating));
+        //String ratingText = String.format(res.getString(R.string.followerText));
+        //ratingText = ratingText.replace("@", String.valueOf(rating));
 
+        String ratingText;
+
+        if(rating >= 1000) {
+            rating /= 1000;
+            ratingText = String.valueOf(rating)+"K";
+        } else
+            ratingText = String.valueOf(rating);
 
         Button ratingsButton = (Button) findViewById(R.id.followersButton);
         ratingsButton.setText(ratingText);
+        ratingsButton.setTextSize(36);
     }
 
     private void setFollowingText() {
         int rating = Data.followingUsers.size();
 
         Resources res = getResources();
-        String ratingText = String.format(res.getString(R.string.followingText));
-        ratingText = ratingText.replace("@", String.valueOf(rating));
+        //String ratingText = String.format(res.getString(R.string.followingText));
+        //ratingText = ratingText.replace("@", String.valueOf(rating));
 
+        String ratingText;
+
+        if(rating >= 1000) {
+            rating /= 1000;
+            ratingText = String.valueOf(rating)+"K";
+        } else
+            ratingText = String.valueOf(rating);
 
         Button ratingsButton = (Button) findViewById(R.id.followingUsersButton);
         ratingsButton.setText(ratingText);
+        ratingsButton.setTextSize(36);
     }
 
     public void setRatingText() {
+        int rating;
 
-        int rating = Data.userRating;
+        rating = Data.userRating;
 
         Resources res = getResources();
-        String ratingText = String.format(res.getString(R.string.ratingText));
-        ratingText = ratingText.replace("@rating", String.valueOf(rating));
+        // String ratingText = String.format(res.getString(R.string.ratingText));
+        // ratingText = ratingText.replace("@rating", String.valueOf(rating));
 
+        String ratingText;
+
+        if(rating >= 1000) {
+            rating /= 1000;
+            ratingText = String.valueOf(rating)+"K";
+        } else
+            ratingText = String.valueOf(rating);
 
         Button ratingsButton = (Button) findViewById(R.id.ratingButton);
         ratingsButton.setText(ratingText);
+        ratingsButton.setTextSize(36);
     }
 
     public void setSettedFlagsText() {
@@ -290,11 +315,21 @@ public class ProfileActivity extends AppCompatActivity {
         int settedFlags = Data.myFlags.size();
 
         Resources res = getResources();
-        String setFText = String.format(res.getString(R.string.settedFlagsText));
-        setFText = setFText.replace("@count", String.valueOf(settedFlags));
+        //String setFText = String.format(res.getString(R.string.settedFlagsText));
+        //setFText = setFText.replace("@count", String.valueOf(settedFlags));
+
+        String setFText;
+
+        if(settedFlags >= 1000) {
+            settedFlags /= 1000;
+            setFText = String.valueOf(settedFlags)+"K";
+        } else
+            setFText = String.valueOf(settedFlags);
+
 
         Button flagCountButton = (Button) findViewById(R.id.settedFlagsCountButton);
         flagCountButton.setText(setFText);
+        flagCountButton.setTextSize(36);
     }
 
     @Override

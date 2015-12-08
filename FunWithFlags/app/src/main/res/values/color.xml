@@ -6,7 +6,7 @@
 
     <color name="transparent">#00000000</color>
 
-    <color name="pressed_color">#11f1f1</color>
+    <color name="pressed_color">#00b3a1</color>
     <color name="default_color">#ffffff</color>
 
 </resources>

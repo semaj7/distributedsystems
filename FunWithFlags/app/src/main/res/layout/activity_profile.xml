@@ -13,7 +13,6 @@
         android:layout_height="match_parent"
         tools:context=".MapActivity" >
 
-        <!-- todo: find a nice star icon to put in here, instead of the transparent emptiness full of nothing -->
         <Button
             android:layout_width="150dp"
             android:layout_height="150dp"
@@ -22,11 +21,10 @@
             android:layout_marginTop="30dp"
             android:id="@+id/ratingButton"
             android:text="@string/ratingTextPlaceHolder"
-            android:background="@color/transparent"
+            android:background="@drawable/ic_action_important"
             android:onClick="showInfoDialog"
             />
 
-        <!-- todo: find a nice marker icon to put in here, instead of the transparent emptiness full of nothing -->
         <Button
             android:layout_width="150dp"
             android:layout_height="150dp"
@@ -35,11 +33,10 @@
             android:layout_marginTop="30dp"
             android:id="@+id/settedFlagsCountButton"
             android:text="@string/settedFlagsCountTextPlaceHolder"
-            android:background="@color/transparent"
+            android:background="@drawable/ic_action_place"
             android:onClick="showInfoDialog"
             />
 
-        <!-- todo: find a nice following icon to put in here, instead of the transparent emptiness full of nothing -->
         <Button
             android:layout_width="150dp"
             android:layout_height="150dp"
@@ -48,11 +45,10 @@
             android:layout_marginTop="25dp"
             android:id="@+id/followingUsersButton"
             android:text="@string/followingUsersTextPlaceHolder"
-            android:background="@color/transparent"
+            android:background="@drawable/ic_action_cc_bcc"
             android:onClick="showInfoDialog"
             />
 
-        <!-- todo: find a nice follower icon to put in here, instead of the transparent emptiness full of nothing -->
         <Button
             android:layout_width="150dp"
             android:layout_height="150dp"
@@ -61,7 +57,7 @@
             android:layout_marginTop="25dp"
             android:id="@+id/followersButton"
             android:text="@string/settedFlagsCountTextPlaceHolder"
-            android:background="@color/transparent"
+            android:background="@drawable/ic_action_group"
             android:onClick="showInfoDialog"
             />
 
