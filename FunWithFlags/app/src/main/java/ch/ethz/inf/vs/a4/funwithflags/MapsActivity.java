@@ -166,9 +166,9 @@ public class MapsActivity extends AppCompatActivity {
             calculateUserRating();
 
             // delete, just for tests
-            Data.follow("Andi");
+            /*Data.follow("Andi");
             Data.follow("KarateKid");
-            Data.follow("Andreas");
+            Data.follow("Andreas");*/
         }
     }
 
