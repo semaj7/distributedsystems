@@ -2,7 +2,6 @@ package ch.ethz.inf.vs.a4.funwithflags;
 
 import android.app.AlertDialog;
 import android.content.ClipData;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -21,13 +20,11 @@ import android.text.InputType;
 import android.util.DisplayMetrics;
 import android.view.DragEvent;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -61,7 +58,6 @@ import com.parse.ParseUser;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -739,9 +735,7 @@ public class MapsActivity extends AppCompatActivity {
     public void openCloseFlagsPopUp(MenuItem m) {
         showWhitescreen();
         updateCloseFlagsFromAll();
-
-
-
+        
         View popupView = getLayoutInflater().inflate(R.layout.activity_close_flag_list, null);
 
         //init controls
@@ -778,62 +772,6 @@ public class MapsActivity extends AppCompatActivity {
     }
 
 
-    private class FlagArrayAdapter extends ArrayAdapter<Flag> {
-
-        private final List<Flag> flags;
-        HashMap<Flag, Integer> mIdMap = new HashMap<Flag, Integer>();
-
-        Context context;
-
-
-        public FlagArrayAdapter(Context context, int textViewResourceId,
-                                List<Flag> flags) {
-            super(context, textViewResourceId, flags);
-            this.context = context;
-            this.flags = flags;
-            for (int i = 0; i < flags.size(); ++i) {
-                mIdMap.put(flags.get(i), i);
-            }
-        }
-
-        @Override
-        public long getItemId(int position) {
-            Flag item = getItem(position);
-            return mIdMap.get(item);
-        }
-
-        @Override
-        public boolean hasStableIds() {
-            return true;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            LayoutInflater inflater = (LayoutInflater) context
-                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-            View rowView = inflater.inflate(R.layout.close_flag_row_layout, parent, false);
-
-            TextView textView = (TextView) rowView.findViewById(R.id.label);
-            ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);
-
-            Flag flag = flags.get(position);
-
-            //TODO: change the layout according to flag
-            textView.setText(flag.getText());
-
-                /*
-                if (s.startsWith("iPhone")) {
-                    imageView.setImageResource(R.drawable.no);
-                } else {
-                    imageView.setImageResource(R.drawable.ok);
-                }
-                */
-
-            return rowView;
-        }
-
-    }
 
     private void displayDialog(final int whatKind) {
 

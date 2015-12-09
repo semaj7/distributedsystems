@@ -70,6 +70,7 @@ public enum Category {
     }
 
 
+
     public static List<String> getallCategoryNames() {
 
         ArrayList<String> categoryNames = new ArrayList<String>();
