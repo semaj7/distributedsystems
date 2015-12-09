@@ -200,8 +200,9 @@ public class Server {
         for (int i = 0; i < objects.size() ; i++) {
             Log.d("Pascal debug", "added a favourite to the local list!!");
             Data.favouriteFlagsList.add(parseFlagToFlag(context, objects.get(i)));
+            Data.favouriteFlags[i] = Data.favouriteFlagsList.get(i);
         }
-        Data.favouriteFlags=(Flag[]) Data.favouriteFlagsList.toArray();
+        //Data.favouriteFlags=(Flag[]) Data.favouriteFlagsList.toArray();
 
     }
 

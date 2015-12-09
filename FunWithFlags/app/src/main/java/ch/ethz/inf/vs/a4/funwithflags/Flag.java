@@ -53,20 +53,26 @@ public class Flag {
     }
 
     public void upVote(){
-        if(Data.downvotedFlags.contains(this))
-            downVotes --;
-        if(!Data.upvotedFlags.contains(this))
+        if(Data.downvotedFlags.contains(this)) {
+            downVotes--;
+        }
+        if(!Data.upvotedFlags.contains(this)) {
+            Server.submitRatingToServer(this, true);
             upVotes++;
+        }
         Data.putUpvoted(this);
         Data.checkIfTopAndAdd(this);
     }
 
     // this function returns true if that downvote lead a the point where the ratio got too bad, and the flag should get deleted, this should be checked everytime the method is used
     public boolean downVote(){
-        if(Data.upvotedFlags.contains(this))
+        if(Data.upvotedFlags.contains(this)) {
             upVotes--;
-        if(!Data.downvotedFlags.contains(this))
+        }
+        if(!Data.downvotedFlags.contains(this)) {
+            Server.submitRatingToServer(this, false);
             downVotes++;
+        }
         if (getVoteRateAbsolut() <= MINIMAL_UP_TO_DOWN_VOTE_RATIO)
             return true;
         Data.putDownvoted(this);
@@ -193,4 +199,11 @@ public class Flag {
         return ID;
     }
 
+    public void setDownVotes(int downVotesCount) {
+        downVotes = downVotesCount;
+    }
+
+    public void setUpVotes(int upVotesCount) {
+        upVotes = upVotesCount;
+    }
 }

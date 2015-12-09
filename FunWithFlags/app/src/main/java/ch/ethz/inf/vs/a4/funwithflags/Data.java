@@ -180,6 +180,7 @@ public final class Data {
         for(int i = 0; i< MapsActivity.MAX_NUMBER_OF_FAVOURITES; i ++){
             if(favouriteFlags[i] == null){
                 favouriteFlags[i] = flag;
+                Server.submitFavouriteToServer(flag);
                 return true;
             }
         }
@@ -254,6 +255,7 @@ public final class Data {
 
     public static boolean deleteIthFavourite(int favouriteNRtoDelete) {
         if (favouriteNRtoDelete >= 0 && favouriteNRtoDelete < MapsActivity.MAX_NUMBER_OF_FAVOURITES) {
+            Server.deleteFavouriteFromServer(favouriteFlags[favouriteNRtoDelete]);
             favouriteFlags[favouriteNRtoDelete] = null;
             return true;
         }
@@ -272,19 +274,15 @@ public final class Data {
     public static void putUpvoted(Flag flag) {
         if(downvotedFlags.contains(flag)) {
             downvotedFlags.remove(flag);
-            // todo: delete users downvote on server
         }
         upvotedFlags.add(flag);
-        // todo: add users upvote to server
     }
 
     public static void putDownvoted(Flag flag){
         if(upvotedFlags.contains(flag)) {
             upvotedFlags.remove(flag);
-            // todo: delete users upvote on server
         }
         downvotedFlags.add(flag);
-        // todo: add users downvote to server
     }
 
     public final static void follow(String username){

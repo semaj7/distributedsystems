@@ -157,19 +157,7 @@ public class MapsActivity extends AppCompatActivity {
         toolbar.setHomeButtonEnabled(true);
 
         // get Server Data
-        if(isLoggedIn()) {
-            getFollowingUsersFromServer();
-            getUpvotesFromServer();
-            getDownvotesFromServer();
-            getFavouritesFromServer();
-            getTopFlagsFromServer();
-            calculateUserRating();
-
-            // delete, just for tests
-            /*Data.follow("Andi");
-            Data.follow("KarateKid");
-            Data.follow("Andreas");*/
-        }
+        refresh();
     }
 
     public void calculateUserRating() {
@@ -235,6 +223,9 @@ public class MapsActivity extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), "Refreshing...", Toast.LENGTH_SHORT).show();
         getFlags();
         if(isLoggedIn()) {
+            Server.getFavouritesFromServer(getApplicationContext());
+            Server.getFollowingUsers();
+
             getFollowingUsersFromServer();
             getUpvotesFromServer();
             getDownvotesFromServer();
@@ -1264,6 +1255,7 @@ public class MapsActivity extends AppCompatActivity {
                         if (Data.followingUsers.contains(f.getUserName())) {
                             // unfollow
                             Data.unFollow(f.getUserName());
+                            Server.unFollow(f.getUserName());
                             followUserButton.setImageDrawable(getApplicationContext().getResources().getDrawable(R.drawable.ic_action_add_person));
                             String toastMessage = String.format(res.getString(R.string.unFollowSuccessToast));
                             toastMessage = toastMessage.replace("@", f.getUserName());
@@ -1271,6 +1263,7 @@ public class MapsActivity extends AppCompatActivity {
                         } else {
                             // follow
                             Data.follow(f.getUserName());
+                            Server.follow(f.getUserName());
                             // todo: julia: do au ersetze met unfollow bitte :)
                             followUserButton.setImageDrawable(getApplicationContext().getResources().getDrawable(R.drawable.ic_action_remove));
                             String toastMessage = String.format(res.getString(R.string.newFollowSuccessToast));
