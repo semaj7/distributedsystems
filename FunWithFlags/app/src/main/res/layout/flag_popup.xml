@@ -77,6 +77,8 @@
         android:layout_below="@+id/textViewUsername"
         android:layout_centerHorizontal="true" />
 
+
+
     <ImageButton
         android:id="@+id/followUserFromFlag"
         android:layout_width="wrap_content"
@@ -128,6 +130,14 @@
         android:background="@drawable/roundbutton"
         android:layout_below="@+id/ratingTextView"
         android:layout_toEndOf="@+id/textView" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/toProfileButton"
+        android:text="profile"
+        android:layout_below="@+id/downVoteButton"
+        />
 
 </RelativeLayout>
 

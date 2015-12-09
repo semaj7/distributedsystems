@@ -29,11 +29,11 @@ public final class Data {
 
     public static int userRating;
 
-    public final static List<Flag> downvotedFlags = new ArrayList<Flag>();
+    public static ArrayList<Flag> downvotedFlags = new ArrayList<Flag>();
 
-    public final static List<Flag> upvotedFlags = new ArrayList<Flag>();
+    public static ArrayList<Flag> upvotedFlags = new ArrayList<Flag>();
 
-    public final static List<String> followingUsers = new ArrayList<String>();
+    public static ArrayList<String> followingUsers = new ArrayList<String>();
 
     public final static String[] slideMenuStrings = new String[]{"Search", "Favourites", "Filters","Ranking", "What's new","Settings"};
 
@@ -218,12 +218,26 @@ public final class Data {
         allFlags=new ArrayList<Flag>(flags);
         myFlags=new ArrayList<Flag>(flags);
         for(Flag flag: flags){
-            if((flag.getUserName().equals(user.getUsername())) && !myFlags.contains(flag)) {
-                myFlags.add(flag);
-                System.out.println("debug: adding "+flag.getUserName()+" to "+user.getUsername()+" s myflags list");
+            if(user != null) {
+                if ((flag.getUserName().equals(user.getUsername())) && !myFlags.contains(flag)) {
+                    myFlags.add(flag);
+                    System.out.println("debug: adding " + flag.getUserName() + " to " + user.getUsername() + " s myflags list");
+                }
             }
-            if(!allFlags.contains(flag))
+            if (!allFlags.contains(flag))
                 allFlags.add(flag);
+
+        }
+    }
+
+    public static final void updateMyFlagsFromAll() {
+
+        Data.myFlags = new ArrayList<Flag>();
+        for(Flag f: Data.allFlags){
+            if(user != null) {
+                if (f.getUserName().equals(Data.user.getUsername()))
+                    Data.myFlags.add(f);
+            }
         }
     }
 

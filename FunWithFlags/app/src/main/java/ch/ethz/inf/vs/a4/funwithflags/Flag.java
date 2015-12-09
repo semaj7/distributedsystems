@@ -135,8 +135,11 @@ public class Flag {
     }
 
     public boolean isVisible(){
-        if(Data.containsFlag(this, Data.favouriteFlags) | Data.user.getUsername().equals(this.getUserName())
-        /*| Data.containsFlag(this, Data.topRankedFlags)*/)
+        if(Data.user != null)
+            if(Data.user.getUsername().equals(this.getUserName()))
+                return true;
+        if(Data.containsFlag(this, Data.favouriteFlags) )
+        /*| Data.containsFlag(this, Data.topRankedFlags)*/
             return true;
         return isInRange();
     }
