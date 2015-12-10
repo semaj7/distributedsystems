@@ -61,14 +61,6 @@ public class Server {
             public void done(List<ParseObject> flags, com.parse.ParseException e) {
                 if (e == null) {
 
-                    String ID;
-                    String userName;
-                    String text;
-                    LatLng latLng;
-                    Category category;
-                    Date date;
-                    ParseGeoPoint geoPoint;
-
                     for (int i = 0; i < flags.size(); i++) {
 
                         ParseObject parseFlag=flags.get(i);
@@ -235,6 +227,7 @@ public class Server {
         */
     }
     public static void deleteFavouriteFromServer(Flag f){
+        //TODO: does not work!!!
         ParseObject parseFlag= getParseFlag(f);
         if(parseFlag==null) {
             Log.d("debug", "Trying to remove a flag from favourites that is not uploaded yet");
@@ -370,6 +363,7 @@ public class Server {
     }
 
     public static ParseUser getParseUser(String userName){
+        //TODO this bastard seems to be incorrect!
         ParseQuery<ParseUser> query = ParseUser.getQuery();
         query.whereEqualTo("userName", userName);
         try {
