@@ -22,21 +22,7 @@ import java.util.List;
  */
 
     /*
-    SERVER COMMUNICATION (trying not to mix stuff to much)
-
-    we can always put the server functionality into the other functions later on, but I think it
-    makes sense to separate it.
-    */
-
-    /*
-    Users(email:String, passwordHash:String, salt:String, registerDate:Date)
-    Flags(flagId:Int, userName:String, content:String, latitude:Int, longitude:Int, categoryName:String, date:Date)
-    Ratings(userName:String, lfagId:Int, rating:Boolean)
-    Categories(categoryName:String)
-    Favorites(userName:String, flagId:Int)
-    Following(followedUser:String, followingUser:String)
-
-
+    SERVER COMMUNICATION
     */
 
 
@@ -60,14 +46,6 @@ public class Server {
             @Override
             public void done(List<ParseObject> flags, com.parse.ParseException e) {
                 if (e == null) {
-
-                    String ID;
-                    String userName;
-                    String text;
-                    LatLng latLng;
-                    Category category;
-                    Date date;
-                    ParseGeoPoint geoPoint;
 
                     for (int i = 0; i < flags.size(); i++) {
 
@@ -160,38 +138,6 @@ public class Server {
 
         }
 
-        //old implementation
-        /*
-        ParseQuery<ParseObject> favouritesQuery = new ParseQuery<ParseObject>("Favourite");
-        favouritesQuery.whereMatches("userName",getCurrentLoggedInUserName());
-        favouritesQuery.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> objects, ParseException e) {
-                Data.favouriteFlags=new Flag[MapsActivity.MAX_NUMBER_OF_FAVOURITES];
-                for (int i = 0; i < objects.size(); i++) {
-                    ParseQuery<ParseObject> flagQuery=new ParseQuery<ParseObject>("Flag");
-                    Data.favouriteFlagsList.clear();
-                    flagQuery.getInBackground((String) objects.get(i).get("FlagId"), new GetCallback<ParseObject>() {
-                        @Override
-                        public void done(ParseObject object, com.parse.ParseException e) {
-
-
-                                String ID = (String) object.getObjectId();
-                                String userName = (String) object.get("userName");
-                                String text = (String) object.get("content");
-                                ParseGeoPoint geoPoint = (ParseGeoPoint) object.get("geoPoint");
-                                LatLng latLng = new LatLng(geoPoint.getLatitude(), geoPoint.getLongitude());
-                                Category category = Category.getByName((String) object.get("categoryName"));
-                                Date date = (Date) object.get("date");
-
-                                Data.favouriteFlagsList.add(new Flag(ID, userName, text, latLng, category, date, context));
-
-                        }
-                    });
-                }
-            }
-        });
-        */
     }
 
     private static void saveFavouritesLocally(Context context, List<ParseObject> objects){
@@ -225,14 +171,6 @@ public class Server {
             favouritesRelation.add(parseFlag);
         }
         user.saveEventually();
-        //Log.d("Pascal debug", "it f***ing should have submitted a favourit, i don't have ONE idea why it didn't");
-        /*
-        //old implementation
-        final ParseObject favourite = new ParseObject("Favourite");
-        favourite.put("userName", getCurrentLoggedInUserName());
-        favourite.put("flagId",f.getID());
-        favourite.saveInBackground();
-        */
     }
     public static void deleteFavouriteFromServer(Flag f){
         ParseObject parseFlag= getParseFlag(f);
@@ -240,60 +178,34 @@ public class Server {
             Log.d("debug", "Trying to remove a flag from favourites that is not uploaded yet");
             return;
         }
+
+        Log.d("debug", "Trying to remove a flag from favourites...");
+
         //implementation with relation
         ParseUser user=ParseUser.getCurrentUser();
         ParseRelation<ParseObject> favouritesRelation=user.getRelation("favourite");
         favouritesRelation.remove(getParseFlag(f));
+        user.saveInBackground();
 
 
-        //old implementation
-        /*
-        ParseQuery<ParseObject> favouritesQuery=new ParseQuery<ParseObject>("Favourite");
-        favouritesQuery.whereMatches("flagId",f.getID());
-        favouritesQuery.whereMatches("userName", getCurrentLoggedInUserName());
-        favouritesQuery.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> objects, ParseException e) {
-                objects.get(0).deleteEventually();
-            }
-        });
-        */
 
     }
 
     //RATING---------------------------------------------------------------//
 
     public static void submitRatingToServer(Flag f, boolean upOrDown){
+        ParseObject flag=getParseFlag(f);
 
-        ParseObject parseFlag= getParseFlag(f);
-        if(parseFlag==null) {
+        if(flag==null) {
             Log.d("debug", "Trying to rate a flag that is not submitted yet");
             return;
         }
 
-        ParseObject flag=getParseFlag(f);
         ParseRelation<ParseObject> upVotesRelation=flag.getRelation("upVotes");
         ParseRelation<ParseObject> downVotesRelation=flag.getRelation("downVotes");
 
-        //remove already existing rating
-        upVotesRelation.getQuery().whereMatches("upVotes",getCurrentLoggedInUserName()).findInBackground(new FindCallback<ParseObject>() {
-
-            @Override
-            public void done(List<ParseObject> objects, ParseException e) {
-                for (int i = 0; i < objects.size(); i++) {
-                    objects.get(i).deleteEventually();
-                }
-            }
-        });
-        upVotesRelation.getQuery().whereMatches("downVotes",getCurrentLoggedInUserName()).findInBackground(new FindCallback<ParseObject>() {
-
-            @Override
-            public void done(List<ParseObject> objects, ParseException e) {
-                for (int i = 0; i < objects.size(); i++) {
-                    objects.get(i).deleteEventually();
-                }
-            }
-        });
+        upVotesRelation.remove(ParseUser.getCurrentUser());
+        downVotesRelation.remove(ParseUser.getCurrentUser());
 
 
         if(upOrDown){
@@ -305,14 +217,20 @@ public class Server {
 
         //update the count
         try {
-            flag.put("upVotesCount",upVotesRelation.getQuery().count());
-            flag.put("downVotesCount",downVotesRelation.getQuery().count());
+            flag.save();
+            Log.d("pascal debug", "updating the up/down-votes counters");
+            flag.put("upVotesCount", upVotesRelation.getQuery().count());
+            Log.d("pascal debug", "upvotes: " + upVotesRelation.getQuery().count());
+
+            flag.put("downVotesCount", downVotesRelation.getQuery().count());
+            Log.d("pascal debug", "downvotes: " + downVotesRelation.getQuery().count());
+            flag.save();
 
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
-        flag.saveInBackground();
+
     }
 
 
@@ -321,7 +239,7 @@ public class Server {
     public static void getFollowingUsers(){
         ParseUser user=ParseUser.getCurrentUser();
         ParseRelation<ParseObject> followingRelation=user.getRelation("following");
-        ParseQuery<ParseObject> followingRelationQuery= followingRelation.getQuery();
+        ParseQuery<ParseObject> followingRelationQuery = followingRelation.getQuery();
         followingRelationQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> objects, ParseException e) {
@@ -369,10 +287,12 @@ public class Server {
 
     }
 
-    public static ParseUser getParseUser(String userName){
+    public static ParseUser getParseUser(String userName) {
         ParseQuery<ParseUser> query = ParseUser.getQuery();
-        query.whereEqualTo("userName", userName);
+        query.whereEqualTo("username", userName);
+
         try {
+
             return query.find().get(0);
         } catch (ParseException e) {
             e.printStackTrace();
@@ -401,17 +321,6 @@ public class Server {
             flag.setUpVotes((int)upVotesCount);
         }
 
-        /*
-        ParseRelation<ParseObject> upVotesRelation=parseFlag.getRelation("upVotes");
-        ParseRelation<ParseObject> downVotesRelation=parseFlag.getRelation("downVotes");
-
-        try {
-            flag.setDownVotes(downVotesRelation.getQuery().count());
-            flag.setUpVotes(upVotesRelation.getQuery().count());
-        } catch (ParseException e1) {
-            e1.printStackTrace();
-        }
-        */
         return flag;
     }
 }
