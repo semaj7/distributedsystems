@@ -173,6 +173,7 @@ public class Server {
         user.saveEventually();
     }
     public static void deleteFavouriteFromServer(Flag f){
+        //TODO: does not work!!!
         ParseObject parseFlag= getParseFlag(f);
         if(parseFlag==null) {
             Log.d("debug", "Trying to remove a flag from favourites that is not uploaded yet");
@@ -287,7 +288,8 @@ public class Server {
 
     }
 
-    public static ParseUser getParseUser(String userName) {
+    public static ParseUser getParseUser(String userName){
+        //TODO this bastard seems to be incorrect!
         ParseQuery<ParseUser> query = ParseUser.getQuery();
         query.whereEqualTo("username", userName);
 
