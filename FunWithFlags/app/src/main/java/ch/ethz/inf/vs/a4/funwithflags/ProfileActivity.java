@@ -14,12 +14,10 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.parse.ParseUser;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class ProfileActivity extends AppCompatActivity {
@@ -88,7 +86,7 @@ public class ProfileActivity extends AppCompatActivity {
                 correspondingFlags = new Flag[myFlagsRated.size()];
                 for(int i = 0; i< myFlagsRated.size(); i++){
                     correspondingFlags[i] = myFlagsRated.get(i);
-                    infoToShow[i] = correspondingFlags[i].getVoteRateAbsolut()+":\n"+correspondingFlags[i].getText();
+                    infoToShow[i] = correspondingFlags[i].getVoteRateAbsolut()+":\t\t\t"+correspondingFlags[i].getText();
                 }
                 if(myFlagsRated.size() == 0)
                     nothing = true;
