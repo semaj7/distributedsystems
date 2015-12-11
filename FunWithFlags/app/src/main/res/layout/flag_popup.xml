@@ -12,6 +12,7 @@
         android:alpha="0.5"
         android:background="@android:color/background_dark"
         android:layout_alignParentTop="true"
+        android:onClick="popUpBackgroundClicked"
         android:layout_alignParentStart="true" />
 
     <!-- The main image to be centered in the layout.
@@ -24,6 +25,7 @@
         android:alpha="0.75"
         android:background="@color/background_floating_material_light"
         android:id="@+id/imageView"
+        android:onClick="doNothing"
         android:layout_centerVertical="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"

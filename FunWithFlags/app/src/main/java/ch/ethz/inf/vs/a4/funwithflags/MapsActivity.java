@@ -424,6 +424,14 @@ public class MapsActivity extends AppCompatActivity {
         setUpMapIfNeeded();
     }
 
+    public void popUpBackgroundClicked(View view) {
+        onBackPressed();
+    }
+
+    public void doNothing(View view) {
+        //be true to your word
+    }
+
     @Override
     public void onBackPressed() {
         boolean closedSomething = false;
