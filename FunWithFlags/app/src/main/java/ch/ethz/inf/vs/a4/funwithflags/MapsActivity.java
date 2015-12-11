@@ -2,7 +2,6 @@ package ch.ethz.inf.vs.a4.funwithflags;
 
 import android.app.AlertDialog;
 import android.content.ClipData;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -21,13 +20,11 @@ import android.text.InputType;
 import android.util.DisplayMetrics;
 import android.view.DragEvent;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -61,7 +58,6 @@ import com.parse.ParseUser;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -161,14 +157,7 @@ public class MapsActivity extends AppCompatActivity {
         toolbar.setHomeButtonEnabled(true);
 
         // get Server Data
-        if(isLoggedIn()) {
-            getFollowingUsersFromServer();
-            getUpvotesFromServer();
-            getDownvotesFromServer();
-            getFavouritesFromServer();
-            getTopFlagsFromServer();
-            calculateUserRating();
-        }
+        refresh();
     }
 
     public void calculateUserRating() {
@@ -233,7 +222,26 @@ public class MapsActivity extends AppCompatActivity {
         // do everything we need to do to refresh
         Toast.makeText(getApplicationContext(), "Refreshing...", Toast.LENGTH_SHORT).show();
         getFlags();
-        //
+        if(isLoggedIn()) {
+            Server.getFavouritesFromServer(getApplicationContext());
+            Server.getFollowingUsers();
+
+            getFollowingUsersFromServer();
+            getUpvotesFromServer();
+            getDownvotesFromServer();
+            getFavouritesFromServer();
+            getTopFlagsFromServer();
+            calculateUserRating();
+        } else {
+            Data.myFlags = new ArrayList<Flag>();
+            Data.userRating = 0;
+            Data.followingUsers = new ArrayList<String>();
+            Data.downvotedFlags = new ArrayList<Flag>();
+            Data.upvotedFlags = new ArrayList<Flag>();
+            Data.favouriteFlagsList = new ArrayList<Flag>();
+        }
+
+
         refresh.setRefreshing(false);
     }
 
@@ -414,6 +422,14 @@ public class MapsActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         setUpMapIfNeeded();
+    }
+
+    public void popUpBackgroundClicked(View view) {
+        onBackPressed();
+    }
+
+    public void doNothing(View view) {
+        //be true to your word
     }
 
     @Override
@@ -739,9 +755,7 @@ public class MapsActivity extends AppCompatActivity {
     public void openCloseFlagsPopUp(MenuItem m) {
         showWhitescreen();
         updateCloseFlagsFromAll();
-
-
-
+        
         View popupView = getLayoutInflater().inflate(R.layout.activity_close_flag_list, null);
 
         //init controls
@@ -778,62 +792,6 @@ public class MapsActivity extends AppCompatActivity {
     }
 
 
-    private class FlagArrayAdapter extends ArrayAdapter<Flag> {
-
-        private final List<Flag> flags;
-        HashMap<Flag, Integer> mIdMap = new HashMap<Flag, Integer>();
-
-        Context context;
-
-
-        public FlagArrayAdapter(Context context, int textViewResourceId,
-                                List<Flag> flags) {
-            super(context, textViewResourceId, flags);
-            this.context = context;
-            this.flags = flags;
-            for (int i = 0; i < flags.size(); ++i) {
-                mIdMap.put(flags.get(i), i);
-            }
-        }
-
-        @Override
-        public long getItemId(int position) {
-            Flag item = getItem(position);
-            return mIdMap.get(item);
-        }
-
-        @Override
-        public boolean hasStableIds() {
-            return true;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            LayoutInflater inflater = (LayoutInflater) context
-                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-            View rowView = inflater.inflate(R.layout.close_flag_row_layout, parent, false);
-
-            TextView textView = (TextView) rowView.findViewById(R.id.label);
-            ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);
-
-            Flag flag = flags.get(position);
-
-            //TODO: change the layout according to flag
-            textView.setText(flag.getText());
-
-                /*
-                if (s.startsWith("iPhone")) {
-                    imageView.setImageResource(R.drawable.no);
-                } else {
-                    imageView.setImageResource(R.drawable.ok);
-                }
-                */
-
-            return rowView;
-        }
-
-    }
 
     private void displayDialog(final int whatKind) {
 
@@ -1191,11 +1149,18 @@ public class MapsActivity extends AppCompatActivity {
 
     }
 
+    public void switchToAlienProfile(String username){
+        Intent newIntent = new Intent(this, ProfileActivity.class);
+        newIntent.putExtra("username", username);
+        startActivity(newIntent);
+    }
+
     public void switchToProfile(View v) {
 
         if(isLoggedIn()) {
             calculateUserRating();
             Intent newIntent = new Intent(this, ProfileActivity.class);
+            newIntent.putExtra("username", getCurrentLoggedInUserName());
             startActivity(newIntent);
         } else {
             startActivity(new Intent(this, LoginActivity.class));
@@ -1243,32 +1208,44 @@ public class MapsActivity extends AppCompatActivity {
             }
             ImageButton upVoteButton = (ImageButton) popupView.findViewById(R.id.upVoteButton);
             ImageButton downVoteButton = (ImageButton) popupView.findViewById(R.id.downVoteButton);
+            Button toProfileButton = (Button) popupView.findViewById(R.id.toProfileButton);
+
             //straightforward, now handle the onclick listeners for all buttons
             final Resources res = getResources();
             upVoteButton.setOnClickListener(new View.OnClickListener(){
 
                 @Override
                 public void onClick(View v) {
-                    f.upVote();
-                    System.out.println("debug, got upvoted, now is at: " + f.getVoteRateAbsolut());
-                    ratingTv.setText(String.valueOf(f.getVoteRateAbsolut()));
-                    Toast.makeText(getApplicationContext(), String.format(res.getString(R.string.upVoteSuccessToast)) , Toast.LENGTH_SHORT).show();
+                    if (!isLoggedIn()) {
+                        Toast.makeText(getApplicationContext(), String.format(res.getString(R.string.needToBeLogedInForThisMessage)), Toast.LENGTH_SHORT).show();
+                        switchToLogin();
+                    } else {
+                        f.upVote();
+                        System.out.println("debug, got upvoted, now is at: " + f.getVoteRateAbsolut());
+                        ratingTv.setText(String.valueOf(f.getVoteRateAbsolut()));
+                        Toast.makeText(getApplicationContext(), String.format(res.getString(R.string.upVoteSuccessToast)), Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
             downVoteButton.setOnClickListener(new View.OnClickListener() {
 
                 @Override
                 public void onClick(View v) {
-                    if (f.downVote()) {
-                        // ratio too bad, delete this flag
-                        deleteFlag(f);
-                        flagPopUpWindow.dismiss();
-                        refresh();
+                    if (!isLoggedIn()) {
+                        Toast.makeText(getApplicationContext(), String.format(res.getString(R.string.needToBeLogedInForThisMessage)), Toast.LENGTH_SHORT).show();
+                        switchToLogin();
                     } else {
-                        System.out.println("debug, got downvoted, now is at: " + f.getVoteRateAbsolut());
+                        if (f.downVote()) {
+                            // ratio too bad, delete this flag
+                            deleteFlag(f);
+                            flagPopUpWindow.dismiss();
+                            refresh();
+                        } else {
+                            System.out.println("debug, got downvoted, now is at: " + f.getVoteRateAbsolut());
+                        }
+                        ratingTv.setText(String.valueOf(f.getVoteRateAbsolut()));
+                        Toast.makeText(getApplicationContext(), String.format(res.getString(R.string.downVoteSuccessToast)), Toast.LENGTH_SHORT).show();
                     }
-                    ratingTv.setText(String.valueOf(f.getVoteRateAbsolut()));
-                    Toast.makeText(getApplicationContext(), String.format(res.getString(R.string.downVoteSuccessToast)), Toast.LENGTH_SHORT).show();
                 }
             });
 
@@ -1276,14 +1253,11 @@ public class MapsActivity extends AppCompatActivity {
 
                 @Override
                 public void onClick(View v) {
-                    if(Data.followingUsers.contains(f.getUserName())){
-                        // unfollow
-                        Data.unFollow(f.getUserName());
-                        followUserButton.setImageDrawable(getApplicationContext().getResources().getDrawable(R.drawable.ic_action_add_person));
-                        String toastMessage = String.format(res.getString(R.string.unFollowSuccessToast));
-                        toastMessage = toastMessage.replace("@", f.getUserName());
-                        Toast.makeText(getApplicationContext(), toastMessage, Toast.LENGTH_SHORT).show();
+                    if(!isLoggedIn()) {
+                        Toast.makeText(getApplicationContext(), String.format(res.getString(R.string.needToBeLogedInForThisMessage)), Toast.LENGTH_SHORT).show();
+                        switchToLogin();
                     } else {
+<<<<<<< HEAD
                         // follow
                         Data.follow(f.getUserName());
 
@@ -1291,6 +1265,26 @@ public class MapsActivity extends AppCompatActivity {
                         String toastMessage = String.format(res.getString(R.string.newFollowSuccessToast));
                         toastMessage = toastMessage.replace("@", f.getUserName());
                         Toast.makeText(getApplicationContext(), toastMessage, Toast.LENGTH_SHORT).show();
+=======
+                        if (Data.followingUsers.contains(f.getUserName())) {
+                            // unfollow
+                            Data.unFollow(f.getUserName());
+                            Server.unFollow(f.getUserName());
+                            followUserButton.setImageDrawable(getApplicationContext().getResources().getDrawable(R.drawable.ic_action_add_person));
+                            String toastMessage = String.format(res.getString(R.string.unFollowSuccessToast));
+                            toastMessage = toastMessage.replace("@", f.getUserName());
+                            Toast.makeText(getApplicationContext(), toastMessage, Toast.LENGTH_SHORT).show();
+                        } else {
+                            // follow
+                            Data.follow(f.getUserName());
+                            Server.follow(f.getUserName());
+                            // todo: julia: do au ersetze met unfollow bitte :)
+                            followUserButton.setImageDrawable(getApplicationContext().getResources().getDrawable(R.drawable.ic_action_remove));
+                            String toastMessage = String.format(res.getString(R.string.newFollowSuccessToast));
+                            toastMessage = toastMessage.replace("@", f.getUserName());
+                            Toast.makeText(getApplicationContext(), toastMessage, Toast.LENGTH_SHORT).show();
+                        }
+>>>>>>> origin/master
                     }
                 }
             });
@@ -1298,6 +1292,7 @@ public class MapsActivity extends AppCompatActivity {
             favouriteFlagButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+<<<<<<< HEAD
                     if (Data.containsFlag(f, Data.favouriteFlags)) {
                         // user wants to unfavourite the flag
                         Data.deleteFavouriteFlag(f);
@@ -1315,10 +1310,43 @@ public class MapsActivity extends AppCompatActivity {
                             Toast.makeText(getApplicationContext(), String.format(res.getString(R.string.newFavouriteSuccessToast)), Toast.LENGTH_SHORT).show();
 
                             favouriteFlagButton.setImageDrawable(getApplicationContext().getResources().getDrawable(R.drawable.ic_action_favorite_red2));
+=======
+                    if(!isLoggedIn()) {
+                        Toast.makeText(getApplicationContext(), String.format(res.getString(R.string.needToBeLogedInForThisMessage)), Toast.LENGTH_SHORT).show();
+                        switchToLogin();
+                    } else {
+                        if (Data.containsFlag(f, Data.favouriteFlags)) {
+                            // user wants to unfavourite the flag
+                            Data.deleteFavouriteFlag(f);
+                            // todo: julia: change back to gray favourite button here
+                            favouriteFlagButton.setImageDrawable(getApplicationContext().getResources().getDrawable(R.drawable.ic_action_favorite));
+                            Toast.makeText(getApplicationContext(), String.format(res.getString(R.string.unFavouriteSuccessToast)), Toast.LENGTH_SHORT).show();
+                        } else {
+                            if (!Data.addFavourite(f)) {
+                                // Favourites was full, and f was not added, the user should delete one of his favourite flags first
+                                System.out.println("debug, fav was full should now show dialog");
+                                deleteFavouriteFlagDialogAndReplace(f);
+                                // todo: julia: change to red favourite button here
+                                favouriteFlagButton.setImageDrawable(getApplicationContext().getResources().getDrawable(R.drawable.ic_action_favorite_red2));
+                            }
+                            if (Data.containsFlag(f, Data.favouriteFlags)) {
+                                Toast.makeText(getApplicationContext(), String.format(res.getString(R.string.newFavouriteSuccessToast)), Toast.LENGTH_SHORT).show();
+                                // todo: julia: change to red favourite button here
+                                favouriteFlagButton.setImageDrawable(getApplicationContext().getResources().getDrawable(R.drawable.ic_action_favorite_red2));
+                            }
+>>>>>>> origin/master
                         }
                     }
                 }
             });
+            toProfileButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    switchToAlienProfile(f.getUserName());
+                }
+            });
+
+
 
              //blur background
             //TODO: fix this that also the google maps is blurred
@@ -1463,12 +1491,12 @@ public class MapsActivity extends AppCompatActivity {
 
 
 
-    void getFlags(){
+    void getFlags() {
 
         //TODO: merge this with the server class!
-       // Server.getFlagsFromServer(this);
+        // Server.getFlagsFromServer(this);
 
-        ParseQuery<ParseObject> flagQuery=new ParseQuery<ParseObject>("Flag");
+        ParseQuery<ParseObject> flagQuery = new ParseQuery<ParseObject>("Flag");
         flagQuery.setLimit(1000);
         flagQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
@@ -1482,31 +1510,31 @@ public class MapsActivity extends AppCompatActivity {
                     Category category;
                     Date date;
                     ParseGeoPoint geoPoint;
-                            for (int i = 0; i < flags.size(); i++) {
+                    for (int i = 0; i < flags.size(); i++) {
                                 /*
                                 from the report:
                                 Flags(flagId:Int, userName:String, content:String, latitude:Int,
                                 longitude:Int, categoryName:String, date:Date)
                                 */
-                                ID = (String) flags.get(i).getObjectId();
-                                userName = (String) flags.get(i).get("userName");
-                                text = (String) flags.get(i).get("content");
-                                geoPoint = (ParseGeoPoint) flags.get(i).get("geoPoint");
-                                latLng = new LatLng(geoPoint.getLatitude(), geoPoint.getLongitude());
-                                category = Category.getByName((String) flags.get(i).get("categoryName"));
-                                date = (Date) flags.get(i).get("date");
+                        ID = (String) flags.get(i).getObjectId();
+                        userName = (String) flags.get(i).get("userName");
+                        text = (String) flags.get(i).get("content");
+                        geoPoint = (ParseGeoPoint) flags.get(i).get("geoPoint");
+                        latLng = new LatLng(geoPoint.getLatitude(), geoPoint.getLongitude());
+                        category = Category.getByName((String) flags.get(i).get("categoryName"));
+                        date = (Date) flags.get(i).get("date");
 
-                                ret.add(new Flag(ID, userName, text, latLng, category, date, getApplicationContext()));
-                            }
-
-                            dataSetChanged(ret);
-
-                        }
-
-                        setUpMap();
+                        ret.add(new Flag(ID, userName, text, latLng, category, date, getApplicationContext()));
                     }
 
-                });
+                    dataSetChanged(ret);
+
+                }
+
+                setUpMap();
+            }
+
+        });
             }
 
     private void addToData(Flag f) {
@@ -1529,14 +1557,6 @@ public class MapsActivity extends AppCompatActivity {
         Data.flagMarkerHashMap.put(f, m);
     }
 
-    public void updateMyFlagsFromAll() {
-
-        Data.myFlags = new ArrayList<Flag>();
-        for(Flag f: Data.allFlags){
-            if(f.getUserName().equals(Data.user.getUsername()))
-                Data.myFlags.add(f);
-        }
-    }
 
     public void updateCloseFlagsFromAll() {
 
@@ -1558,7 +1578,7 @@ public class MapsActivity extends AppCompatActivity {
     public void dataSetChanged(List<Flag> flags) {
         Data.setAllFlags(flags);
         updateCloseFlagsFromAll();
-        updateMyFlagsFromAll();
+        Data.updateMyFlagsFromAll();
     }
 
 

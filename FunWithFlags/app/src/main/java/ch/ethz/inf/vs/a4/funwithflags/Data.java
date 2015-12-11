@@ -29,11 +29,11 @@ public final class Data {
 
     public static int userRating;
 
-    public final static List<Flag> downvotedFlags = new ArrayList<Flag>();
+    public static ArrayList<Flag> downvotedFlags = new ArrayList<Flag>();
 
-    public final static List<Flag> upvotedFlags = new ArrayList<Flag>();
+    public static ArrayList<Flag> upvotedFlags = new ArrayList<Flag>();
 
-    public final static List<String> followingUsers = new ArrayList<String>();
+    public static ArrayList<String> followingUsers = new ArrayList<String>();
 
     public final static String[] slideMenuStrings = new String[]{"Search", "Favourites", "Filters","Ranking", "What's new","Settings"};
 
@@ -180,6 +180,7 @@ public final class Data {
         for(int i = 0; i< MapsActivity.MAX_NUMBER_OF_FAVOURITES; i ++){
             if(favouriteFlags[i] == null){
                 favouriteFlags[i] = flag;
+                Server.submitFavouriteToServer(flag);
                 return true;
             }
         }
@@ -218,12 +219,26 @@ public final class Data {
         allFlags=new ArrayList<Flag>(flags);
         myFlags=new ArrayList<Flag>(flags);
         for(Flag flag: flags){
-            if((flag.getUserName().equals(user.getUsername())) && !myFlags.contains(flag)) {
-                myFlags.add(flag);
-                System.out.println("debug: adding "+flag.getUserName()+" to "+user.getUsername()+" s myflags list");
+            if(user != null) {
+                if ((flag.getUserName().equals(user.getUsername())) && !myFlags.contains(flag)) {
+                    myFlags.add(flag);
+                    System.out.println("debug: adding " + flag.getUserName() + " to " + user.getUsername() + " s myflags list");
+                }
             }
-            if(!allFlags.contains(flag))
+            if (!allFlags.contains(flag))
                 allFlags.add(flag);
+
+        }
+    }
+
+    public static final void updateMyFlagsFromAll() {
+
+        Data.myFlags = new ArrayList<Flag>();
+        for(Flag f: Data.allFlags){
+            if(user != null) {
+                if (f.getUserName().equals(Data.user.getUsername()))
+                    Data.myFlags.add(f);
+            }
         }
     }
 
@@ -240,6 +255,7 @@ public final class Data {
 
     public static boolean deleteIthFavourite(int favouriteNRtoDelete) {
         if (favouriteNRtoDelete >= 0 && favouriteNRtoDelete < MapsActivity.MAX_NUMBER_OF_FAVOURITES) {
+            Server.deleteFavouriteFromServer(favouriteFlags[favouriteNRtoDelete]);
             favouriteFlags[favouriteNRtoDelete] = null;
             return true;
         }
@@ -258,19 +274,15 @@ public final class Data {
     public static void putUpvoted(Flag flag) {
         if(downvotedFlags.contains(flag)) {
             downvotedFlags.remove(flag);
-            // todo: delete users downvote on server
         }
         upvotedFlags.add(flag);
-        // todo: add users upvote to server
     }
 
     public static void putDownvoted(Flag flag){
         if(upvotedFlags.contains(flag)) {
             upvotedFlags.remove(flag);
-            // todo: delete users upvote on server
         }
         downvotedFlags.add(flag);
-        // todo: add users downvote to server
     }
 
     public final static void follow(String username){

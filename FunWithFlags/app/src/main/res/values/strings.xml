@@ -122,7 +122,7 @@
     <string name="upVoteSuccessToast">you have successfully upvoted this flag</string>
     <string name="downVoteSuccessToast">you have successfully downvoted this flag</string>
     <string name="unFavouriteSuccessToast">this flag no longer is in your favourite\'s list</string>
-    <string name="unFollowSuccessToast">you are no longer following @</string>
+    <string name="unFollowSuccessToast">you are no longer following @user</string>
     <string name="ratedFlagsDialogTitle">Your best rated flags</string>
     <string name="ratedFlagsDialogMessage">what would you like to do with those?</string>
     <string name="myFlagsDialogTitle">Your flags</string>
@@ -137,5 +137,14 @@
     <string name="followerUsersDialogMessage">Have a good look!</string>
     <string name="followingText">You are following @ users already!</string>
     <string name="followerText">There are @ users following you!</string>
+    <string name="needToBeLogedInForThisMessage">You need to be loged in to do this</string>
+    <string name="show">Show</string>
+    <string name="ratedFlagsDialogTitleAlienProfile">\@user best rated flags</string>
+    <string name="myFlagsDialogTitleAlienProfile">\@user flags</string>
+    <string name="followingUsersDialogTitleAlienProfile">\@user is following these users!</string>
+    <string name="followerUsersDialogTitleAlienProfile">These users follow @user</string>
+    <string name="notAllowedToSeeMessage">you are not allowed to see this</string>
+    <string name="noUsersYet">there are no users in this list yet</string>
+    <string name="noFlagsYet">There are no flags to show yet</string>
 
 </resources>

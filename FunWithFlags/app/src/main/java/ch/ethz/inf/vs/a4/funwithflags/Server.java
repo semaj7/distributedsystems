@@ -1,5 +1,8 @@
 package ch.ethz.inf.vs.a4.funwithflags;
 
+import android.content.Context;
+import android.util.Log;
+
 import com.google.android.gms.maps.model.LatLng;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
@@ -7,6 +10,7 @@ import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseRelation;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
@@ -18,21 +22,7 @@ import java.util.List;
  */
 
     /*
-    SERVER COMMUNICATION (trying not to mix stuff to much)
-
-    we can always put the server functionality into the other functions later on, but I think it
-    makes sense to separate it.
-    */
-
-    /*
-    Users(email:String, passwordHash:String, salt:String, registerDate:Date)
-    Flags(flagId:Int, userName:String, content:String, latitude:Int, longitude:Int, categoryName:String, date:Date)
-    Ratings(userName:String, lfagId:Int, rating:Boolean)
-    Categories(categoryName:String)
-    Favorites(userName:String, flagId:Int)
-    Following(followedUser:String, followingUser:String)
-
-
+    SERVER COMMUNICATION
     */
 
 
@@ -57,31 +47,21 @@ public class Server {
             public void done(List<ParseObject> flags, com.parse.ParseException e) {
                 if (e == null) {
 
-                    String ID;
-                    String userName;
-                    String text;
-                    LatLng latLng;
-                    Category category;
-                    Date date;
-                    ParseGeoPoint geoPoint;
-
                     for (int i = 0; i < flags.size(); i++) {
-                            /*
-                            from the report:
-                            Flags(flagId:Int, userName:String, content:String, latitude:Int,
-                            longitude:Int, categoryName:String, date:Date)
-                            */
-                        ID = (String) flags.get(i).getObjectId();
-                        userName = (String) flags.get(i).get("userName");
-                        text = (String) flags.get(i).get("content");
-                        geoPoint = (ParseGeoPoint) flags.get(i).get("geoPoint");
-                        latLng = new LatLng(geoPoint.getLatitude(), geoPoint.getLongitude());
-                        category = Category.getByName((String) flags.get(i).get("categoryName"));
-                        date = (Date) flags.get(i).get("date");
 
-                        ret.add(new Flag(ID, userName, text, latLng, category, date, context));
+                        ParseObject parseFlag=flags.get(i);
+
+                        //TODO remove this stuff, it's only for testing
+                        if(i==10){
+                            Server.submitFavouriteToServer(parseFlagToFlag(context, parseFlag));
+                            Log.d("Pascal debug", "as always, just submitting Flag number 10 to favourites ");
+                        }
+                        //remove until here
+
+
+                        ret.add(parseFlagToFlag(context, parseFlag));
+                        //Log.d("pascal debug","just downloaded a flag");
                     }
-
                 }
                 Data.setAllFlags(ret);
 
@@ -93,12 +73,6 @@ public class Server {
 
     public static void submitFlag(Flag f){
 
-        /*
-        From the Report:
-
-        Flags(flagId:Int, userName:String, content:String, latitude:Int,
-                longitude:Int, categoryName:String, date:Date)
-        */
 
         final ParseObject parseFlag = new ParseObject("Flag");
 
@@ -132,86 +106,169 @@ public class Server {
 
     }
 
-    /*
-    todo: set this stuff (data.java)
-    public final static Flag[] favouriteFlags = new Flag[MapsActivity.MAX_NUMBER_OF_FAVOURITES];
-    public final static Flag[] topRankedFlags = new Flag[MapsActivity.TOP_RANKED_FLAGS_AMOUNT];
-     */
+    public static ParseObject getParseFlag(Flag f){
+        ParseQuery<ParseObject> flagQuery=new ParseQuery<ParseObject>("Flag");
+        try {
+            return flagQuery.get(f.getID());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        Log.d("debug","tried to download a flag that was not yet uploaded");
+        return null;
+    }
+
 
     //FAVOURITES-----------------------------------------------------------//
 
-    public static void getFavouriteFlagsFromServer(final android.content.Context  context){
-        //TODO
-        ParseQuery<ParseObject> favouritesQuery = new ParseQuery<ParseObject>("Favourite");
-        favouritesQuery.whereMatches("userName",getCurrentLoggedInUserName());
-        favouritesQuery.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> objects, ParseException e) {
-                Data.favouriteFlags=new Flag[MapsActivity.MAX_NUMBER_OF_FAVOURITES];
-                for (int i = 0; i < objects.size(); i++) {
-                    ParseQuery<ParseObject> flagQuery=new ParseQuery<ParseObject>("Flag");
-                    Data.favouriteFlagsList.clear();
-                    flagQuery.getInBackground((String) objects.get(i).get("FlagId"), new GetCallback<ParseObject>() {
-                        @Override
-                        public void done(ParseObject object, com.parse.ParseException e) {
+    public static void getFavouritesFromServer(final android.content.Context  context){
+        //TODO: right now one can have an indefined amount of favourites, should change this
+        //new implementation
+        Log.d("Pascal debug", "downloading favourites...");
+        ParseUser user=ParseUser.getCurrentUser();
+        if(user!=null) {
 
-
-                                String ID = (String) object.getObjectId();
-                                String userName = (String) object.get("userName");
-                                String text = (String) object.get("content");
-                                ParseGeoPoint geoPoint = (ParseGeoPoint) object.get("geoPoint");
-                                LatLng latLng = new LatLng(geoPoint.getLatitude(), geoPoint.getLongitude());
-                                Category category = Category.getByName((String) object.get("categoryName"));
-                                Date date = (Date) object.get("date");
-
-                                Data.favouriteFlagsList.add(new Flag(ID, userName, text, latLng, category, date, context));
-
-                        }
-                    });
-                }
+            ParseRelation<ParseObject> favouritesRelation = user.getRelation("favourite");
+            try {
+                Log.d("Pascal debug", "got 'em favourites, now saving 'em favourites locally...");
+                saveFavouritesLocally(context, favouritesRelation.getQuery().find());
+            } catch (ParseException e) {
+                e.printStackTrace();
             }
-        });
+
+        }
+
     }
+
+    private static void saveFavouritesLocally(Context context, List<ParseObject> objects){
+        //TODO: now we have both a list and a array of favourites...
+        Data.favouriteFlagsList.clear();
+        for (int i = 0; i < objects.size() ; i++) {
+            Log.d("Pascal debug", "added a favourite to the local list!!");
+            Data.favouriteFlagsList.add(parseFlagToFlag(context, objects.get(i)));
+            Data.favouriteFlags[i] = Data.favouriteFlagsList.get(i);
+        }
+        //Data.favouriteFlags=(Flag[]) Data.favouriteFlagsList.toArray();
+
+    }
+
     public static void submitFavouriteToServer(Flag f){
-        final ParseObject favourite = new ParseObject("Favourite");
-        favourite.put("userName", getCurrentLoggedInUserName());
-        favourite.put("flagId",f.getID());
-        favourite.saveInBackground();
+
+        ParseObject parseFlag= getParseFlag(f);
+        if(parseFlag==null) {
+            Log.d("debug", "Trying to add a flag to favourites that is not uploaded yet");
+            return;
+        }
+
+        //implementation with relation
+        ParseUser user=ParseUser.getCurrentUser();
+        Log.d("Pascal debug", user.getUsername());
+        if(user!=null) {
+            ParseRelation<ParseObject> favouritesRelation = user.getRelation("favourite");
+            //if(favouritesRelation==null) {Log.d("Pascal debug", "lfw ftw");}
+            //if(favouritesRelation!=null) {Log.d("Pascal debug", "it's not null. very dope");}
+            //if(parseFlag==null) {Log.d("Pascal debug", "the f***ing parseFlag is null");}
+            favouritesRelation.add(parseFlag);
+        }
+        user.saveEventually();
     }
     public static void deleteFavouriteFromServer(Flag f){
-        ParseQuery<ParseObject> favouritesQuery=new ParseQuery<ParseObject>("Favourite");
-        favouritesQuery.whereMatches("flagId",f.getID());
-        favouritesQuery.whereMatches("userName", getCurrentLoggedInUserName());
-        favouritesQuery.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> objects, ParseException e) {
-                objects.get(0).deleteEventually();
-            }
-        });
+        //TODO: does not work!!!
+        ParseObject parseFlag= getParseFlag(f);
+        if(parseFlag==null) {
+            Log.d("debug", "Trying to remove a flag from favourites that is not uploaded yet");
+            return;
+        }
+
+        Log.d("debug", "Trying to remove a flag from favourites...");
+
+        //implementation with relation
+        ParseUser user=ParseUser.getCurrentUser();
+        ParseRelation<ParseObject> favouritesRelation=user.getRelation("favourite");
+        favouritesRelation.remove(getParseFlag(f));
+        user.saveInBackground();
+
+
 
     }
 
     //RATING---------------------------------------------------------------//
 
-    public static void getTopRankedFlagsFromServer(){
-        //TODO
-    }
     public static void submitRatingToServer(Flag f, boolean upOrDown){
-        final ParseObject rating = new ParseObject("Rating");
-        rating.put("userName", getCurrentLoggedInUserName());
-        rating.put("flagId",f.getID());
-        rating.put("rating", upOrDown);
-        rating.saveInBackground();
+        ParseObject flag=getParseFlag(f);
+
+        if(flag==null) {
+            Log.d("debug", "Trying to rate a flag that is not submitted yet");
+            return;
+        }
+
+        ParseRelation<ParseObject> upVotesRelation=flag.getRelation("upVotes");
+        ParseRelation<ParseObject> downVotesRelation=flag.getRelation("downVotes");
+
+        upVotesRelation.remove(ParseUser.getCurrentUser());
+        downVotesRelation.remove(ParseUser.getCurrentUser());
+
+
+        if(upOrDown){
+            upVotesRelation.add(ParseUser.getCurrentUser());
+        }
+        else{
+            downVotesRelation.add(ParseUser.getCurrentUser());
+        }
+
+        //update the count
+        try {
+            flag.save();
+            Log.d("pascal debug", "updating the up/down-votes counters");
+            flag.put("upVotesCount", upVotesRelation.getQuery().count());
+            Log.d("pascal debug", "upvotes: " + upVotesRelation.getQuery().count());
+
+            flag.put("downVotesCount", downVotesRelation.getQuery().count());
+            Log.d("pascal debug", "downvotes: " + downVotesRelation.getQuery().count());
+            flag.save();
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+
     }
-    /*
-    maybe not necessary since we can change a rating by just submitting another one
-    (e.g at first I like a flag, but then I realize that it sucks, so I can just rate again)
 
-    public static void deleteRatingFromServer(Flag f){
 
+    //FOLLOWING---------------------------------------------------------------//
+
+    public static void getFollowingUsers(){
+        ParseUser user=ParseUser.getCurrentUser();
+        ParseRelation<ParseObject> followingRelation=user.getRelation("following");
+        ParseQuery<ParseObject> followingRelationQuery = followingRelation.getQuery();
+        followingRelationQuery.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> objects, ParseException e) {
+                saveFollowingUsersLocally(objects);
+            }
+        });
     }
-    */
 
+    private static void saveFollowingUsersLocally(List<ParseObject> objects){
+        Data.followingUsers.clear();
+        for (int i = 0; i < objects.size() ; i++) {
+            Data.followingUsers.add((String)(objects.get(i).get("userName")));
+        }
+    }
+
+    public static void follow(String userName){
+        ParseUser user=ParseUser.getCurrentUser();
+        ParseRelation<ParseObject> followingRelation=user.getRelation("following");
+        followingRelation.add(getParseUser(userName));
+        user.saveInBackground();
+    }
+
+    public static void unFollow(String userName){
+        ParseUser user=ParseUser.getCurrentUser();
+        ParseRelation<ParseObject> followingRelation=user.getRelation("following");
+        followingRelation.remove(getParseUser(userName));
+        user.saveInBackground();
+    }
 
     //HELPER FUNCTIONS------------------------------------------------------//
 
@@ -229,5 +286,43 @@ public class Server {
         }
 
 
+    }
+
+    public static ParseUser getParseUser(String userName){
+        //TODO this bastard seems to be incorrect!
+        ParseQuery<ParseUser> query = ParseUser.getQuery();
+        query.whereEqualTo("username", userName);
+
+        try {
+
+            return query.find().get(0);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static Flag parseFlagToFlag(Context context, ParseObject parseFlag){
+
+        String ID = (String) parseFlag.getObjectId();
+        String userName = (String) parseFlag.get("userName");
+        String text = (String) parseFlag.get("content");
+        ParseGeoPoint geoPoint = (ParseGeoPoint) parseFlag.get("geoPoint");
+        LatLng latLng = new LatLng(geoPoint.getLatitude(), geoPoint.getLongitude());
+        Category category = Category.getByName((String) parseFlag.get("categoryName"));
+        Date date = (Date) parseFlag.get("date");
+
+        Flag flag=new Flag(ID, userName, text, latLng, category, date, context);
+
+        //if the upvotes-count on the server is already set, we get it, if not it just stays what it
+        // was locally (i.e "0" in the beginning)
+        Object downVotesCount=parseFlag.get("downVotesCount");
+        Object upVotesCount=parseFlag.get("upVotesCount");
+        if(downVotesCount!=null&&upVotesCount!=null){
+            flag.setDownVotes((int)downVotesCount);
+            flag.setUpVotes((int)upVotesCount);
+        }
+
+        return flag;
     }
 }
