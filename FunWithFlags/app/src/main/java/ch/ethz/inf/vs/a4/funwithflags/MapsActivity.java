@@ -1257,22 +1257,20 @@ public class MapsActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), String.format(res.getString(R.string.needToBeLogedInForThisMessage)), Toast.LENGTH_SHORT).show();
                         switchToLogin();
                     } else {
-<<<<<<< HEAD
-                        // follow
+                        /*// follow
                         Data.follow(f.getUserName());
 
                         followUserButton.setImageDrawable(getApplicationContext().getResources().getDrawable(R.drawable.ic_action_remove));
                         String toastMessage = String.format(res.getString(R.string.newFollowSuccessToast));
                         toastMessage = toastMessage.replace("@", f.getUserName());
-                        Toast.makeText(getApplicationContext(), toastMessage, Toast.LENGTH_SHORT).show();
-=======
+                        Toast.makeText(getApplicationContext(), toastMessage, Toast.LENGTH_SHORT).show();*/
                         if (Data.followingUsers.contains(f.getUserName())) {
                             // unfollow
                             Data.unFollow(f.getUserName());
                             Server.unFollow(f.getUserName());
                             followUserButton.setImageDrawable(getApplicationContext().getResources().getDrawable(R.drawable.ic_action_add_person));
                             String toastMessage = String.format(res.getString(R.string.unFollowSuccessToast));
-                            toastMessage = toastMessage.replace("@", f.getUserName());
+                            toastMessage = toastMessage.replace("@user", f.getUserName());
                             Toast.makeText(getApplicationContext(), toastMessage, Toast.LENGTH_SHORT).show();
                         } else {
                             // follow
@@ -1284,7 +1282,6 @@ public class MapsActivity extends AppCompatActivity {
                             toastMessage = toastMessage.replace("@", f.getUserName());
                             Toast.makeText(getApplicationContext(), toastMessage, Toast.LENGTH_SHORT).show();
                         }
->>>>>>> origin/master
                     }
                 }
             });
@@ -1292,7 +1289,11 @@ public class MapsActivity extends AppCompatActivity {
             favouriteFlagButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-<<<<<<< HEAD
+                    if(!isLoggedIn()) {
+                        Toast.makeText(getApplicationContext(), String.format(res.getString(R.string.needToBeLogedInForThisMessage)), Toast.LENGTH_SHORT).show();
+                        switchToLogin();
+                        return;
+                    }
                     if (Data.containsFlag(f, Data.favouriteFlags)) {
                         // user wants to unfavourite the flag
                         Data.deleteFavouriteFlag(f);
@@ -1310,31 +1311,8 @@ public class MapsActivity extends AppCompatActivity {
                             Toast.makeText(getApplicationContext(), String.format(res.getString(R.string.newFavouriteSuccessToast)), Toast.LENGTH_SHORT).show();
 
                             favouriteFlagButton.setImageDrawable(getApplicationContext().getResources().getDrawable(R.drawable.ic_action_favorite_red2));
-=======
-                    if(!isLoggedIn()) {
-                        Toast.makeText(getApplicationContext(), String.format(res.getString(R.string.needToBeLogedInForThisMessage)), Toast.LENGTH_SHORT).show();
-                        switchToLogin();
-                    } else {
-                        if (Data.containsFlag(f, Data.favouriteFlags)) {
-                            // user wants to unfavourite the flag
-                            Data.deleteFavouriteFlag(f);
-                            // todo: julia: change back to gray favourite button here
-                            favouriteFlagButton.setImageDrawable(getApplicationContext().getResources().getDrawable(R.drawable.ic_action_favorite));
-                            Toast.makeText(getApplicationContext(), String.format(res.getString(R.string.unFavouriteSuccessToast)), Toast.LENGTH_SHORT).show();
-                        } else {
-                            if (!Data.addFavourite(f)) {
-                                // Favourites was full, and f was not added, the user should delete one of his favourite flags first
-                                System.out.println("debug, fav was full should now show dialog");
-                                deleteFavouriteFlagDialogAndReplace(f);
-                                // todo: julia: change to red favourite button here
-                                favouriteFlagButton.setImageDrawable(getApplicationContext().getResources().getDrawable(R.drawable.ic_action_favorite_red2));
-                            }
-                            if (Data.containsFlag(f, Data.favouriteFlags)) {
-                                Toast.makeText(getApplicationContext(), String.format(res.getString(R.string.newFavouriteSuccessToast)), Toast.LENGTH_SHORT).show();
-                                // todo: julia: change to red favourite button here
-                                favouriteFlagButton.setImageDrawable(getApplicationContext().getResources().getDrawable(R.drawable.ic_action_favorite_red2));
-                            }
->>>>>>> origin/master
+
+
                         }
                     }
                 }
@@ -1510,21 +1488,24 @@ public class MapsActivity extends AppCompatActivity {
                     Category category;
                     Date date;
                     ParseGeoPoint geoPoint;
+                    Flag f;
                     for (int i = 0; i < flags.size(); i++) {
                                 /*
                                 from the report:
                                 Flags(flagId:Int, userName:String, content:String, latitude:Int,
                                 longitude:Int, categoryName:String, date:Date)
                                 */
-                        ID = (String) flags.get(i).getObjectId();
+                        /*ID = (String) flags.get(i).getObjectId();
                         userName = (String) flags.get(i).get("userName");
                         text = (String) flags.get(i).get("content");
                         geoPoint = (ParseGeoPoint) flags.get(i).get("geoPoint");
                         latLng = new LatLng(geoPoint.getLatitude(), geoPoint.getLongitude());
                         category = Category.getByName((String) flags.get(i).get("categoryName"));
-                        date = (Date) flags.get(i).get("date");
+                        date = (Date) flags.get(i).get("date");*/
+                        f = Server.parseFlagToFlag(getApplicationContext(), flags.get(i));
 
-                        ret.add(new Flag(ID, userName, text, latLng, category, date, getApplicationContext()));
+                        //ret.add(new Flag(ID, userName, text, latLng, category, date, getApplicationContext()));
+                        ret.add(f);
                     }
 
                     dataSetChanged(ret);
@@ -1576,6 +1557,7 @@ public class MapsActivity extends AppCompatActivity {
 
 
     public void dataSetChanged(List<Flag> flags) {
+        System.out.println("debug: dataSetChanged");
         Data.setAllFlags(flags);
         updateCloseFlagsFromAll();
         Data.updateMyFlagsFromAll();

@@ -219,14 +219,18 @@ public final class Data {
         allFlags=new ArrayList<Flag>(flags);
         myFlags=new ArrayList<Flag>(flags);
         for(Flag flag: flags){
+            if(!Data.containsFlag(flag, topRankedFlags))
+                checkIfTopAndAdd(flag);
+
             if(user != null) {
                 if ((flag.getUserName().equals(user.getUsername())) && !myFlags.contains(flag)) {
                     myFlags.add(flag);
                     System.out.println("debug: adding " + flag.getUserName() + " to " + user.getUsername() + " s myflags list");
                 }
             }
-            if (!allFlags.contains(flag))
+            if (!allFlags.contains(flag)) {
                 allFlags.add(flag);
+            }
 
         }
     }

@@ -173,7 +173,6 @@ public class Server {
         user.saveEventually();
     }
     public static void deleteFavouriteFromServer(Flag f){
-        //TODO: does not work!!!
         ParseObject parseFlag= getParseFlag(f);
         if(parseFlag==null) {
             Log.d("debug", "Trying to remove a flag from favourites that is not uploaded yet");
@@ -215,22 +214,25 @@ public class Server {
         else{
             downVotesRelation.add(ParseUser.getCurrentUser());
         }
-
+        int newUpVoteCount=0;
+        int newDownVoteCount=0;
         //update the count
         try {
             flag.save();
+            newUpVoteCount=upVotesRelation.getQuery().count();
             Log.d("pascal debug", "updating the up/down-votes counters");
-            flag.put("upVotesCount", upVotesRelation.getQuery().count());
-            Log.d("pascal debug", "upvotes: " + upVotesRelation.getQuery().count());
-
-            flag.put("downVotesCount", downVotesRelation.getQuery().count());
-            Log.d("pascal debug", "downvotes: " + downVotesRelation.getQuery().count());
+            flag.put("upVotesCount", newUpVoteCount);
+            Log.d("pascal debug", "upvotes: " + newUpVoteCount);
+            newDownVoteCount=downVotesRelation.getQuery().count();
+            flag.put("downVotesCount", newDownVoteCount);
+            Log.d("pascal debug", "downvotes: " + newDownVoteCount);
             flag.save();
 
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
+        f.setDownVotes(newDownVoteCount);
+        f.setUpVotes(newUpVoteCount);
 
     }
 
@@ -252,8 +254,10 @@ public class Server {
     private static void saveFollowingUsersLocally(List<ParseObject> objects){
         Data.followingUsers.clear();
         for (int i = 0; i < objects.size() ; i++) {
-            Data.followingUsers.add((String)(objects.get(i).get("userName")));
+            Data.followingUsers.add((String) (((ParseUser) objects.get(i)).getUsername()));
+            Log.d("Pascal debug", "following user "+(String)(((ParseUser)objects.get(i)).getUsername()));
         }
+
     }
 
     public static void follow(String userName){
@@ -288,8 +292,7 @@ public class Server {
 
     }
 
-    public static ParseUser getParseUser(String userName){
-        //TODO this bastard seems to be incorrect!
+    public static ParseUser getParseUser(String userName) {
         ParseQuery<ParseUser> query = ParseUser.getQuery();
         query.whereEqualTo("username", userName);
 
@@ -318,9 +321,11 @@ public class Server {
         // was locally (i.e "0" in the beginning)
         Object downVotesCount=parseFlag.get("downVotesCount");
         Object upVotesCount=parseFlag.get("upVotesCount");
-        if(downVotesCount!=null&&upVotesCount!=null){
-            flag.setDownVotes((int)downVotesCount);
-            flag.setUpVotes((int)upVotesCount);
+        if(downVotesCount!=null){
+            flag.setDownVotes((int) downVotesCount);
+        }
+        if(upVotesCount!=null) {
+            flag.setUpVotes((int) upVotesCount);
         }
 
         return flag;
