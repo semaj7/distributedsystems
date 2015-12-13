@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <!--TODO: do a nice layout please -->
+    <!-- Background -->
 
     <ImageView
         android:id="@+id/backgroundPopUp"
@@ -15,13 +15,10 @@
         android:onClick="popUpBackgroundClicked"
         android:layout_alignParentStart="true" />
 
-    <!-- The main image to be centered in the layout.
-     Instead of ImageView, you can change it to
-     anything, for example a TextView-->
 
     <ImageView
         android:layout_width="wrap_content"
-        android:layout_height="350dp"
+        android:layout_height="180dp"
         android:alpha="0.75"
         android:background="@color/background_floating_material_light"
         android:id="@+id/imageView"
@@ -30,7 +27,8 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
         android:layout_alignStart="@+id/flagView"
-        android:layout_alignEnd="@+id/upVoteButton" />
+        android:layout_alignEnd="@+id/buttonHolder" />
+
 
 
     <ImageView
@@ -41,66 +39,42 @@
         android:layout_alignTop="@+id/imageView"
         android:layout_centerHorizontal="true" />
 
+    <!-- Main Text-->
     <TextView android:text="@string/noTextFoundDefault"
         android:id="@+id/flagText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="#000000"
+        android:textSize="24sp"
         android:layout_below="@+id/flagView"
         android:layout_centerHorizontal="true" />
 
-    <ImageButton
-        android:id="@+id/addFavourite"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_action_favorite"
-        android:background="@drawable/roundbutton"
-        android:layout_marginTop="24dp"
-        android:layout_below="@+id/flagText"
-        android:layout_centerHorizontal="true"
-        android:padding="5dp"
-        android:paddingRight="10dp"/>
+
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/fieldUsername"
+        android:id="@+id/whenTextView"
+        android:text="@string/noTime"
         android:textColor="#000000"
-        android:id="@+id/textViewUsername"
-        android:layout_marginTop="30dp"
-        android:layout_below="@+id/addFavourite"
-        android:layout_centerHorizontal="true" />
+        android:layout_below="@id/flagText"
+        android:layout_toStartOf="@+id/placeholderUsername"
+        android:layout_marginEnd="10dp"
+        android:layout_marginTop="10dp"
+
+        />
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="20dp"
         android:text="@string/userName"
         android:id="@+id/placeholderUsername"
         android:textColor="#000000"
-        android:layout_below="@+id/textViewUsername"
-        android:layout_centerHorizontal="true" />
-
-
-
-    <ImageButton
-        android:id="@+id/followUserFromFlag"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_action_add_person"
-        android:background="@drawable/roundbutton"
-        android:layout_below="@+id/placeholderUsername"
+        android:layout_below="@+id/flagText"
         android:layout_centerHorizontal="true"
-        android:padding="5dp"
-        android:paddingRight="10dp"/>
+        android:layout_marginTop="10dp"
+        />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/rating"
-        android:textColor="#000000"
-        android:id="@+id/textView"
-        android:layout_marginTop="23dp"
-        android:layout_below="@+id/followUserFromFlag"
-        android:layout_centerHorizontal="true" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -108,38 +82,84 @@
         android:id="@+id/ratingTextView"
         android:text="@string/noRating"
         android:textColor="#000000"
-        android:layout_below="@+id/textView"
-        android:layout_centerHorizontal="true" />
+        android:layout_below="@id/flagText"
+        android:textStyle="bold"
+        android:layout_toEndOf="@id/placeholderUsername"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
 
-    <ImageButton
-        android:layout_width="wrap_content"
-        android:id="@+id/upVoteButton"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_action_good"
-        android:padding="5dp"
-        android:paddingRight="10dp"
-        android:background="@drawable/roundbutton"
-        android:layout_below="@+id/ratingTextView"
-        android:layout_toStartOf="@+id/textView" />
-
-    <ImageButton
-        android:layout_width="wrap_content"
-        android:id="@+id/downVoteButton"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_action_bad"
-        android:padding="5dp"
-        android:paddingRight="10dp"
-        android:background="@drawable/roundbutton"
-        android:layout_below="@+id/ratingTextView"
-        android:layout_toEndOf="@+id/textView" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/toProfileButton"
-        android:text="profile"
-        android:layout_below="@+id/downVoteButton"
         />
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/buttonHolder"
+        android:orientation="horizontal"
+        android:layout_below="@id/ratingTextView"
+        android:layout_marginTop="15dp">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/toProfileButton"
+            android:src="@drawable/ic_action_group"
+            android:text="profile"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="0dp"
+            android:layout_marginEnd="10dp"/>
+
+        <ImageButton
+            android:id="@+id/followUserFromFlag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_action_add_person"
+            android:background="@drawable/roundbutton"
+            android:padding="5dp"
+            android:layout_alignParentTop="true"
+            android:layout_toLeftOf="@+id/upVoteButton"
+            android:layout_marginTop="0dp"
+            android:layout_marginEnd="10dp"/>
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:id="@+id/upVoteButton"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_action_good"
+            android:padding="5dp"
+            android:background="@drawable/roundbutton"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="0dp"
+            />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:id="@+id/downVoteButton"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_action_bad"
+            android:padding="5dp"
+            android:background="@drawable/roundbutton"
+            android:layout_toRightOf="@id/upVoteButton"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="0dp"
+            android:layout_marginStart="10dp"
+            />
+
+        <ImageButton
+            android:id="@+id/addFavourite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_action_favorite"
+            android:background="@drawable/roundbutton"
+            android:padding="5dp"
+            android:layout_toRightOf="@id/downVoteButton"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="0dp"
+            android:layout_marginStart="10dp"/>
+
+
+    </RelativeLayout>
 
 </RelativeLayout>
 

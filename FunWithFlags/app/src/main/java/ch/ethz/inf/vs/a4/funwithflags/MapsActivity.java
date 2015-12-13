@@ -55,10 +55,13 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import org.ocpsoft.prettytime.PrettyTime;
+
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 
 import static android.view.MotionEvent.ACTION_DOWN;
@@ -1209,6 +1212,9 @@ public class MapsActivity extends AppCompatActivity {
             ratingTv.setText(String.valueOf(f.getVoteRateAbsolut()));
             TextView username = (TextView) popupView.findViewById(R.id.placeholderUsername);
             username.setText(f.getUserName());
+            final TextView whenTv = (TextView) popupView.findViewById(R.id.whenTextView);
+            PrettyTime time = new PrettyTime(new Locale(Locale.getDefault().getDisplayLanguage()));
+            whenTv.setText(time.format(f.getDate()));
             ImageView smallPopup = (ImageView) popupView.findViewById(R.id.imageView);
             float s=(float)0.5;
             float v= (float) 0.97;
