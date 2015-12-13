@@ -212,8 +212,7 @@ public class MapsActivity extends AppCompatActivity {
             Data.favouriteFlagsList = new ArrayList<Flag>();
         }
 
-        setUpMapIfNeeded();
-        addCircleToCurrentDestination((int) (MAX_FLAG_VISIBILITY_RANGE * 1000));
+        //addCircleToCurrentDestination((int) (MAX_FLAG_VISIBILITY_RANGE * 1000));
 
         refresh.setRefreshing(false);
     }
@@ -622,14 +621,22 @@ public class MapsActivity extends AppCompatActivity {
 
     private void chooseFlagTextDialog(final List<Flag> closeByFlags) {
 
-        if(closeByFlags.get(0).isVisible()) {
+
+        final List<Flag> visibleCloseFlags = new ArrayList<Flag>();
+        for(Flag f: closeByFlags){
+            if(f.isVisible()){
+                visibleCloseFlags.add(f);
+            }
+        }
+
+        if(visibleCloseFlags.size() > 0) {
 
             //only do this if we have actually more than 1 flag to select from
-            if (closeByFlags.size() > 1) {
+            if (visibleCloseFlags.size() > 1) {
                 // Set up the array to display the flag texts
-                final String[] flagEntries = new String[closeByFlags.size()];
-                for (int i = 0; i < closeByFlags.size(); i++) {
-                    flagEntries[i] = closeByFlags.get(i).getText();
+                final String[] flagEntries = new String[visibleCloseFlags.size()];
+                for (int i = 0; i < visibleCloseFlags.size(); i++) {
+                    flagEntries[i] = visibleCloseFlags.get(i).getText();
                 }
 
                 //build and show dialog
@@ -642,15 +649,15 @@ public class MapsActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int whichEntry) {
                         System.out.println("DEBUG: markerListener, onClick: clicked entry nr: " + whichEntry);
                         // todo: do what ever we want to do with the clicked "flag"(text)
-                        goToMarker(closeByFlags.get(whichEntry));
-                        popUpFlag(closeByFlags.get(whichEntry));
+                        goToMarker(visibleCloseFlags.get(whichEntry));
+                        popUpFlag(visibleCloseFlags.get(whichEntry));
                         dialog.dismiss();
                     }
                 });
                 alert.show();
-            } else if (closeByFlags.size() == 1) {
-                goToMarker(closeByFlags.get(0));
-                popUpFlag(closeByFlags.get(0));
+            } else if (visibleCloseFlags.size() == 1) {
+                goToMarker(visibleCloseFlags.get(0));
+                popUpFlag(visibleCloseFlags.get(0));
             }
         } else {
             goToMarker(closeByFlags.get(0));
