@@ -18,7 +18,7 @@
             android:layout_marginLeft="4dp"
             android:layout_marginRight="10dp"
             android:layout_marginTop="4dp"
-            android:src="@drawable/ic_action_place" >
+            android:src="@drawable/ic_action_place_black" >
         </ImageView>
 
         <TextView
