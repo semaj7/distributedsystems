@@ -82,7 +82,7 @@ public class MapsActivity extends AppCompatActivity {
     private ListView mDrawerList;
     private Button showAllButton;
     private ImageButton profileButton, addFlagButton;
-    private PopupWindow flagPopUpWindow, closeByFlagsPopUpWindow;
+    private PopupWindow flagPopUpWindow, closeByFlagsPopUpWindow, whatsNewPopUpWindow;
     private Circle circle_visible_range;
     private GPSTracker gps;
     private AsyncTask cameraWorker;
@@ -168,30 +168,6 @@ public class MapsActivity extends AppCompatActivity {
         }
     }
 
-    private void getDownvotesFromServer() {
-        // todo: implement this
-        // Data.downvotedFlags = someParseMagicGivesMeDownvotedFlags();
-    }
-
-    private void getUpvotesFromServer() {
-        // todo: implement this
-        // Data.upvotedFlags = someParseMagicGivesMeUpvotedFlags();
-    }
-
-    private void getFollowingUsersFromServer() {
-        // todo: implement this
-        // Data.followingUsers = someParseMagicGivesMeFollowingUsernames();
-    }
-
-    private void getTopFlagsFromServer() {
-        // todo: implement this
-        // Data.topRankedFlags = someParseMagicGivesMeTopFlags();
-    }
-
-    private void getFavouritesFromServer() {
-        // todo: implement this
-        //Data.favouriteFlags = someParseMagicGivesMeFavsOf(Data.user.getUsername());
-    }
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
@@ -226,11 +202,6 @@ public class MapsActivity extends AppCompatActivity {
             Server.getFavouritesFromServer(getApplicationContext());
             Server.getFollowingUsers();
 
-            getFollowingUsersFromServer();
-            getUpvotesFromServer();
-            getDownvotesFromServer();
-            getFavouritesFromServer();
-            getTopFlagsFromServer();
             calculateUserRating();
         } else {
             Data.myFlags = new ArrayList<Flag>();
@@ -241,6 +212,8 @@ public class MapsActivity extends AppCompatActivity {
             Data.favouriteFlagsList = new ArrayList<Flag>();
         }
 
+        setUpMapIfNeeded();
+        addCircleToCurrentDestination((int) (MAX_FLAG_VISIBILITY_RANGE * 1000));
 
         refresh.setRefreshing(false);
     }
@@ -444,6 +417,13 @@ public class MapsActivity extends AppCompatActivity {
         if (closeByFlagsPopUpWindow != null) {
             if (closeByFlagsPopUpWindow.isShowing()) {
                 closeByFlagsPopUpWindow.dismiss();
+                hideWhitescreen();
+                closedSomething = true;
+            }
+        }
+        if (whatsNewPopUpWindow != null){
+            if (whatsNewPopUpWindow.isShowing()){
+                whatsNewPopUpWindow.dismiss();
                 hideWhitescreen();
                 closedSomething = true;
             }
@@ -741,7 +721,7 @@ public class MapsActivity extends AppCompatActivity {
                 mDrawerLayout.closeDrawers();
                 break;
             case 4: // what's new
-                Toast.makeText(this, "Clicked " + slideMenuStrings[4] ,Toast.LENGTH_SHORT).show();
+                whatsNewPopup();
                 mDrawerLayout.closeDrawers();
                 break;
             default: // Settings
@@ -750,6 +730,43 @@ public class MapsActivity extends AppCompatActivity {
 
                 break;
         }
+    }
+
+    private void whatsNewPopup() {
+
+        showWhitescreen();
+
+        View popupView = getLayoutInflater().inflate(R.layout.activity_close_flag_list, null);
+        //this method shows the popup, the first param is just an anchor, passing in the view
+        //we inflated is fine
+
+        final ListView listview = (ListView) popupView.findViewById(R.id.listview);
+
+        final ArrayList<Flag> sortedFlagList = Data.quickSortListByDate(Data.flagsFrom(Data.followingUsers));
+
+        final WhatsNewFlagAdapter adapter = new WhatsNewFlagAdapter(this,
+                android.R.layout.simple_list_item_1, sortedFlagList);
+        listview.setAdapter(adapter);
+
+        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                final Flag item = (Flag) parent.getItemAtPosition(position);
+
+                whatsNewPopUpWindow.dismiss();
+                hideWhitescreen();
+                goToMarker(item);
+                popUpFlag(item);
+            }
+        });
+
+
+        whatsNewPopUpWindow = new PopupWindow(popupView, WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+
+        whatsNewPopUpWindow.setAnimationStyle(R.style.animation);
+        whatsNewPopUpWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
+
+
     }
 
     public void openCloseFlagsPopUp(MenuItem m) {

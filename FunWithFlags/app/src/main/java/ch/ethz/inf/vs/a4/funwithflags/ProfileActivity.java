@@ -34,7 +34,6 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        flags = new ArrayList<Flag>();
         logoutFollowButton = (Button) findViewById(R.id.logoutFollowButton);
 
         Intent intent = getIntent();
@@ -49,6 +48,10 @@ public class ProfileActivity extends AppCompatActivity {
             }
         }
 
+        ArrayList<String> temp = new ArrayList<String>();
+        temp.add(profilesUsername);
+        flags = Data.flagsFrom(temp);
+
 
         updateUI();
 
@@ -58,6 +61,9 @@ public class ProfileActivity extends AppCompatActivity {
             public void onRefresh() {
                 refresh.setRefreshing(true);
                 updateUI();
+                ArrayList<String> temp = new ArrayList<String>();
+                temp.add(profilesUsername);
+                flags = Data.flagsFrom(temp);
                 refresh.setRefreshing(false);
             }
         });
@@ -96,7 +102,7 @@ public class ProfileActivity extends AppCompatActivity {
 
                     String title = res.getString(R.string.ratedFlagsDialogTitleAlienProfile);
                     String usrnm = profilesUsername;
-                    if(usrnm.charAt(usrnm.length()) == 's')
+                    if(usrnm.charAt(usrnm.length() - 1) == 's')
                         usrnm += "\'";
                     else
                         usrnm += "\'s";
@@ -104,9 +110,10 @@ public class ProfileActivity extends AppCompatActivity {
                     alert.setTitle(title);
 
                 }
-                else
+                else {
                     alert.setTitle(R.string.ratedFlagsDialogTitle);
-                alert.setMessage(R.string.ratedFlagsDialogMessage);
+                    alert.setMessage(R.string.ratedFlagsDialogMessage);
+                }
                 break;
             case R.id.settedFlagsCountButton:
                 infoToShow = new String[flags.size()];
@@ -124,7 +131,7 @@ public class ProfileActivity extends AppCompatActivity {
 
                     String title = res.getString(R.string.myFlagsDialogTitleAlienProfile);
                     String usrnm = profilesUsername;
-                    if(usrnm.charAt(usrnm.length()) == 's')
+                    if(usrnm.charAt(usrnm.length()-1 ) == ('s'))
                         usrnm += "\'";
                     else
                         usrnm += "\'s";
@@ -132,9 +139,10 @@ public class ProfileActivity extends AppCompatActivity {
                     alert.setTitle(title);
 
                 }
-                else
+                else {
                     alert.setTitle(R.string.myFlagsDialogTitle);
-                alert.setMessage(R.string.myFlagsDialogMessage);
+                    alert.setMessage(R.string.myFlagsDialogMessage);
+                }
                 break;
             case R.id.followingUsersButton:
                 if(!ownProfile) {
@@ -185,6 +193,7 @@ public class ProfileActivity extends AppCompatActivity {
                 alert.setMessage(R.string.followerUsersDialogMessage);
                 break;
             default:// should never happen
+                System.out.println("debug: error! profileactivity in default");
                 infoToShow = new String[]{""};
                 correspondingFlags = new Flag[1];
                 alert.setTitle("");
@@ -193,7 +202,6 @@ public class ProfileActivity extends AppCompatActivity {
         }
 
         if(nothing){
-            Button b = (Button) findViewById(id);
             String toastMessage;
             if(id == R.id.followersButton | id == R.id.followingUsersButton)
                 toastMessage = res.getString(R.string.noUsersYet);
@@ -213,7 +221,10 @@ public class ProfileActivity extends AppCompatActivity {
 
         String positiveText;
         if(id == R.id.ratingButton | id == R.id.settedFlagsCountButton)
-            positiveText = String.format(res.getString(R.string.Delete));
+            if(ownProfile)
+                positiveText = String.format(res.getString(R.string.Delete));
+            else
+                positiveText = String.format(res.getString(R.string.OK));
         else {
             if (id == R.id.followersButton)
                 positiveText = String.format(res.getString(R.string.OK));
@@ -224,11 +235,23 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if (choosenDialogElement == -1) {
-                    Toast.makeText(getApplicationContext(), String.format(res.getString(R.string.nothingSelectedToDeleteYet)), Toast.LENGTH_SHORT).show();
+                    if(ownProfile)
+                        Toast.makeText(getApplicationContext(), String.format(res.getString(R.string.nothingSelectedToDeleteYet)), Toast.LENGTH_SHORT).show();
+                    else{
+                        dialog.dismiss();
+                        updateUI();
+                        return;
+                    }
                 } else {
                     if(id == R.id.ratingButton | id == R.id.settedFlagsCountButton) {
                         // we are dealing with flags
-                        deleteFlag(correspondingFlags[choosenDialogElement]);
+                        if(ownProfile)
+                            deleteFlag(correspondingFlags[choosenDialogElement]);
+                        else{
+                            dialog.dismiss();
+                            updateUI();
+                            return;
+                        }
                     }
                     else {
                         // dealing with users
@@ -266,12 +289,13 @@ public class ProfileActivity extends AppCompatActivity {
             });
         }
 
-        alert.setNegativeButton(String.format(res.getString(R.string.Cancel))+"\n", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
+        if(ownProfile)
+            alert.setNegativeButton(String.format(res.getString(R.string.Cancel))+"\n", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
 
         alert.show();
 
@@ -312,24 +336,12 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     public String getUserId() {
-        //TODO: get user's name
         if(Data.user != null)
             return Data.user.getUsername();
         Resources res = getResources();
         return res.getString(R.string.user_name_not_found);
     }
 
-    /* no follow button here
-    public void followUserClick(View v) {
-
-        //TODO: implement this
-
-        //show Toast if successful
-        Resources res = getResources();
-        String fU = String.format(res.getString(R.string.followedUser));
-        fU = fU.replace("@name", getUserId());
-        Toast.makeText(this, fU, Toast.LENGTH_LONG).show();
-    }*/
 
     public void logOut(View v) {
         if(!ownProfile){

@@ -321,4 +321,17 @@ public final class Data {
         flags.add(rotation);
         flags.addAll(higher);
         return flags;    }
+
+    public static ArrayList<Flag> flagsFrom(ArrayList<String> users) {
+        ArrayList<Flag> result = new ArrayList<Flag>();
+
+        for(Flag f: allFlags){
+            if(users.contains(f.getUserName())){
+                result.add(f);
+            }
+        }
+
+        return result;
+
+    }
 }

@@ -146,5 +146,7 @@
     <string name="notAllowedToSeeMessage">you are not allowed to see this</string>
     <string name="noUsersYet">there are no users in this list yet</string>
     <string name="noFlagsYet">There are no flags to show yet</string>
+    <string name="whatsNew">What\\\'s new?</string>
+    <string name="user_posted_flag">\@user posted a new flag</string>
 
 </resources>

@@ -6,6 +6,8 @@
 
     <color name="transparent">#00000000</color>
 
+    <color name="black">#000000</color>
+
     <color name="pressed_color">#00b3a1</color>
     <color name="default_color">#ffffff</color>
 
