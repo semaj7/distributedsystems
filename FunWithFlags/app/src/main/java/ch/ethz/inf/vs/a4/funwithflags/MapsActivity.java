@@ -1,7 +1,6 @@
 package ch.ethz.inf.vs.a4.funwithflags;
 
 import android.app.AlertDialog;
-import android.content.ClipData;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -17,13 +16,10 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
-import android.util.DisplayMetrics;
-import android.view.DragEvent;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
@@ -59,12 +55,9 @@ import org.ocpsoft.prettytime.PrettyTime;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
-
-import static android.view.MotionEvent.ACTION_DOWN;
 
 public class MapsActivity extends AppCompatActivity {
 
@@ -91,7 +84,6 @@ public class MapsActivity extends AppCompatActivity {
     private AsyncTask cameraWorker;
     private boolean cameraWorkerRunning;
     private SwipeRefreshLayout refresh;
-    private float initialX, initialY;
     private ImageView whitescreen;
     private ActionBar toolbar;
 
@@ -238,90 +230,6 @@ public class MapsActivity extends AppCompatActivity {
             showAllButton.setVisibility(View.VISIBLE);
     }
 
-
-    private class MapClickListener implements GoogleMap.OnMapClickListener{
-        // sadly this only works with single taps, and not with touches that do a swipe movement :(
-        // otherwhise this would work. but due to clicking it is very unintuitive on how to get to refreshing and back
-        @Override
-        public void onMapClick(LatLng latLng) {
-            double cameraLat = Data.getLastCameraPosition().latitude;
-            double clickLat = latLng.latitude;
-            System.out.println("DEBUG: clickLat: "+clickLat);
-            System.out.println("DEBUG: cameraLat: "+cameraLat);
-            if (clickLat > cameraLat) {
-                System.out.println("DEBUG: enabling refresh");
-                refresh.setEnabled(true);
-            }
-            else {
-                System.out.println("DEBUG: disabling refresh");
-                refresh.setEnabled(false);
-            }
-        }
-    }
-
-    private class MapsTouchListener implements View.OnTouchListener{
-            // sadly this baby didn't get no action either :'(
-            @Override
-            public boolean onTouch (View v, MotionEvent event){
-
-                int action = event.getActionMasked();
-
-                switch (action) {
-
-                    case MotionEvent.ACTION_DOWN:
-                        initialX = event.getX();
-                        initialY = event.getY();
-
-                        System.out.println("DEBUG: Action was DOWN");
-                        return true;
-
-
-                    case MotionEvent.ACTION_MOVE:
-                        System.out.println("DEBUG: Action was MOVE");
-                        return true;
-
-                    case MotionEvent.ACTION_UP:
-                        float finalX = event.getX();
-                        float finalY = event.getY();
-
-                        System.out.println("DEBUG: Action was UP");
-
-                        if (initialX < finalX) {
-                            System.out.println("DEBUG: Left to Right swipe performed");
-                        }
-
-                        if (initialX > finalX) {
-                            System.out.println("DEBUG: Right to Left swipe performed");
-                        }
-
-                        if (initialY < finalY) {
-                            System.out.println("DEBUG: Up to Down swipe performed");
-                            DisplayMetrics displaymetrics = new DisplayMetrics();
-                            getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
-                            int height = displaymetrics.heightPixels / 8 * 3; // upper part of screen
-                            if (initialY < height)
-                                refresh.setEnabled(true);
-                            else
-                                refresh.setEnabled(false);
-                        }
-
-                        if (initialY > finalY) {
-                            System.out.println("DEBUG: Down to Up swipe performed");
-                        }
-                        return true;
-
-                    case MotionEvent.ACTION_CANCEL:
-                        System.out.println("DEBUG: Action was CANCEL");
-                        return true;
-
-                    case MotionEvent.ACTION_OUTSIDE:
-                        System.out.println("DEBUG: Movement occurred outside bounds of current screen element");
-                        return true;
-                }
-
-            return false;
-        }
-    }
 
 
     private class mapCameraListener implements GoogleMap.OnCameraChangeListener{
@@ -538,52 +446,6 @@ public class MapsActivity extends AppCompatActivity {
 
     }
 
-    private void makeButtonDraggable(Button b) {
-
-        //TODO: fix this, this does not work properly yet
-        b.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                if (motionEvent.getAction() == ACTION_DOWN) {
-                    ClipData clipData = ClipData.newPlainText("", "");
-                    View.DragShadowBuilder dsb = new View.DragShadowBuilder(view);
-                    view.startDrag(clipData, dsb, view, 0);
-                    view.setVisibility(View.INVISIBLE);
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        });
-
-        b.setOnDragListener(new View.OnDragListener() {
-            private boolean containsDragable;
-
-            @Override
-            public boolean onDrag(View view, DragEvent dragEvent) {
-                int dragAction = dragEvent.getAction();
-                View dragView = (View) dragEvent.getLocalState();
-                if (dragAction == DragEvent.ACTION_DRAG_EXITED) {
-                    containsDragable = false;
-                } else if (dragAction == DragEvent.ACTION_DRAG_ENTERED) {
-                    containsDragable = true;
-                } else if (dragAction == DragEvent.ACTION_DRAG_ENDED) {
-                    if (dropEventNotHandled(dragEvent)) {
-                        dragView.setVisibility(View.VISIBLE);
-                    }
-                } else if (dragAction == DragEvent.ACTION_DROP && containsDragable) {
-                    dragView.setVisibility(View.VISIBLE);
-                }
-                return true;
-            }
-
-            private boolean dropEventNotHandled(DragEvent dragEvent) {
-                return !dragEvent.getResult();
-            }
-        });
-
-
-    }
 
     private void searchAndFilterByUserNameDialog() {
 
@@ -1355,25 +1217,6 @@ public class MapsActivity extends AppCompatActivity {
             });
 
 
-
-             //blur background
-            //TODO: fix this that also the google maps is blurred
-    /*
-          //  final View content = this.findViewById(android.R.id.content).getRootView();
-            final View content = this.findViewById(android.R.id.content).getRootView();
-            View v1 = getWindow().getDecorView().getRootView();
-
-
-            if (v1.getWidth() > 0) {
-                Bitmap image = BlurBuilder.blur(v1);
-                ImageView background = (ImageView) popupView.findViewById(R.id.backgroundPopUp);
-                background.setImageBitmap(image);
-            }
-
-
-            */
-
-
             flagPopUpWindow = new PopupWindow(popupView, WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
             //this method shows the popup, the first param is just an anchor, passing in the view
             //we inflated is fine
@@ -1511,35 +1354,16 @@ public class MapsActivity extends AppCompatActivity {
             public void done(List<ParseObject> flags, com.parse.ParseException e) {
                 if (e == null) {
                     ArrayList<Flag> ret = new ArrayList<Flag>();
-                    String ID;
-                    String userName;
-                    String text;
-                    LatLng latLng;
-                    Category category;
-                    Date date;
-                    ParseGeoPoint geoPoint;
+
                     Flag f;
                     for (int i = 0; i < flags.size(); i++) {
-                                /*
-                                from the report:
-                                Flags(flagId:Int, userName:String, content:String, latitude:Int,
-                                longitude:Int, categoryName:String, date:Date)
-                                */
-                        /*ID = (String) flags.get(i).getObjectId();
-                        userName = (String) flags.get(i).get("userName");
-                        text = (String) flags.get(i).get("content");
-                        geoPoint = (ParseGeoPoint) flags.get(i).get("geoPoint");
-                        latLng = new LatLng(geoPoint.getLatitude(), geoPoint.getLongitude());
-                        category = Category.getByName((String) flags.get(i).get("categoryName"));
-                        date = (Date) flags.get(i).get("date");*/
+
                         f = Server.parseFlagToFlag(getApplicationContext(), flags.get(i));
 
-                        //ret.add(new Flag(ID, userName, text, latLng, category, date, getApplicationContext()));
                         ret.add(f);
                     }
 
                     dataSetChanged(ret);
-
                 }
 
                 setUpMap();
@@ -1592,11 +1416,6 @@ public class MapsActivity extends AppCompatActivity {
         updateCloseFlagsFromAll();
         Data.updateMyFlagsFromAll();
     }
-
-
-
-
-
 
     void deleteFlag(Flag f){
         // edit: a flag might also get deleted from a downvote, even when it is not the current users flag. this should not be tested here
