@@ -352,7 +352,8 @@ public class ProfileActivity extends AppCompatActivity {
         ParseUser.logOut();
         Data.user = null;
         Data.myFlags.clear();
-        Toast.makeText(this, "You are logged out now", Toast.LENGTH_SHORT).show();
+        String logoutMessage = getResources().getString(R.string.logout_message);
+        Toast.makeText(this, logoutMessage, Toast.LENGTH_SHORT).show();
         finish(); // user is loged out, therefore can no longer be in the profile
     }
 
@@ -361,14 +362,22 @@ public class ProfileActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), String.format(getResources().getString(R.string.needToBeLogedInForThisMessage)), Toast.LENGTH_SHORT).show();
             startActivity(new Intent(getApplicationContext(), LoginActivity.class));
         } else {
+            String message;
             if (Data.followingUsers.contains(profilesUsername)) {
                 // unfollow
+                message = getResources().getString(R.string.unFollowSuccessToast);
+                message = message.replace("@user", profilesUsername);
+                Toast.makeText(getApplicationContext(), message , Toast.LENGTH_SHORT).show();
                 Data.unFollow(profilesUsername);
-                Toast.makeText(getApplicationContext(), getResources().getString(R.string.unFollowSuccessToast), Toast.LENGTH_SHORT).show();
+                Server.unFollow(profilesUsername);
             } else {
                 // follow
+                message = getResources().getString(R.string.newFollowSuccessToast);
+                message = message.replace("@user", profilesUsername);
+                Toast.makeText(getApplicationContext(), message , Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
                 Data.follow(profilesUsername);
-                Toast.makeText(getApplicationContext(), getResources().getString(R.string.newFollowSuccessToast), Toast.LENGTH_SHORT).show();
+                Server.follow(profilesUsername);
             }
         }
     }

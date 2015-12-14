@@ -927,7 +927,8 @@ public class MapsActivity extends AppCompatActivity {
             layout.setOrientation(LinearLayout.VERTICAL);
             layout.addView(input);
             final TextView textView = new TextView(this);
-            textView.setText("\n\t\t Select a category:");
+            String chooseCategory = getResources().getString(R.string.choose_category);
+            textView.setText("\n\t\t "+chooseCategory+":");
             layout.addView(textView);
             layout.addView(categorySpinner);
             alert.setView(layout);

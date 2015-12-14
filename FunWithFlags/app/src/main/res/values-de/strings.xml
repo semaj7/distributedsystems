@@ -1,0 +1,155 @@
+<resources>
+    <string name="app_name">flaggr</string>
+    <string name="title_activity_maps">flaggr</string>
+    <string name="newFlagDialogTitle">Setze deine Flagge!</string>
+    <string name="newFlagDialogMessage">Gib deinen Text ein:</string>
+    <string name="Profile">Profil</string>
+    <string name="title_activity_profile">ProfileActivity</string>
+
+    <string name="hello_world">Hallo Welt!</string>
+    <string name="OK">OK</string>
+    <string name="Cancel">Abbrechen</string>
+    <string name="action_settings">Einstellungen</string>
+    <string name="ratingTextPlaceHolder">Keine Bewertungen gefunden.</string>
+    <string name="settedFlagsCountTextPlaceHolder">Dieser Benutzer hat noch keine Flaggen gesetzt.</string>
+    <string name="ratingText">Deine aktuelle Bewertung ist @rating. Gut Gemacht!</string>
+    <string name="rating">Bewertung:</string>
+    <string name="settedFlagsText">Du hast schon @count Flaggen gesetzt! Wie toll!</string>
+    <string name="followedUser">Du folgst jetzt @name. So ein Stalker!</string>
+    <string name="SportsName">Sport</string>
+    <string name="not_in_range_message">You are not close enough to this flag</string>
+    <string name="choose_category">wähle Kategorie</string>
+    <string name="flag_text_hint">sag etwas</string>
+    <string name="closeByFlagsDialogTitle">Flaggen in der Nähe</string>
+    <string name="closeByFlagsDialogMessage">Wähle eine Flagge</string>
+    <string name="favouriteDisplayDialogTitle">Deine lieblings-Flaggen</string>
+    <string name="noFavourtieYet">Du hast noch keine lieblings-Flaggen</string>
+    <string name="search_username_title">Suche nach Benutzernamen:</string>
+    <string name="showAll">Zeige alle Flags</string>
+    <string name="flag_activity_title">Flagge</string>
+    <string name="followUser">Folgen</string>
+    <string name="upVote">Upvote</string>
+    <string name="downVote">Downvote</string>
+    <string name="noTextFoundDefault">Kein Text gefunden für diese Flagge!</string>
+    <string name="flag_text">Flaggen Text: </string>
+    <string name="title_activity_settings">Einstellungen</string>
+
+    <!-- Strings related to Settings -->
+
+    <!-- Example General settings -->
+    <string name="pref_header_general">General</string>
+
+    <string name="pref_title_social_recommendations">Enable social recommendations</string>
+    <string name="pref_description_social_recommendations">Recommendations for people to contact
+        based on your message history
+    </string>
+
+    <string name="pref_title_display_name">Display name</string>
+    <string name="pref_default_display_name">John Smith</string>
+
+    <string name="pref_title_add_friends_to_messages">Add friends to messages</string>
+    <string-array name="pref_example_list_titles">
+        <item>Always</item>
+        <item>When possible</item>
+        <item>Never</item>
+    </string-array>
+    <string-array name="pref_example_list_values">
+        <item>1</item>
+        <item>0</item>
+        <item>-1</item>
+    </string-array>
+
+    <!-- Example settings for Data & Sync -->
+    <string name="pref_header_data_sync">Data &amp; sync</string>
+
+    <string name="pref_title_sync_frequency">Sync frequency</string>
+    <string-array name="pref_sync_frequency_titles">
+        <item>15 minutes</item>
+        <item>30 minutes</item>
+        <item>1 hour</item>
+        <item>3 hours</item>
+        <item>6 hours</item>
+        <item>Never</item>
+    </string-array>
+    <string-array name="pref_sync_frequency_values">
+        <item>15</item>
+        <item>30</item>
+        <item>60</item>
+        <item>180</item>
+        <item>360</item>
+        <item>-1</item>
+    </string-array>
+
+    <string name="pref_title_system_sync_settings">System sync settings</string>
+
+    <!-- Example settings for Notifications -->
+    <string name="pref_header_notifications">Notifications</string>
+
+    <string name="pref_title_new_message_notifications">New message notifications</string>
+
+    <string name="pref_title_ringtone">Ringtone</string>
+    <string name="pref_ringtone_silent">Silent</string>
+
+    <string name="pref_title_vibrate">Vibration</string>
+    <string name="noTopFlagsYet">Es gibt noch eine top-bewerteten Flaggen...</string>
+    <string name="topRankingDisplayDialogTitle">Top Flaggen</string>
+    <string name="userName">Benutzername</string>
+    <string name="time">Zeit</string>
+    <string name="upVoteRatio">Punkte</string>
+    <string name="category">Kategorie</string>
+    <string name="login_first_time">Sieht so aus als würdest du dich das erste mal einloggen!</string>
+    <string name="welcome">Willkommen</string>
+    <string name="provide_username">Benutzernamen eingeben:</string>
+    <string name="login_not_successful">Login fehlgeschlagen!</string>
+    <string name="try_again_later">Stelle sicher dass du mit dem Internet verbunden bist, und versuche es erneut</string>
+    <string name="log_out">Ausloggen</string>
+    <string name="prompt_username">Benutzername</string>
+    <string name="provide_email">Bitte gib deine email-Addresse an:</string>
+    <string name="title_activity_close_flag_list">CloseFlagListActivity</string>
+    <string name="user_name_not_found">Kein Benutzernamen gefunden</string>
+    <string name="show_close_flags">Zeige nahe Flaggen</string>
+    <string name="drawer_open">öffne Menu</string>
+    <string name="drawer_close">schliesse Menu</string>
+    <string name="fieldUsername">Geschrieben von: </string>
+    <string name="noRating">Keine Bewertung</string>
+    <string name="sorry">Du kannst diese Flagge nicht sehen. Sie ist ausserhalb deines Radius.\nDu musst näher gehen um sie zu sehen.</string>
+    <string name="Delete">Löschen</string>
+    <string name="noFavourtieSelectedToDeleteYet">Wähle zuerst eine Flagge</string>
+    <string name="deleteFavouriteDialogTitle">Zu viele Favoriten</string>
+    <string name="deleteFavouriteDialogMessage">Um diese Flagge zu deinen Favoriten hinzuzufügen, musst du zuerst eine deiner bestehenden Löschen</string>
+    <string name="newFavouriteSuccessToast">Diese Flagge wurde erfolgreich zu deinen Favoriten hinzugefügt</string>
+    <string name="newFollowSuccessToast">Du folgst jetzt @</string>
+    <string name="upVoteSuccessToast">Du hast diese Flagge erfolgreich positiv Bewertet</string>
+    <string name="downVoteSuccessToast">Du hast diese Flagge erfolgreich negativ Bewertet</string>
+    <string name="unFavouriteSuccessToast">Diese Flagge ist nicht länger in deinen Favoriten</string>
+    <string name="unFollowSuccessToast">Du folgst @user nicht mehr</string>
+    <string name="ratedFlagsDialogTitle">Deine am besten bewerteten Flaggen</string>
+    <string name="ratedFlagsDialogMessage">Was möchtest du mit ihnen tun?</string>
+    <string name="myFlagsDialogTitle">Deine Flaggen</string>
+    <string name="myFlagsDialogMessage">Was möchtest du mit ihnen tun?</string>
+    <string name="unfollow">unfolgen</string>
+    <string name="nothingSelectedToDeleteYet">Nichts ausgewählt...</string>
+    <string name="followingUsersTextPlaceHolder">Du folgst momentan keinen Benutzern</string>
+    <string name="followerUsersTextPlaceHolder">Sorry, im Moment folgt dir niemand</string>
+    <string name="followingUsersDialogTitle">Du folgst diesen Benutzern!</string>
+    <string name="followingUsersDialogMessage">Was möchtest du mit ihnen machen?</string>
+    <string name="followerUsersDialogTitle">Diese Benutzer folgen dir</string>
+    <string name="followerUsersDialogMessage">Schau sie dir gut an!</string>
+    <string name="followingText">Du folgst schon @ Benutzern!</string>
+    <string name="followerText">schon @ Benutzer folgen dir!</string>
+    <string name="needToBeLogedInForThisMessage">Dafür musst du eingeloggt sein</string>
+    <string name="show">Anzeigen</string>
+    <string name="ratedFlagsDialogTitleAlienProfile">\@user am besten bewertete Flaggen</string>
+    <string name="myFlagsDialogTitleAlienProfile">\@user Flaggen</string>
+    <string name="followingUsersDialogTitleAlienProfile">\@user folgt diesen Benutzern!</string>
+    <string name="followerUsersDialogTitleAlienProfile">Diese Benutzer folgen @user</string>
+    <string name="notAllowedToSeeMessage">Du darfst das nicht einsehen</string>
+    <string name="noUsersYet">Es gibt noch keine Benutzer in dieser Liste</string>
+    <string name="noFlagsYet">Es gibt noch keine Flaggen zu zeigen</string>
+    <string name="whatsNew">Was ist neu?</string>
+    <string name="user_posted_flag">\@user hat eine neue Flagge gesetzt</string>
+    <string name="noTime">Keine Zeitangabe gefunden</string>
+    <string name="logout_message">Du bist jetzt ausgeloggt</string>
+
+
+</resources>
