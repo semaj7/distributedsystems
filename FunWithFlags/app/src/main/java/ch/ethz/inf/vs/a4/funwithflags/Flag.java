@@ -152,6 +152,9 @@ public class Flag {
 
     public boolean isInRange(Location lastLocation) {
 
+        if(lastLocation == null)
+            return false;
+
         ParseGeoPoint phoneGeoPoint = new ParseGeoPoint(lastLocation.getLatitude(), lastLocation.getLongitude());
         ParseGeoPoint flagGeoPoint = new ParseGeoPoint(getLatLng().latitude, getLatLng().longitude);
 

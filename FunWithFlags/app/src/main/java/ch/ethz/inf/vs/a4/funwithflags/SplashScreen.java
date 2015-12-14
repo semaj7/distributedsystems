@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
+import java.util.ArrayList;
+
 /**
  * Created by JG on 18.11.2015.
  */
@@ -27,6 +29,19 @@ public class SplashScreen extends Activity {
             }
         };
         timerThread.start();
+        Server.getFlags(getApplicationContext());
+        if(MapsActivity.isLoggedIn()) {
+            Server.getFavouritesFromServer(getApplicationContext());
+            Server.getFollowingUsers();
+            Data.calculateUserRating();
+        } else {
+            Data.myFlags = new ArrayList<Flag>();
+            Data.userRating = 0;
+            Data.followingUsers = new ArrayList<String>();
+            Data.downvotedFlags = new ArrayList<Flag>();
+            Data.upvotedFlags = new ArrayList<Flag>();
+            Data.favouriteFlagsList = new ArrayList<Flag>();
+        }
     }
 
     @Override

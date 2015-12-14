@@ -68,6 +68,28 @@ public final class Data {
         }
     }
 
+    public static final void updateCloseFlagsFromAll() {
+
+        List<Flag> closeFlags = new ArrayList<Flag>();
+        List<Flag> allFlags = Data.allFlags;
+
+        Location lastLocation = Data.lastLocation;
+        for (Flag flag : allFlags) {
+            if (flag.isInRange(lastLocation))
+                closeFlags.add(flag);
+
+        }
+
+        Data.closeFlags = new ArrayList<Flag>(closeFlags);
+    }
+
+    public static final void dataSetChanged(List<Flag> flags) {
+        System.out.println("debug: dataSetChanged");
+        Data.setAllFlags(flags);
+        updateCloseFlagsFromAll();
+        Data.updateMyFlagsFromAll();
+    }
+
     public static final void checkIfTopAndAdd(Flag flag){
         System.out.println("debug, check if top flag");
         if (containsFlag(flag, topRankedFlags)) {

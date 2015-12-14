@@ -404,7 +404,14 @@ public class ProfileActivity extends AppCompatActivity {
         }
 
         // update ui
-        setTitle(profilesUsername);
+        String title = getString(R.string.usersProfile);
+        String usrnm = profilesUsername;
+        if(usrnm.charAt(usrnm.length()-1 ) == ('s'))
+            usrnm += "\'";
+        else
+            usrnm += "\'s";
+        title = title.replace("@user", usrnm);
+        setTitle(title);
         setRatingText();
         setSettedFlagsText();
         setFollowingText();

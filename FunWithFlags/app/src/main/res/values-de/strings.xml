@@ -151,6 +151,7 @@
     <string name="noTime">Keine Zeitangabe gefunden</string>
     <string name="logout_message">Du bist jetzt ausgeloggt</string>
     <string name="options">Optionen</string>
+    <string name="usersProfile">\@user Profil</string>
 
 
 </resources>

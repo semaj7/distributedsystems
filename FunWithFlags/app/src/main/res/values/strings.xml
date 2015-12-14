@@ -151,5 +151,8 @@
     <string name="noCategory">No category</string>
     <string name="notInRadius">You can\'t read this flag, because it isn\'t in your radius.\n You have to get closer to read it.</string>
     <string name="options">Options</string>
+    <string name="usersProfile">\@user Profile</string>
+    <string name="gpsAlertDialogTitle">GPS Disabled!</string>
+    <string name="gpsAlertDialogMessage">GPS is not enabled. Do you want to go to settings menu?</string>
 
 </resources>

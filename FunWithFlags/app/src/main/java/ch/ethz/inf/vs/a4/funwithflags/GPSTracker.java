@@ -79,16 +79,19 @@ public class GPSTracker extends Service implements LocationListener {
 
         //TODO: declare these strings in strings.xml
         // Setting Dialog Title
-        alertDialog.setTitle("GPS");
+        String slaveString = getString(R.string.gpsAlertDialogTitle);
+        alertDialog.setTitle(slaveString);
 
         // Setting Dialog Message
-        alertDialog.setMessage("GPS is not enabled. Do you want to go to settings menu?");
+        slaveString = getString(R.string.gpsAlertDialogMessage);
+        alertDialog.setMessage(slaveString);
 
         // Setting Icon to Dialog
         //alertDialog.setIcon(R.drawable.delete);
 
         // On pressing Settings button
-        alertDialog.setPositiveButton("Settings", new DialogInterface.OnClickListener() {
+        slaveString = getString(R.string.action_settings);
+        alertDialog.setPositiveButton(slaveString, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                 mContext.startActivity(intent);
@@ -96,7 +99,8 @@ public class GPSTracker extends Service implements LocationListener {
         });
 
         // on pressing cancel button
-        alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        slaveString = getString(R.string.Cancel);
+        alertDialog.setNegativeButton(slaveString, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 dialog.cancel();
             }
@@ -121,6 +125,7 @@ public class GPSTracker extends Service implements LocationListener {
 
             if (!isGPSEnabled && !isNetworkEnabled) {
                 // no network provider is enabled
+                showSettingsAlert();
             } else {
                 this.canGetLocation = true;
                 // First get location from Network Provider

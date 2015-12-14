@@ -253,11 +253,44 @@ public class Server {
 
     private static void saveFollowingUsersLocally(List<ParseObject> objects){
         Data.followingUsers.clear();
+        if(objects != null)
         for (int i = 0; i < objects.size() ; i++) {
-            Data.followingUsers.add((String) (((ParseUser) objects.get(i)).getUsername()));
-            Log.d("Pascal debug", "following user "+(String)(((ParseUser)objects.get(i)).getUsername()));
+            if (objects.get(i) != null) {
+                Data.followingUsers.add((String) (((ParseUser) objects.get(i)).getUsername()));
+                Log.d("Pascal debug", "following user " + (String) (((ParseUser) objects.get(i)).getUsername()));
+            }
         }
 
+    }
+
+    public static void getFlags(final Context c) {
+
+        // Server.getFlagsFromServer(this);
+
+        ParseQuery<ParseObject> flagQuery = new ParseQuery<ParseObject>("Flag");
+        flagQuery.setLimit(1000);
+        flagQuery.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> flags, com.parse.ParseException e) {
+                if (e == null) {
+                    ArrayList<Flag> ret = new ArrayList<Flag>();
+
+                    Flag f;
+                    for (int i = 0; i < flags.size(); i++) {
+
+                        f = Server.parseFlagToFlag(c, flags.get(i));
+
+                        ret.add(f);
+                    }
+
+                    Data.dataSetChanged(ret);
+                }
+
+
+
+            }
+
+        });
     }
 
     public static void follow(String userName){
