@@ -7,7 +7,6 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.location.Location;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -81,15 +80,10 @@ public class MapsActivity extends AppCompatActivity {
     private PopupWindow flagPopUpWindow, closeByFlagsPopUpWindow, whatsNewPopUpWindow;
     private Circle circle_visible_range;
     private GPSTracker gps;
-    private AsyncTask cameraWorker;
-    private boolean cameraWorkerRunning;
     private SwipeRefreshLayout refresh;
     private ImageView whitescreen;
     private ActionBar toolbar;
 
-
-    //initialize this with a flag if you want to animate to a flag after setting up the map, otherwise null
-    private Flag goToFlag;
     private int favouriteNRtoDelete;
 
     @Override
@@ -113,8 +107,6 @@ public class MapsActivity extends AppCompatActivity {
         // map
         setUpMapIfNeeded();
         locationChanged();
-        cameraWorker = new AsyncCameraWorker();
-        mMap.setOnCameraChangeListener(new mapCameraListener());
         mMap.setOnMapLongClickListener(new MapLongClickListenerRefresh());
         refresh = (SwipeRefreshLayout) findViewById(R.id.refresh);
         refresh.setEnabled(false);
@@ -232,67 +224,7 @@ public class MapsActivity extends AppCompatActivity {
 
 
 
-    private class mapCameraListener implements GoogleMap.OnCameraChangeListener{
 
-        @Override
-        public void onCameraChange(CameraPosition cameraPosition) {
-
-            System.out.println("debug; camera changed");
-
-            if(!Data.stillInSameSector(cameraPosition.target)) {
-                // crossed a grid border, so do stuff :)
-                Data.cameraPositionUpdate(cameraPosition.target);
-                getFlagsIfCameraStillLongEnough();
-            } else {
-                Data.cameraPositionUpdate(cameraPosition.target);
-            }
-        }
-    }
-
-    private void getFlagsIfCameraStillLongEnough() {
-        if(cameraWorkerRunning){
-            cameraWorker.cancel(true);
-        }
-        cameraWorker = new AsyncCameraWorker();
-        cameraWorker.execute();
-    }
-
-    private class AsyncCameraWorker extends AsyncTask<Object, Void, Void> {
-
-
-        public AsyncCameraWorker(){
-            cameraWorkerRunning = false;
-        }
-
-        @Override
-        protected Void doInBackground(Object... params) {
-
-            cameraWorkerRunning = true;
-            LatLng oldCameraPosition = Data.getLastCameraPosition();
-            long time = (long) (1000 * MapsActivity.NON_CAMERA_MOVEMENT_TIMEOUT);
-            try {
-                Thread.sleep(time);
-            } catch (InterruptedException e) {
-                System.out.println("debug, cameraworker catch. sleep failed");
-                e.printStackTrace();
-            }
-            LatLng newCameraPosition = Data.getLastCameraPosition();
-            if (oldCameraPosition.latitude == newCameraPosition.latitude && oldCameraPosition.longitude == newCameraPosition.longitude) {
-                // we stood still long enough. now we should get the flags at that location.
-                // todo: use parse-magic to get flags around current camera position.
-                // getFlags(newCameraPosition) oder so was :)
-            }
-            System.out.println("debug: now loading flags in visible map part");
-            cameraWorkerRunning = false;
-            return null;
-        }
-
-        @Override
-        protected void onCancelled() {
-            cameraWorkerRunning = false;
-        }
-
-    }
 
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
         @Override
@@ -404,14 +336,16 @@ public class MapsActivity extends AppCompatActivity {
                         List<Flag> flagsAtApproxPosition = filterFlagsByApproximatePositions(Data.allFlags, markerPos);
                         chooseFlagTextDialog(flagsAtApproxPosition);
 
-                        //this is used to show the text on top of the marker
-                        //  marker.showInfoWindow();
                         return true;
                     }
                 });
 
                 setUpMap();
 
+            }
+            else {
+
+                //TODO: SHOW USER WHAT TO DO IF NO GOOGLE PLAY SERVICES ARE INSTALLED!
             }
         }
     }
@@ -1372,17 +1306,11 @@ public class MapsActivity extends AppCompatActivity {
             }
         }
 
-        if (goToFlag != null) {
-            goToMarker(goToFlag);
-        }
-
 
         //LatLng in degrees, (double, double), ([-90,90],[-180,180])
 
     }
-
-
-
+    
     void getFlags() {
 
         //TODO: merge this with the server class!
