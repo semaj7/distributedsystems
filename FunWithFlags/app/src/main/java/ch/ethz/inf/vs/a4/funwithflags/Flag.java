@@ -5,7 +5,6 @@ import android.location.Location;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.parse.ParseGeoPoint;
-import com.parse.ParseUser;
 
 import java.util.Date;
 
@@ -34,7 +33,7 @@ public class Flag {
   //  private static GPSTracker gpsTracker; //this is static so that all flags can use the same gpsTracker (otherwise overkill)
 
     public static String NOT_IN_RANGE_MESSAGE;
-    private static final int MINIMAL_UP_TO_DOWN_VOTE_RATIO = -5; // todo: maybe find a better value for this
+    private static final int MINIMAL_UP_TO_DOWN_VOTE_RATIO = -5;
 
     public Flag(String ID,String userName, String text, LatLng latLng, Category category, Date date, Context context){
 

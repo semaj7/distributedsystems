@@ -35,7 +35,6 @@ public enum Category {
     }
 
     public static Category getByName(String name) {
-        //TODO: make this design better, this is ugly
         switch (name) {
             case "No category":
                 return DEFAULT;

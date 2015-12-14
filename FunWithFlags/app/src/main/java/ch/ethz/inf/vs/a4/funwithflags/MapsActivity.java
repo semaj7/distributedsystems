@@ -57,7 +57,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Random;
 
 public class MapsActivity extends AppCompatActivity {
 
@@ -67,7 +66,7 @@ public class MapsActivity extends AppCompatActivity {
     public static final double MAX_FLAG_OVERLAPPING_KM = 0.005; // in kilometers, so its 5 meters
 
     public static final float NON_CAMERA_MOVEMENT_TIMEOUT = 2.5f;
-    public static final int TOP_RANKED_FLAGS_AMOUNT = 4;//TODO: discuss this number together, also should the top ranked flag's content always be visible? this could give some insight on what a good flag should contain, also it is quite unlickely that someone would travel the world for some random good ranked flags, just to see their content..
+    public static final int TOP_RANKED_FLAGS_AMOUNT = 4;
     public static final int MAX_NUMBER_OF_FAVOURITES = 4; // a low value makes testing easier :)
     private static final int FAVOURITE_DIALOG = 0;
     private static final int RANKING_DIALOG = 1;
@@ -126,6 +125,7 @@ public class MapsActivity extends AppCompatActivity {
         toolbar = getSupportActionBar();
         toolbar.setTitle(R.string.app_name);
         toolbar.setDisplayShowHomeEnabled(true);
+
         //toolbar.setLogo(R.drawable.logo);
         //toolbar.setDisplayUseLogoEnabled(true);
 
@@ -840,10 +840,12 @@ public class MapsActivity extends AppCompatActivity {
 
         LatLng coord = getCoordinates();
 
+        if (coord == null) return;
+
         System.out.print("location: " + coord.latitude+ ", " + coord.longitude);
 
         CircleOptions circleOptions = new CircleOptions()
-                .center(getCoordinates())
+                .center(coord)
 
                 // Fill color of the circle
                 // 0x represents, this is an hexadecimal code
@@ -940,6 +942,11 @@ public class MapsActivity extends AppCompatActivity {
                     String inputText = input.getText().toString();
                     LatLng currentPosition = getCoordinates();
 
+                    if (currentPosition == null) {
+                        gps.showSettingsAlert();
+                        return;
+                    }
+
                     Flag f = new Flag(null,getCurrentLoggedInUserName(), inputText, currentPosition, cat[0], new Timestamp(System.currentTimeMillis()), getApplicationContext());
 
                     Server.submitFlag(f);
@@ -984,6 +991,7 @@ public class MapsActivity extends AppCompatActivity {
 
     }
 
+    //may return null if no coordinates received!
     public LatLng getCoordinates() {
 
         double lon;
@@ -991,38 +999,29 @@ public class MapsActivity extends AppCompatActivity {
 
         //TODO: change to something meaningful
 
-        if (gps.canGetLocation()) {
-            lat = gps.getLatitude();
-            lon = gps.getLongitude();
+        Location googleLocation = null;
+        if (mMap!= null) googleLocation = mMap.getMyLocation();
+
+        if (googleLocation != null) {
+            lon =  googleLocation.getLongitude();
+            lat = googleLocation.getLatitude();
 
         }
-
         else {
-            gps.showSettingsAlert();
-            lat = RandomFloat( -90, 90 ); //TODO: change this to something useful
-            lon = RandomFloat( -180, 180 );
+            if (gps.canGetLocation()) {
+                lat = gps.getLatitude();
+                lon = gps.getLongitude();
+            } else {
+                gps.showSettingsAlert();
+
+                return null;
+            }
         }
 
         System.out.println("Lat:" + lat);
         System.out.println("Lon:" + lon);
 
-    //    Toast.makeText(this, "Set flag at Lat:" + lat + "Lon:" + lon, Toast.LENGTH_LONG).show();
-
         return new LatLng(lat, lon);
-    }
-
-    // TODO: delete this method in the end, when we no longer need it
-    float RandomFloat(int a, int b) {
-        Random random = new Random(System.currentTimeMillis());
-        double floatval = Math.random();
-
-        System.out.println("Random float:" + floatval);
-
-        double rand = (floatval * (b - a)) + a;
-
-        System.out.println("Random result:" + rand);
-
-        return (float) rand;
     }
 
     public void switchToLogin() {
