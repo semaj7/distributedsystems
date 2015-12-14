@@ -18,7 +18,7 @@
 
     <ImageView
         android:layout_width="wrap_content"
-        android:layout_height="180dp"
+        android:layout_height="wrap_content"
         android:alpha="0.75"
         android:background="@color/background_floating_material_light"
         android:id="@+id/imageView"
@@ -26,8 +26,16 @@
         android:layout_centerVertical="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
-        android:layout_alignStart="@+id/flagView"
-        android:layout_alignEnd="@+id/buttonHolder" />
+
+        android:layout_alignTop="@+id/windowHolder"
+        android:layout_alignBottom="@+id/windowHolder" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/windowHolder"
+        android:layout_centerVertical="true"
+        android:padding="5dp">
 
 
 
@@ -35,8 +43,7 @@
         android:id="@+id/flagView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/ic_action_place"
-        android:layout_alignTop="@+id/imageView"
+        android:background="@drawable/ic_action_place_black"
         android:layout_centerHorizontal="true" />
 
     <!-- Main Text-->
@@ -96,17 +103,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/catTextView"
-        android:text="@string/noRating"
+        android:text="@string/noCategory"
         android:textColor="#000000"
         android:layout_below="@id/flagText"
         android:layout_toEndOf="@id/ratingTextView"
         android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
-
-        />
+        android:layout_marginTop="10dp"/>
 
 
-    <RelativeLayout
+        <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/buttonHolder"
@@ -114,15 +119,16 @@
         android:layout_below="@id/ratingTextView"
         android:layout_marginTop="15dp">
 
-        <Button
+        <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/toProfileButton"
-            android:src="@drawable/ic_action_group"
-            android:text="profile"
-            android:layout_alignParentTop="true"
+            android:src="@drawable/ic_action_person_grey"
+            android:background="@drawable/roundbutton"
             android:layout_marginTop="0dp"
-            android:layout_marginEnd="10dp"/>
+            android:layout_marginEnd="10dp"
+            android:padding="10dp"
+            android:layout_toLeftOf="@+id/followUserFromFlag"/>
 
         <ImageButton
             android:id="@+id/followUserFromFlag"
@@ -130,7 +136,7 @@
             android:layout_height="wrap_content"
             android:src="@drawable/ic_action_add_person"
             android:background="@drawable/roundbutton"
-            android:padding="5dp"
+            android:padding="10dp"
             android:layout_alignParentTop="true"
             android:layout_toLeftOf="@+id/upVoteButton"
             android:layout_marginTop="0dp"
@@ -141,7 +147,7 @@
             android:id="@+id/upVoteButton"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_action_good"
-            android:padding="5dp"
+            android:padding="10dp"
             android:background="@drawable/roundbutton"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
@@ -153,7 +159,7 @@
             android:id="@+id/downVoteButton"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_action_bad"
-            android:padding="5dp"
+            android:padding="10dp"
             android:background="@drawable/roundbutton"
             android:layout_toRightOf="@id/upVoteButton"
             android:layout_alignParentTop="true"
@@ -167,13 +173,13 @@
             android:layout_height="wrap_content"
             android:src="@drawable/ic_action_favorite"
             android:background="@drawable/roundbutton"
-            android:padding="5dp"
+            android:padding="10dp"
             android:layout_toRightOf="@id/downVoteButton"
-            android:layout_alignParentTop="true"
             android:layout_marginTop="0dp"
             android:layout_marginStart="10dp"/>
 
 
+        </RelativeLayout>
     </RelativeLayout>
 
 </RelativeLayout>

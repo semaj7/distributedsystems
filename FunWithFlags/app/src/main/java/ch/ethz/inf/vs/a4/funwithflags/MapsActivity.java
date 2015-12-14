@@ -1137,7 +1137,7 @@ public class MapsActivity extends AppCompatActivity {
             }
             ImageButton upVoteButton = (ImageButton) popupView.findViewById(R.id.upVoteButton);
             ImageButton downVoteButton = (ImageButton) popupView.findViewById(R.id.downVoteButton);
-            Button toProfileButton = (Button) popupView.findViewById(R.id.toProfileButton);
+            ImageButton toProfileButton = (ImageButton) popupView.findViewById(R.id.toProfileButton);
 
             //straightforward, now handle the onclick listeners for all buttons
             final Resources res = getResources();
