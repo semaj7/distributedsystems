@@ -46,9 +46,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="24sp"
-        android:textStyle="bold"
-        android:text="@string/sorry"
+        android:text="@string/notInRadius"
         android:textColor="#000000"
+        android:gravity="center"
         android:id="@+id/notInRange"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
