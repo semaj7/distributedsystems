@@ -42,10 +42,11 @@
     <!-- Main Text-->
     <TextView android:text="@string/noTextFoundDefault"
         android:id="@+id/flagText"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="#000000"
         android:textSize="24sp"
+        android:gravity="center"
         android:layout_below="@+id/flagView"
         android:layout_centerHorizontal="true" />
 
