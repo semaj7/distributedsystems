@@ -48,49 +48,24 @@ public final class Data {
     public static ArrayList<Flag>myFlags = new ArrayList<Flag>();
 
     //following the KISS principle:
-    public final static List<Flag>showMeThisCloseFlagPleaseInOtherActivity = new ArrayList<Flag>();
 
     public static Location lastLocation;
 
     public static ParseUser user;
 
-    private static LatLng cameraPosition;
-    private static int camLatGrid;
-    private static int camLongGrid;
-    //private static boolean[][] cameraGrid; // [latitude][longitude]
 
     // todo: get and put this information (fav, and top) from server, keep stuff consistent
     public static Flag[] favouriteFlags = new Flag[MapsActivity.MAX_NUMBER_OF_FAVOURITES];
     public static Flag[] topRankedFlags = new Flag[MapsActivity.TOP_RANKED_FLAGS_AMOUNT];
 
     public static List<Flag>favouriteFlagsList = new ArrayList<Flag>();
-    public static List<Flag>topRankedFlagsList = new ArrayList<Flag>();
 
+    public static final void calculateUserRating() {
 
-    public static final void cameraPositionUpdate(LatLng newPosition){
-
-        System.out.print("debug; old camera latitude: "+ cameraPosition.latitude);
-        System.out.println(". old camera latitude: "+ cameraPosition.longitude);
-        cameraPosition = newPosition;
-        camLatGrid = (int) (cameraPosition.latitude) / 2;
-        camLongGrid = (int) (cameraPosition.longitude) / 2;
-        System.out.print("debug; new camera latitude: "+ cameraPosition.latitude);
-        System.out.println(". new camera longitude: "+ cameraPosition.longitude);
-    }
-
-    public static final LatLng getLastCameraPosition(){
-        return cameraPosition;
-    }
-
-    public static final boolean stillInSameSector(LatLng toTest){
-        if(cameraPosition == null)
-            cameraPosition = new LatLng(0.0, 0.0);
-        if(!(camLatGrid == (int) (toTest.latitude) / 2) && (camLongGrid == (int) (toTest.longitude) /2)) {
-            System.out.println("debug; camera grid change. last grid [" + camLatGrid + "][" + camLongGrid + "]. tested grid: [" + ((int) (toTest.latitude) / 2) + "][" + ((int) (toTest.longitude) / 2) + "]");
-            return false;
+        Data.userRating = 0;
+        for(Flag f : Data.myFlags){
+            Data.userRating += f.getVoteRateAbsolut();
         }
-        System.out.println("debug; still in same sector");
-        return true;
     }
 
     public static final void checkIfTopAndAdd(Flag flag){

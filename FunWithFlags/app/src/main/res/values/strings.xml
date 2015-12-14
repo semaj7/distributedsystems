@@ -150,5 +150,6 @@
     <string name="noTime">No Time found</string>
     <string name="noCategory">No category</string>
     <string name="notInRadius">You can\'t read this flag, because it isn\'t in your radius.\n You have to get closer to read it.</string>
+    <string name="options">Options</string>
 
 </resources>

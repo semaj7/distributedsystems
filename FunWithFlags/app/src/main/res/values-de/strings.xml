@@ -150,6 +150,7 @@
     <string name="user_posted_flag">\@user hat eine neue Flagge gesetzt</string>
     <string name="noTime">Keine Zeitangabe gefunden</string>
     <string name="logout_message">Du bist jetzt ausgeloggt</string>
+    <string name="options">Optionen</string>
 
 
 </resources>

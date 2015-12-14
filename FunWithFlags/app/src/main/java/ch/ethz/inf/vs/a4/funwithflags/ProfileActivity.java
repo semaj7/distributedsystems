@@ -350,6 +350,11 @@ public class ProfileActivity extends AppCompatActivity {
             return;
         }
         ParseUser.logOut();
+        Data.userRating = 0;
+        Data.favouriteFlags = new Flag[MapsActivity.MAX_NUMBER_OF_FAVOURITES];
+        Data.downvotedFlags = new ArrayList<Flag>();
+        Data.upvotedFlags = new ArrayList<Flag>();
+        Data.followingUsers = new ArrayList<String>();
         Data.user = null;
         Data.myFlags.clear();
         Toast.makeText(this, "You are logged out now", Toast.LENGTH_SHORT).show();
@@ -378,6 +383,7 @@ public class ProfileActivity extends AppCompatActivity {
         //TODO: add additional UI changes
 
         // update info in Data
+        Data.calculateUserRating();
         if(ownProfile) {
             Data.updateMyFlagsFromAll();
             flags = Data.myFlags;
@@ -451,6 +457,7 @@ public class ProfileActivity extends AppCompatActivity {
     public void setRatingText() {
         int rating;
 
+        Data.calculateUserRating();
         rating = Data.userRating;
         if(!ownProfile){
             rating = 0;
@@ -502,6 +509,7 @@ public class ProfileActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_profile, menu);
+
         return true;
     }
 
@@ -512,11 +520,11 @@ public class ProfileActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if(id == android.R.id.home){
+            finish();
         }
 
-        return super.onOptionsItemSelected(item);
+
+        return true;
     }
 }

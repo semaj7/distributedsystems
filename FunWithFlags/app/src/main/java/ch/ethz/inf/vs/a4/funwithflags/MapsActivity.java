@@ -83,12 +83,14 @@ public class MapsActivity extends AppCompatActivity {
     private SwipeRefreshLayout refresh;
     private ImageView whitescreen;
     private ActionBar toolbar;
-
     private int favouriteNRtoDelete;
+    private MenuItem eye;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
 
         getFlags();
 
@@ -130,12 +132,16 @@ public class MapsActivity extends AppCompatActivity {
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.drawable.ic_setting_dark, R.string.drawer_open, R.string.drawer_close){
            public void onDrawerClosed(View view){
                super.onDrawerClosed(view);
-                toolbar.setTitle(R.string.app_name);
+               if(toolbar.getTitle().equals(getString(R.string.options)))
+                   toolbar.setTitle(R.string.app_name);
+               else {
+                   // let it as it is :)
+               }
            }
 
             public void onDrawerOpened(View drawerView){
                 super.onDrawerOpened(drawerView);
-                toolbar.setTitle("Options");
+                toolbar.setTitle(R.string.options);
             }
         };
         // Set the drawer toggle as the DrawerListener
@@ -145,14 +151,6 @@ public class MapsActivity extends AppCompatActivity {
 
         // get Server Data
         refresh();
-    }
-
-    public void calculateUserRating() {
-
-        Data.userRating = 0;
-        for(Flag f : Data.myFlags){
-            Data.userRating += f.getVoteRateAbsolut();
-        }
     }
 
 
@@ -189,7 +187,7 @@ public class MapsActivity extends AppCompatActivity {
             Server.getFavouritesFromServer(getApplicationContext());
             Server.getFollowingUsers();
 
-            calculateUserRating();
+            Data.calculateUserRating();
         } else {
             Data.myFlags = new ArrayList<Flag>();
             Data.userRating = 0;
@@ -204,18 +202,26 @@ public class MapsActivity extends AppCompatActivity {
         refresh.setRefreshing(false);
     }
 
-    private void showWhitescreen(){
+    private void showWhitescreen(String title){
         whitescreen.setVisibility(View.VISIBLE);
-        toolbar.hide();
+        eye.setVisible(false);
+        toolbar.setDisplayShowHomeEnabled(false);
+        toolbar.setDisplayHomeAsUpEnabled(false);
+        toolbar.setHomeButtonEnabled(false);
+        toolbar.setTitle(title);
         profileButton.setVisibility(View.INVISIBLE);
         addFlagButton.setVisibility(View.INVISIBLE);
         if(Data.filteringEnabled.size() >= 1)
             showAllButton.setVisibility(View.INVISIBLE);
     }
 
-    private void hideWhitescreen(){
+    private void hideWhitescreen() {
         whitescreen.setVisibility(View.INVISIBLE);
-        toolbar.show();
+        eye.setVisible(true);
+        toolbar.setDisplayShowHomeEnabled(true);
+        toolbar.setDisplayHomeAsUpEnabled(true);
+        toolbar.setHomeButtonEnabled(true);
+        toolbar.setTitle(R.string.app_name);
         profileButton.setVisibility(View.VISIBLE);
         addFlagButton.setVisibility(View.VISIBLE);
         if(Data.filteringEnabled.size() >= 1)
@@ -279,6 +285,8 @@ public class MapsActivity extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_map, menu);
 
+        eye = menu.findItem(R.id.close_info);
+
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -287,18 +295,12 @@ public class MapsActivity extends AppCompatActivity {
         // Handle action bar item clicks here. The action bar will
             // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
         // Pass the event to ActionBarDrawerToggle, if it returns
         // true, then it has handled the app icon touch event
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
-        // Handle your other action bar items...
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -539,44 +541,48 @@ public class MapsActivity extends AppCompatActivity {
     }
 
     private void whatsNewPopup() {
+        if(isLoggedIn()) {
 
-        showWhitescreen();
+            showWhitescreen(getString(R.string.whatsNew));
 
-        View popupView = getLayoutInflater().inflate(R.layout.activity_close_flag_list, null);
-        //this method shows the popup, the first param is just an anchor, passing in the view
-        //we inflated is fine
+            View popupView = getLayoutInflater().inflate(R.layout.activity_close_flag_list, null);
+            //this method shows the popup, the first param is just an anchor, passing in the view
+            //we inflated is fine
 
-        final ListView listview = (ListView) popupView.findViewById(R.id.listview);
+            final ListView listview = (ListView) popupView.findViewById(R.id.listview);
 
-        final ArrayList<Flag> sortedFlagList = Data.quickSortListByDate(Data.flagsFrom(Data.followingUsers));
+            final ArrayList<Flag> sortedFlagList = Data.quickSortListByDate(Data.flagsFrom(Data.followingUsers));
 
-        final WhatsNewFlagAdapter adapter = new WhatsNewFlagAdapter(this,
-                android.R.layout.simple_list_item_1, sortedFlagList);
-        listview.setAdapter(adapter);
+            final WhatsNewFlagAdapter adapter = new WhatsNewFlagAdapter(this,
+                    android.R.layout.simple_list_item_1, sortedFlagList);
+            listview.setAdapter(adapter);
 
-        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                final Flag item = (Flag) parent.getItemAtPosition(position);
+            listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    final Flag item = (Flag) parent.getItemAtPosition(position);
 
-                whatsNewPopUpWindow.dismiss();
-                hideWhitescreen();
-                goToMarker(item);
-                popUpFlag(item);
-            }
-        });
+                    whatsNewPopUpWindow.dismiss();
+                    hideWhitescreen();
+                    goToMarker(item);
+                    popUpFlag(item);
+                }
+            });
 
 
-        whatsNewPopUpWindow = new PopupWindow(popupView, WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+            whatsNewPopUpWindow = new PopupWindow(popupView, WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
 
-        whatsNewPopUpWindow.setAnimationStyle(R.style.animation);
-        whatsNewPopUpWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
-
+            whatsNewPopUpWindow.setAnimationStyle(R.style.animation);
+            whatsNewPopUpWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
+        } else {
+            String toastmessage = getString(R.string.notAllowedToSeeMessage);
+            Toast.makeText(getApplicationContext(), toastmessage, Toast.LENGTH_SHORT).show();
+        }
 
     }
 
     public void openCloseFlagsPopUp(MenuItem m) {
-        showWhitescreen();
+        showWhitescreen(getString(R.string.closeByFlagsDialogTitle));
         updateCloseFlagsFromAll();
         
         View popupView = getLayoutInflater().inflate(R.layout.activity_close_flag_list, null);
@@ -1000,7 +1006,7 @@ public class MapsActivity extends AppCompatActivity {
     public void switchToProfile(View v) {
 
         if(isLoggedIn()) {
-            calculateUserRating();
+            Data.calculateUserRating();
             Intent newIntent = new Intent(this, ProfileActivity.class);
             newIntent.putExtra("username", getCurrentLoggedInUserName());
             startActivity(newIntent);
