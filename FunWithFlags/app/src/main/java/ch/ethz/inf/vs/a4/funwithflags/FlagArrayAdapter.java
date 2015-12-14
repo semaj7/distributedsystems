@@ -59,6 +59,7 @@ public class FlagArrayAdapter extends ArrayAdapter<Flag> {
         TextView whoPosted = (TextView) rowView.findViewById(R.id.whoPosted);
         TextView whenPosted = (TextView) rowView.findViewById(R.id.whenPosted);
         TextView textOfFlag = (TextView) rowView.findViewById(R.id.textOfFlag);
+
         // Populate the data into the template view using the data object
 
 

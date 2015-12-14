@@ -761,7 +761,7 @@ public class MapsActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int whichFlag) {
                 // todo: do something with selected flag.. right now, show it :)
-                if(!empty[0]) {
+                if (!empty[0]) {
                     goToMarker(nonNullFlagData.get(whichFlag));
                     popUpFlag(nonNullFlagData.get(whichFlag));
                 }
@@ -1038,6 +1038,25 @@ public class MapsActivity extends AppCompatActivity {
 
     }
 
+    public void switchToAlienOrOwnProfile(View v) {
+        if (v instanceof TextView) {
+            String username = ((TextView) v).getText().toString();
+
+            if (isLoggedIn()) {
+                if (getCurrentLoggedInUserName().equals(username)) {
+                    switchToProfile(v);
+                }
+                else {
+                    switchToAlienProfile(username);
+                }
+            }
+            else {
+                switchToAlienProfile(username);
+            }
+
+        }
+    }
+
     public void switchToAlienProfile(String username){
         Intent newIntent = new Intent(this, ProfileActivity.class);
         newIntent.putExtra("username", username);
@@ -1066,17 +1085,33 @@ public class MapsActivity extends AppCompatActivity {
         //inflate the popup layout we just created, make sure the name is correct
         if(f.isVisible()){
 
+            //only invoke this if visible
+
             View popupView = getLayoutInflater().inflate(R.layout.flag_popup, null);
             //init controls
+
+            //--- Text --- //
             TextView text = (TextView) popupView.findViewById(R.id.flagText);
             text.setText(f.getText());
+
+            //--- RATING --- //
             final TextView ratingTv = (TextView) popupView.findViewById(R.id.ratingTextView);
             ratingTv.setText(String.valueOf(f.getVoteRateAbsolut()));
+
+            //--- Username --- //
             TextView username = (TextView) popupView.findViewById(R.id.placeholderUsername);
             username.setText(f.getUserName());
+
+            //--- Category --- //
+            TextView categoryTv = (TextView) popupView.findViewById(R.id.catTextView);
+            categoryTv.setText(f.getCategory().name);
+
+            //--- Time --- //
             final TextView whenTv = (TextView) popupView.findViewById(R.id.whenTextView);
             PrettyTime time = new PrettyTime(new Locale(Locale.getDefault().getDisplayLanguage()));
             whenTv.setText(time.format(f.getDate()));
+
+            // -- Background Image -- //
             ImageView smallPopup = (ImageView) popupView.findViewById(R.id.imageView);
             float s=(float)0.5;
             float v= (float) 0.97;
@@ -1084,6 +1119,8 @@ public class MapsActivity extends AppCompatActivity {
             float hsv[];
             hsv=new float[]{h, s, v};
             smallPopup.setBackgroundColor(Color.HSVToColor(hsv));
+
+            // -- Other Buttons -- //
 
             final ImageButton favouriteFlagButton = (ImageButton) popupView.findViewById(R.id.addFavourite);
             if(Data.containsFlag(f, Data.favouriteFlags)) {
@@ -1217,12 +1254,16 @@ public class MapsActivity extends AppCompatActivity {
             });
 
 
+            // CREATE ! //
+
             flagPopUpWindow = new PopupWindow(popupView, WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
             //this method shows the popup, the first param is just an anchor, passing in the view
             //we inflated is fine
             flagPopUpWindow.setAnimationStyle(R.style.animation);
             flagPopUpWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
         } else {
+            // flag is not visible -> show not in range popup
+
             notInRangePopUp();
         }
 
