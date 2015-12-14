@@ -7,7 +7,10 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.Vibrator;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
@@ -85,14 +88,12 @@ public class MapsActivity extends AppCompatActivity {
     private ActionBar toolbar;
     private int favouriteNRtoDelete;
     private MenuItem eye;
+    private boolean resumeHasRun;
+    private boolean updating;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
-
-        getFlags();
 
         // view's
         setContentView(R.layout.activity_maps);
@@ -106,17 +107,11 @@ public class MapsActivity extends AppCompatActivity {
         gps = new GPSTracker(this, this);
 
 
-        // map
-        setUpMapIfNeeded();
-        locationChanged();
-        mMap.setOnMapLongClickListener(new MapLongClickListenerRefresh());
         refresh = (SwipeRefreshLayout) findViewById(R.id.refresh);
         refresh.setEnabled(false);
 
 
-
-
-        // todo: initialize app compat action bar, as to however it should be
+        // compat action bar
         toolbar = getSupportActionBar();
         toolbar.setTitle(R.string.app_name);
         toolbar.setDisplayShowHomeEnabled(true);
@@ -149,8 +144,19 @@ public class MapsActivity extends AppCompatActivity {
         toolbar.setDisplayHomeAsUpEnabled(true);
         toolbar.setHomeButtonEnabled(true);
 
-        // get Server Data
+
+        // map
+        setUpMapIfNeeded();
+        locationChanged();
+        mMap.setOnMapLongClickListener(new MapLongClickListenerRefresh());
+    }
+
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
         refresh();
+        setUpMapIfNeeded();
     }
 
 
@@ -172,16 +178,18 @@ public class MapsActivity extends AppCompatActivity {
         // this is pretty stupid... but sadly the only way i found to do it for now
         @Override
         public void onMapLongClick(LatLng latLng) {
-            Vibrator vib = (Vibrator) getSystemService(VIBRATOR_SERVICE);
-            vib.vibrate(125); // give some haptic feedback, so that user knows he long-clicked
             refresh();
         }
     }
 
     private void refresh() {
-        refresh.setRefreshing(true);
-        // do everything we need to do to refresh
+        // feedback
         Toast.makeText(getApplicationContext(), "Refreshing...", Toast.LENGTH_SHORT).show();
+        refresh.setRefreshing(true);
+        Vibrator vib = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+        vib.vibrate(125); // give some haptic feedback, so that user knows he long-clicked
+
+        // do everything we need to do to refresh
         getFlags();
         if(isLoggedIn()) {
             Server.getFavouritesFromServer(getApplicationContext());
@@ -197,10 +205,29 @@ public class MapsActivity extends AppCompatActivity {
             Data.favouriteFlagsList = new ArrayList<Flag>();
         }
 
-        //addCircleToCurrentDestination((int) (MAX_FLAG_VISIBILITY_RANGE * 1000));
+        updating = true;
 
+        Thread timerThread = new Thread(){
+            public void run(){
+                try{
+                    sleep(1500);
+                }catch(InterruptedException e){
+                    e.printStackTrace();
+                }finally{
+                    updating = false;
+                }
+            }
+        };
+        timerThread.start();
+        while(updating){
+            // wait
+            // todo: if possible wait somewhere else
+        }
+        setUpMapIfNeeded();
         refresh.setRefreshing(false);
     }
+
+
 
     private void showWhitescreen(String title){
         whitescreen.setVisibility(View.VISIBLE);
@@ -349,6 +376,8 @@ public class MapsActivity extends AppCompatActivity {
 
                 //TODO: SHOW USER WHAT TO DO IF NO GOOGLE PLAY SERVICES ARE INSTALLED!
             }
+        } else {
+            setUpMap();
         }
     }
 
@@ -583,7 +612,7 @@ public class MapsActivity extends AppCompatActivity {
 
     public void openCloseFlagsPopUp(MenuItem m) {
         showWhitescreen(getString(R.string.closeByFlagsDialogTitle));
-        updateCloseFlagsFromAll();
+        Data.updateCloseFlagsFromAll();
         
         View popupView = getLayoutInflater().inflate(R.layout.activity_close_flag_list, null);
 
@@ -760,7 +789,7 @@ public class MapsActivity extends AppCompatActivity {
     }
 
 
-    public boolean isLoggedIn() {
+    public static boolean isLoggedIn() {
 
         ParseUser currentUser = ParseUser.getCurrentUser();
         if (currentUser != null) {
@@ -1316,36 +1345,10 @@ public class MapsActivity extends AppCompatActivity {
         //LatLng in degrees, (double, double), ([-90,90],[-180,180])
 
     }
-    
-    void getFlags() {
-
-        //TODO: merge this with the server class!
-        // Server.getFlagsFromServer(this);
-
-        ParseQuery<ParseObject> flagQuery = new ParseQuery<ParseObject>("Flag");
-        flagQuery.setLimit(1000);
-        flagQuery.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> flags, com.parse.ParseException e) {
-                if (e == null) {
-                    ArrayList<Flag> ret = new ArrayList<Flag>();
-
-                    Flag f;
-                    for (int i = 0; i < flags.size(); i++) {
-
-                        f = Server.parseFlagToFlag(getApplicationContext(), flags.get(i));
-
-                        ret.add(f);
-                    }
-
-                    dataSetChanged(ret);
-                }
-
-                setUpMap();
-            }
-
-        });
-            }
+    private void getFlags(){
+        Server.getFlags(this);
+        setUpMapIfNeeded();
+    }
 
     private void addToData(Flag f) {
         Data.allFlags.add(f);
@@ -1368,29 +1371,6 @@ public class MapsActivity extends AppCompatActivity {
     }
 
 
-    public void updateCloseFlagsFromAll() {
-
-        List<Flag> closeFlags = new ArrayList<Flag>();
-        List<Flag> allFlags = Data.allFlags;
-
-        Location lastLocation = Data.lastLocation;
-        for (Flag flag : allFlags) {
-            if (flag.isInRange(lastLocation))
-                closeFlags.add(flag);
-
-        }
-
-        Data.closeFlags = new ArrayList<Flag>(closeFlags);
-    }
-
-
-
-    public void dataSetChanged(List<Flag> flags) {
-        System.out.println("debug: dataSetChanged");
-        Data.setAllFlags(flags);
-        updateCloseFlagsFromAll();
-        Data.updateMyFlagsFromAll();
-    }
 
     void deleteFlag(Flag f){
         // edit: a flag might also get deleted from a downvote, even when it is not the current users flag. this should not be tested here
