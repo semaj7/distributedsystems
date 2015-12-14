@@ -364,9 +364,6 @@ public class MapsActivity extends AppCompatActivity {
         // Handle your other action bar items...
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -942,13 +939,9 @@ public class MapsActivity extends AppCompatActivity {
                     String inputText = input.getText().toString();
                     LatLng currentPosition = getCoordinates();
 
-
-                    //TODO: get the category here
                     Flag f = new Flag(null,getCurrentLoggedInUserName(), inputText, currentPosition, cat[0], new Timestamp(System.currentTimeMillis()), getApplicationContext());
-                    //TODO: get the flags ID somewhere
-                    // f.setID(ID);
-                    Server.submitFlag(f);
 
+                    Server.submitFlag(f);
 
                     f.isOwner = true;
                     addToData(f);
@@ -1005,7 +998,7 @@ public class MapsActivity extends AppCompatActivity {
 
         else {
             gps.showSettingsAlert();
-            lat = RandomFloat( -90, 90 );
+            lat = RandomFloat( -90, 90 ); //TODO: change this to something useful
             lon = RandomFloat( -180, 180 );
         }
 

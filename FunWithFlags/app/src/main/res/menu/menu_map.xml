@@ -7,11 +7,6 @@
 
         <!-- for example our logo should appear as action button, if possible. and it should always show notification symbol, etc.
          possible to add onClicks, and all that fancy stuff in here :) -->
-        <item
-            android:id="@+id/action_logo"
-            android:icon="@drawable/logo"
-            android:title="example Title"
-            />
 
         <item
             android:id="@+id/close_info"
@@ -21,10 +16,5 @@
             android:title="@string/show_close_flags"
         />
 
-
-        <!-- Declared like this, things will end up in the overflow, like settings here -->
-        <item android:id="@+id/action_settings"
-            android:title="@string/action_settings"
-            app:showAsAction="never"/>
 
 </menu>
