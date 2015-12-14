@@ -156,7 +156,6 @@ public class MapsActivity extends AppCompatActivity {
     protected void onRestart() {
         super.onRestart();
         refresh();
-        setUpMapIfNeeded();
     }
 
 
@@ -178,19 +177,45 @@ public class MapsActivity extends AppCompatActivity {
         // this is pretty stupid... but sadly the only way i found to do it for now
         @Override
         public void onMapLongClick(LatLng latLng) {
+            Toast.makeText(getApplicationContext(), "Refreshing...", Toast.LENGTH_SHORT).show();
+            refresh.setRefreshing(true);
+
+            Vibrator vib = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+            vib.vibrate(125); // give some haptic feedback, so that user knows he long-clicked
             refresh();
         }
     }
 
     private void refresh() {
         // feedback
-        Toast.makeText(getApplicationContext(), "Refreshing...", Toast.LENGTH_SHORT).show();
-        refresh.setRefreshing(true);
-        Vibrator vib = (Vibrator) getSystemService(VIBRATOR_SERVICE);
-        vib.vibrate(125); // give some haptic feedback, so that user knows he long-clicked
+
 
         // do everything we need to do to refresh
-        getFlags();
+        ParseQuery<ParseObject> flagQuery = new ParseQuery<ParseObject>("Flag");
+        flagQuery.setLimit(1000);
+        flagQuery.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> flags, com.parse.ParseException e) {
+                if (e == null) {
+                    ArrayList<Flag> ret = new ArrayList<Flag>();
+
+                    Flag f;
+                    for (int i = 0; i < flags.size(); i++) {
+
+                        f = Server.parseFlagToFlag(getApplicationContext(), flags.get(i));
+
+                        ret.add(f);
+                    }
+
+                    Data.dataSetChanged(ret);
+                }
+
+                setUpMap();
+
+            }
+
+        });
+
         if(isLoggedIn()) {
             Server.getFavouritesFromServer(getApplicationContext());
             Server.getFollowingUsers();
@@ -203,28 +228,12 @@ public class MapsActivity extends AppCompatActivity {
             Data.downvotedFlags = new ArrayList<Flag>();
             Data.upvotedFlags = new ArrayList<Flag>();
             Data.favouriteFlagsList = new ArrayList<Flag>();
+            Data.favouriteFlags = new Flag[MAX_NUMBER_OF_FAVOURITES];
         }
 
-        updating = true;
-
-        Thread timerThread = new Thread(){
-            public void run(){
-                try{
-                    sleep(1500);
-                }catch(InterruptedException e){
-                    e.printStackTrace();
-                }finally{
-                    updating = false;
-                }
-            }
-        };
-        timerThread.start();
-        while(updating){
-            // wait
-            // todo: if possible wait somewhere else
-        }
         setUpMapIfNeeded();
-        refresh.setRefreshing(false);
+        if(refresh.isRefreshing())
+            refresh.setRefreshing(false);
     }
 
 

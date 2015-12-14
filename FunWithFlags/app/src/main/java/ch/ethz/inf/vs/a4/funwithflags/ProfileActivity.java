@@ -360,7 +360,8 @@ public class ProfileActivity extends AppCompatActivity {
         Data.followingUsers = new ArrayList<String>();
         Data.user = null;
         Data.myFlags.clear();
-        Toast.makeText(this, "You are logged out now", Toast.LENGTH_SHORT).show();
+        String msg = getString(R.string.logout_message);
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
         finish(); // user is loged out, therefore can no longer be in the profile
     }
 

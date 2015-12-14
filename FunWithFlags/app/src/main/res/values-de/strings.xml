@@ -152,6 +152,8 @@
     <string name="logout_message">Du bist jetzt ausgeloggt</string>
     <string name="options">Optionen</string>
     <string name="usersProfile">\@user Profil</string>
+    <string name="gpsAlertDialogTitle">GPS deaktiviert!</string>
+    <string name="gpsAlertDialogMessage">GPS ist deaktiviert. Möchtest du in das Einstellungsmenu wechseln?</string>
 
 
 </resources>
