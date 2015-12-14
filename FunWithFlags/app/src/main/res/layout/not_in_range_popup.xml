@@ -46,10 +46,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="24sp"
-        android:text="@string/notInRadius"
+        android:text="@string/sorry"
         android:textColor="#000000"
-        android:gravity="center"
         android:id="@+id/notInRange"
+        android:gravity="center"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
 

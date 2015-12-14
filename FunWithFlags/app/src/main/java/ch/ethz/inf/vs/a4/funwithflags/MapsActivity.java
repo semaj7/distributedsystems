@@ -1301,7 +1301,7 @@ public class MapsActivity extends AppCompatActivity {
             showAllButton.setVisibility(View.VISIBLE);
             Toast.makeText(this, "Displaying " + Data.flagsToShow.size() + " flags after filtering." ,Toast.LENGTH_SHORT).show();
 
-            for (Flag f: Data.flagsToShow) {
+            for (Flag f : Data.flagsToShow) {
                 displayFlag(f);
             }
         }

@@ -53,7 +53,10 @@ public class ProfileActivity extends AppCompatActivity {
         flags = Data.flagsFrom(temp);
 
 
+
+
         updateUI();
+
 
         refresh = (SwipeRefreshLayout) findViewById(R.id.refresh_profile);
         refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -520,8 +523,12 @@ public class ProfileActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        if(id == android.R.id.home){
-            finish();
+
+        //noinspection SimplifiableIfStatement
+        switch (id) {
+             case android.R.id.home:
+                this.finish();
+                return true;
         }
 
 
