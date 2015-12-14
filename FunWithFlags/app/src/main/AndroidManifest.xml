@@ -43,6 +43,7 @@
         </activity>
         <activity
             android:name=".MapsActivity"
+            android:theme="@style/Theme.FlaggrThemeMap" >
             android:label="@string/title_activity_maps">
 
             <intent-filter>

@@ -53,7 +53,10 @@ public class ProfileActivity extends AppCompatActivity {
         flags = Data.flagsFrom(temp);
 
 
+
+
         updateUI();
+
 
         refresh = (SwipeRefreshLayout) findViewById(R.id.refresh_profile);
         refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -513,9 +516,11 @@ public class ProfileActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+      switch (id) {
+          case android.R.id.home:
+              this.finish();
+              return true;
+      }
 
         return super.onOptionsItemSelected(item);
     }
