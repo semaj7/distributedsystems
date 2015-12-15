@@ -34,7 +34,7 @@
 
         <activity
             android:name=".SplashScreen"
-            android:label="@string/app_name">
+            android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -45,7 +45,6 @@
             android:name=".MapsActivity"
             android:theme="@style/Theme.FlaggrThemeMap" >
             android:label="@string/title_activity_maps">
-
             <intent-filter>
                 <action android:name="ch.ethz.inf.vs.a4.funwithflags.MAPSACTIVITY" />
 
@@ -72,6 +71,10 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="ch.ethz.inf.vs.a4.funwithflags.MapsActivity" />
+        </activity>
+        <activity
+            android:name=".NoGooglePlayServicesActivity"
+            android:label="@string/noGooglePlayServicesTitle" >
         </activity>
     </application>
 

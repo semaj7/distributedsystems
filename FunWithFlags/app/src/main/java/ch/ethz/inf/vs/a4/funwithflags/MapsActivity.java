@@ -144,7 +144,8 @@ public class MapsActivity extends AppCompatActivity {
         // map
         setUpMapIfNeeded();
         locationChanged();
-        mMap.setOnMapLongClickListener(new MapLongClickListenerRefresh());
+        if (mMap != null)
+            mMap.setOnMapLongClickListener(new MapLongClickListenerRefresh());
     }
 
 
@@ -379,7 +380,8 @@ public class MapsActivity extends AppCompatActivity {
             }
             else {
 
-                //TODO: SHOW USER WHAT TO DO IF NO GOOGLE PLAY SERVICES ARE INSTALLED!
+                startActivity(new Intent(this, NoGooglePlayServicesActivity.class));
+                finish();
             }
         } else {
             setUpMap();
@@ -836,7 +838,7 @@ public class MapsActivity extends AppCompatActivity {
 
 
         // Get back the mutable Circle
-        circle_visible_range = mMap.addCircle(circleOptions);
+        if (mMap != null) circle_visible_range = mMap.addCircle(circleOptions);
     }
 
     public void setNewFlagClick(View v){
@@ -1327,26 +1329,28 @@ public class MapsActivity extends AppCompatActivity {
      * This should only be called once and when we are sure that {@link #mMap} is not null.
      */
     private void setUpMap() {
-        //see other marker options: https://developers.google.com/maps/documentation/android-api/marker
-        mMap.clear();
 
-        if (Data.filteringEnabled.size() > 0) { //we have already set a filter and keep it that way
+        if (mMap != null) {
+            //see other marker options: https://developers.google.com/maps/documentation/android-api/marker
+            mMap.clear();
 
-            showAllButton.setVisibility(View.VISIBLE);
-            Toast.makeText(this, "Displaying " + Data.flagsToShow.size() + " flags after filtering." ,Toast.LENGTH_SHORT).show();
+            if (Data.filteringEnabled.size() > 0) { //we have already set a filter and keep it that way
 
-            for (Flag f : Data.flagsToShow) {
-                displayFlag(f);
+                showAllButton.setVisibility(View.VISIBLE);
+                Toast.makeText(this, "Displaying " + Data.flagsToShow.size() + " flags after filtering.", Toast.LENGTH_SHORT).show();
+
+                for (Flag f : Data.flagsToShow) {
+                    displayFlag(f);
+                }
+            } else { //we just started the App and have not yet set a filter
+                showAllButton.setVisibility(View.INVISIBLE);
+                for (Flag f : Data.allFlags) {
+                    displayFlag(f);
+                }
             }
-        }
-        else { //we just started the App and have not yet set a filter
-            showAllButton.setVisibility(View.INVISIBLE);
-            for (Flag f: Data.allFlags) {
-                displayFlag(f);
-            }
-        }
 
 
+        }
         //LatLng in degrees, (double, double), ([-90,90],[-180,180])
 
     }

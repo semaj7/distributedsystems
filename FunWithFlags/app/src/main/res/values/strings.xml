@@ -154,5 +154,8 @@
     <string name="usersProfile">\@user Profile</string>
     <string name="gpsAlertDialogTitle">GPS Disabled!</string>
     <string name="gpsAlertDialogMessage">GPS is not enabled. Do you want to go to settings menu?</string>
+    <string name="title_activity_no_google_play_services">NoGooglePlayServicesActivity</string>
+    <string name="noGooglePlayServices">You seem to have an old version of Google Play Services Installed. For this app to work, you need a newer version. Please download a newer version and start this app again. See you then!</string>
+    <string name="noGooglePlayServicesTitle">Google Play Service Problem</string>
 
 </resources>

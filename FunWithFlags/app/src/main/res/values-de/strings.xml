@@ -154,6 +154,8 @@
     <string name="usersProfile">\@user Profil</string>
     <string name="gpsAlertDialogTitle">GPS deaktiviert!</string>
     <string name="gpsAlertDialogMessage">GPS ist deaktiviert. Möchtest du in das Einstellungsmenu wechseln?</string>
+    <string name="noGooglePlayServices">You seem to have an old version of Google Play Services Installed. For this app to work, you need a newer version. Please download a newer version and start this app again. See you then!</string>
+    <string name="noGooglePlayServicesTitle">Google Play Service Problem</string>
 
 
 </resources>
