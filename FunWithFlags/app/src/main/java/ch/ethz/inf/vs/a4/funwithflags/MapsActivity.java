@@ -53,17 +53,15 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Random;
 
 public class MapsActivity extends AppCompatActivity {
 
     public static final double MAX_FLAG_VISIBILITY_RANGE = 0.5; // kilometers
 
-    //TODO: this constant shouldn't be a constant. the distance is dependent on the maximal zoom level of the current position
+    //this constant shouldn't be a constant. the distance is dependent on the maximal zoom level of the current position
     public static final double MAX_FLAG_OVERLAPPING_KM = 0.005; // in kilometers, so its 5 meters
 
-    public static final float NON_CAMERA_MOVEMENT_TIMEOUT = 2.5f;
-    public static final int TOP_RANKED_FLAGS_AMOUNT = 4;//TODO: discuss this number together, also should the top ranked flag's content always be visible? this could give some insight on what a good flag should contain, also it is quite unlickely that someone would travel the world for some random good ranked flags, just to see their content..
+    public static final int TOP_RANKED_FLAGS_AMOUNT = 4;
     public static final int MAX_NUMBER_OF_FAVOURITES = 4; // a low value makes testing easier :)
     private static final int FAVOURITE_DIALOG = 0;
     private static final int RANKING_DIALOG = 1;
@@ -480,7 +478,6 @@ public class MapsActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int whichEntry) {
                         System.out.println("DEBUG: markerListener, onClick: clicked entry nr: " + whichEntry);
-                        // todo: do what ever we want to do with the clicked "flag"(text)
                         goToMarker(visibleCloseFlags.get(whichEntry));
                         popUpFlag(visibleCloseFlags.get(whichEntry));
                         dialog.dismiss();
@@ -523,7 +520,6 @@ public class MapsActivity extends AppCompatActivity {
     private List<Flag> filterFlagsByApproximatePositions(List<Flag> InitialFlags, LatLng position) {
         List<Flag> resultList = new ArrayList<Flag>();
 
-        // todo: finding a way not to check every single flag on the whole map would be nice. but i don't know if we can do that
         for(Flag f : InitialFlags){
             double flagLat = f.getLatLng().latitude;
             double flagLon = f.getLatLng().longitude;
@@ -663,7 +659,7 @@ public class MapsActivity extends AppCompatActivity {
 
         switch (whatKind) {
 
-            case FAVOURITE_DIALOG: // todo: only assign stuff that is different in switch, and then avoid code duplication
+            case FAVOURITE_DIALOG:
                 nothingThereYet = String.format(res.getString(R.string.noFavourtieYet));
                 title = String.format(res.getString(R.string.favouriteDisplayDialogTitle));
                 flagData = Data.favouriteFlags;
@@ -730,7 +726,6 @@ public class MapsActivity extends AppCompatActivity {
 
             @Override
             public void onClick(DialogInterface dialog, int whichFlag) {
-                // todo: do something with selected flag.. right now, show it :)
                 if (!empty[0]) {
                     goToMarker(nonNullFlagData.get(whichFlag));
                     popUpFlag(nonNullFlagData.get(whichFlag));
@@ -813,26 +808,29 @@ public class MapsActivity extends AppCompatActivity {
 
         LatLng coord = getCoordinates();
 
-        System.out.print("location: " + coord.latitude+ ", " + coord.longitude);
+        if (coord != null) {
 
-        CircleOptions circleOptions = new CircleOptions()
-                .center(getCoordinates())
+            System.out.print("location: " + coord.latitude + ", " + coord.longitude);
 
-                // Fill color of the circle
-                // 0x represents, this is an hexadecimal code
-                // 50 represents percentage of transparency. For 100% transparency, specify 00.
-                // For 0% transparency ( ie, opaque ) , specify ff
-                // The remaining 6 characters(00ff00) specify the fill color
-                .fillColor(0x5000A68B)
+            CircleOptions circleOptions = new CircleOptions()
+                    .center(coord)
 
-                // Border color of the circle
-                .strokeColor(0x50003AA1)
+                            // Fill color of the circle
+                            // 0x represents, this is an hexadecimal code
+                            // 50 represents percentage of transparency. For 100% transparency, specify 00.
+                            // For 0% transparency ( ie, opaque ) , specify ff
+                            // The remaining 6 characters(00ff00) specify the fill color
+                    .fillColor(0x5000A68B)
 
-                .radius(radius_in_meters); // In meters
+                            // Border color of the circle
+                    .strokeColor(0x50003AA1)
+
+                    .radius(radius_in_meters); // In meters
 
 
-        // Get back the mutable Circle
-        if (mMap != null) circle_visible_range = mMap.addCircle(circleOptions);
+            // Get back the mutable Circle
+            if (mMap != null) circle_visible_range = mMap.addCircle(circleOptions);
+        }
     }
 
     public void setNewFlagClick(View v){
@@ -913,18 +911,16 @@ public class MapsActivity extends AppCompatActivity {
                     String inputText = input.getText().toString();
                     LatLng currentPosition = getCoordinates();
 
+                    if (currentPosition != null) {
 
-                    //TODO: get the category here
-                    Flag f = new Flag(null,Server.getCurrentLoggedInUserName(), inputText, currentPosition, cat[0], new Timestamp(System.currentTimeMillis()), getApplicationContext());
-                    //TODO: get the flags ID somewhere
-                    // f.setID(ID);
-                    Server.submitFlag(f);
+                        Flag f = new Flag(null, Server.getCurrentLoggedInUserName(), inputText, currentPosition, cat[0], new Timestamp(System.currentTimeMillis()), getApplicationContext());
 
-
-                    f.isOwner = true;
-                    addToData(f);
-                    Data.myFlags.add(f);
-                    displayFlag(f);
+                        Server.submitFlag(f);
+                        f.isOwner = true;
+                        addToData(f);
+                        Data.myFlags.add(f);
+                        displayFlag(f);
+                    }
                 }
             });
 
@@ -945,12 +941,12 @@ public class MapsActivity extends AppCompatActivity {
 
     }
 
+    //may return null
     public LatLng getCoordinates() {
 
         double lon;
         double lat;
 
-        //TODO: change to something meaningful
 
         if (gps.canGetLocation()) {
             lat = gps.getLatitude();
@@ -960,8 +956,7 @@ public class MapsActivity extends AppCompatActivity {
 
         else {
             gps.showSettingsAlert();
-            lat = RandomFloat( -90, 90 );
-            lon = RandomFloat( -180, 180 );
+            return null;
         }
 
         System.out.println("Lat:" + lat);
@@ -972,19 +967,6 @@ public class MapsActivity extends AppCompatActivity {
         return new LatLng(lat, lon);
     }
 
-    // TODO: delete this method in the end, when we no longer need it
-    float RandomFloat(int a, int b) {
-        Random random = new Random(System.currentTimeMillis());
-        double floatval = Math.random();
-
-        System.out.println("Random float:" + floatval);
-
-        double rand = (floatval * (b - a)) + a;
-
-        System.out.println("Random result:" + rand);
-
-        return (float) rand;
-    }
 
     public void switchToLogin() {
 
@@ -1360,7 +1342,7 @@ public class MapsActivity extends AppCompatActivity {
         // edit: a flag might also get deleted from a downvote, even when it is not the current users flag. this should not be tested here
         //is user authorized?
         //if(f.getUserName().equals(getCurrentLoggedInUserName())) {
-        //delete locally TODO: hope i have not forgotten some place where the flag is stored
+        //delete locally
         Data.flagMarkerHashMap.remove(f);
         Data.allFlags.remove(f);
         Data.closeFlags.remove(f);

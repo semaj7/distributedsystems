@@ -77,7 +77,6 @@ public class GPSTracker extends Service implements LocationListener {
     public void showSettingsAlert() {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(mContext);
 
-        //TODO: declare these strings in strings.xml
         // Setting Dialog Title
         String slaveString = getString(R.string.gpsAlertDialogTitle);
         alertDialog.setTitle(slaveString);

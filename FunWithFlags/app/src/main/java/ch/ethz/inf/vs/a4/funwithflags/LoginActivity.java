@@ -234,8 +234,6 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
 
     private void loginNotSuccessful(String error) {
 
-        //TODO: Provide useful messages to the user, maybe change String error to int ErrorCode
-
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         Resources res = getResources();
         builder.setTitle(res.getString(R.string.login_not_successful));

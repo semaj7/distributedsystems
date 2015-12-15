@@ -308,7 +308,7 @@ public class ProfileActivity extends AppCompatActivity {
         // edit: a flag might also get deleted from a downvote, even when it is not the current users flag. this should not be tested here
         //is user authorized?
         //if(f.getUserName().equals(getCurrentLoggedInUserName())) {
-        //delete locally TODO: hope i have not forgotten some place where the flag is stored
+        //delete locally
         Data.flagMarkerHashMap.remove(f);
         Data.allFlags.remove(f);
         Data.closeFlags.remove(f);
@@ -383,8 +383,6 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     public void updateUI() {
-
-        //TODO: add additional UI changes
 
         // update info in Data
         Data.calculateUserRating();

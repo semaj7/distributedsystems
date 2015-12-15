@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!-- TODO: do what ever we want to do in the action bar, and define what we need here
+    <!---
         reading material: http://developer.android.com/training/appbar/index.html    -->
 
         <!-- for example our logo should appear as action button, if possible. and it should always show notification symbol, etc.

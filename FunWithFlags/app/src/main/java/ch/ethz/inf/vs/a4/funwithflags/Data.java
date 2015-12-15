@@ -54,7 +54,6 @@ public final class Data {
     public static ParseUser user;
 
 
-    // todo: get and put this information (fav, and top) from server, keep stuff consistent
     public static Flag[] favouriteFlags = new Flag[MapsActivity.MAX_NUMBER_OF_FAVOURITES];
     public static Flag[] topRankedFlags = new Flag[MapsActivity.TOP_RANKED_FLAGS_AMOUNT];
 
@@ -287,12 +286,10 @@ public final class Data {
     }
 
     public final static void follow(String username){
-        // todo: also do this relation to the server
         followingUsers.add(username);
     }
 
     public final static void unFollow(String username){
-        // todo: also do this relation to the server
         if(followingUsers.contains(username))
             followingUsers.remove(username);
     }
