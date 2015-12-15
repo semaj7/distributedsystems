@@ -157,5 +157,7 @@
     <string name="title_activity_no_google_play_services">NoGooglePlayServicesActivity</string>
     <string name="noGooglePlayServices">You seem to have an old version of Google Play Services Installed. For this app to work, you need a newer version. Please download a newer version and start this app again. See you then!</string>
     <string name="noGooglePlayServicesTitle">Google Play Service Problem</string>
+    <string name="selectCategory">\n\t\tSelect a category:</string>
+    <string name="logout_message">you are now logged out!</string>
 
 </resources>

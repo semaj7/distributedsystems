@@ -127,7 +127,7 @@
     <string name="ratedFlagsDialogMessage">Was möchtest du mit ihnen tun?</string>
     <string name="myFlagsDialogTitle">Deine Flaggen</string>
     <string name="myFlagsDialogMessage">Was möchtest du mit ihnen tun?</string>
-    <string name="unfollow">unfolgen</string>
+    <string name="unfollow">entfolgen</string>
     <string name="nothingSelectedToDeleteYet">Nichts ausgewählt...</string>
     <string name="followingUsersTextPlaceHolder">Du folgst momentan keinen Benutzern</string>
     <string name="followerUsersTextPlaceHolder">Sorry, im Moment folgt dir niemand</string>
