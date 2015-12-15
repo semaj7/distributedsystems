@@ -1,6 +1,7 @@
 package ch.ethz.inf.vs.a4.funwithflags;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -28,43 +29,49 @@ import java.util.List;
 
 public class Server {
 
-    private static boolean done;
 
+    public static boolean done = true;
     //FLAGS-----------------------------------------------------------//
 
-    //just downloads the flags and stores them in allFlags
+    //asynchronously just downloads the flags and stores them in allFlags
     public static void getFlagsFromServer(final android.content.Context  context){
 
-        done=false;
+        if (done) { //something like a lock
 
-        ParseQuery<ParseObject> flagQuery=new ParseQuery<ParseObject>("Flag");
-        final ArrayList<Flag> ret = new ArrayList<Flag>();
-        int i=0;
-        while(done==false){
-            flagQuery.setLimit(1000);
-            flagQuery.setSkip(i * 1000);
-            flagQuery.findInBackground(new FindCallback<ParseObject>() {
+            done = false; //TODO: make this lock atomic
 
-                @Override
-                public void done(List<ParseObject> flags, com.parse.ParseException e) {
-                    if (e == null) {
-                        int n = flags.size();
-                        for (int i = 0; i < flags.size(); i++) {
-                            ParseObject parseFlag = flags.get(i);
-                            ret.add(parseFlagToFlag(context, parseFlag));
-                        }
-                        if (n == 0) {
+            new AsyncTask<Void, Void, Boolean>() {
+
+
+                protected Boolean doInBackground(Void... params) {
+                    int i = 0;
+                    ParseQuery<ParseObject> flagQuery = new ParseQuery<ParseObject>("Flag");
+                    List<ParseObject> flags = new ArrayList<ParseObject>();
+                    while (!done) {
+                        flagQuery.setLimit(1000);
+                        flagQuery.setSkip(i * 1000);
+                        try {
+                            flags.addAll(flagQuery.find());
+                        } catch (ParseException e) {
+                            //empty or failed -> finish
                             done = true;
                         }
+                        i++;
                     }
 
+                    final ArrayList<Flag> ret = new ArrayList<Flag>();
+                    for (i = 0; i < flags.size(); i++) {
+                        ParseObject parseFlag = flags.get(i);
+                        ret.add(parseFlagToFlag(context, parseFlag));
+                    }
 
+                    Data.setAllFlags(ret);
+                    return null;
                 }
 
-            });
-            i++;
+            }.execute();
+
         }
-        Data.setAllFlags(ret);
 
     }
 
@@ -297,9 +304,6 @@ public class Server {
 
         user.saveInBackground();
 
-        //TODO: remove, it's just for testing
-        getFollowers();
-
     }
 
     public static void unFollow(String userName){
@@ -346,7 +350,6 @@ public class Server {
                     for (int i = 0; i < n; i++) {
                         ParseObject currentUsersFollowers=usersFollowersList.get(i);
                         ParseUser currentUser=(ParseUser)currentUsersFollowers.get("user");
-                        //TODO (done already), change "Andi" to user.getUsername()
                         if ((currentUser.getUsername()).equals(user.getUsername())) {
                             //Log.d("pascal debug","Cyberdogs entry was fount");
                             currentUsersFollowers.getRelation("followers").getQuery().findInBackground(new FindCallback<ParseObject>() {

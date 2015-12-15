@@ -43,10 +43,7 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.parse.FindCallback;
 import com.parse.ParseGeoPoint;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import org.ocpsoft.prettytime.PrettyTime;
@@ -141,6 +138,7 @@ public class MapsActivity extends AppCompatActivity {
         toolbar.setHomeButtonEnabled(true);
 
 
+        refresh();
         // map
         setUpMapIfNeeded();
         locationChanged();
@@ -188,30 +186,7 @@ public class MapsActivity extends AppCompatActivity {
 
 
         // do everything we need to do to refresh
-        ParseQuery<ParseObject> flagQuery = new ParseQuery<ParseObject>("Flag");
-        flagQuery.setLimit(1000);
-        flagQuery.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> flags, com.parse.ParseException e) {
-                if (e == null) {
-                    ArrayList<Flag> ret = new ArrayList<Flag>();
-
-                    Flag f;
-                    for (int i = 0; i < flags.size(); i++) {
-
-                        f = Server.parseFlagToFlag(getApplicationContext(), flags.get(i));
-
-                        ret.add(f);
-                    }
-
-                    Data.dataSetChanged(ret);
-                }
-
-                setUpMap();
-
-            }
-
-        });
+        Server.getFlagsFromServer(this); //asynchronous
 
         if(isLoggedIn()) {
             Server.getFavouritesFromServer(getApplicationContext());
@@ -393,9 +368,6 @@ public class MapsActivity extends AppCompatActivity {
         Marker m = Data.flagMarkerHashMap.get(f);
         if (m != null) {
             LatLng latLng = m.getPosition();
-       /*     CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 10);
-            mMap.animateCamera(cameraUpdate); */
-
 
             CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(latLng)      // Sets the center of the map to Mountain View
@@ -545,7 +517,6 @@ public class MapsActivity extends AppCompatActivity {
         return resultList;
     }
 
-    // TODO: implement this method, and delete Toasts afterwards
     private void selectItem(int position) {
         switch (position) {
             case 0: // Search
@@ -1354,10 +1325,6 @@ public class MapsActivity extends AppCompatActivity {
         }
         //LatLng in degrees, (double, double), ([-90,90],[-180,180])
 
-    }
-    private void getFlags(){
-        Server.getFlagsFromServer(this);
-        setUpMapIfNeeded();
     }
 
     private void addToData(Flag f) {
