@@ -139,27 +139,37 @@ public class Server {
     public static void getFavouritesFromServer(final android.content.Context  context){
         //TODO: right now one can have an undefined amount of favourites, should change this
         //TODO: Pascal: how should this limit behave?
-        threadsInThisClass.incrementAndGet();
+
+        new AsyncTask<Void, Void, Boolean>() {
+            protected Boolean doInBackground(Void... params) {
+                threadsInThisClass.incrementAndGet();
 
 
-        Log.d("Pascal debug", "downloading favourites...");
-        ParseUser user=ParseUser.getCurrentUser();
-        if(user!=null) {
-            ParseRelation<ParseObject> favouritesRelation = user.getRelation("favourite");
-            ParseQuery<ParseObject> favouritesRelationQuery=favouritesRelation.getQuery();
-            //TODO: ok, like this?
-            favouritesRelationQuery.setLimit(MapsActivity.MAX_NUMBER_OF_FAVOURITES);
-            //
-            try {
-                Log.d("Pascal debug", "got 'em favourites, now saving 'em favourites locally...");
-                saveFavouritesLocally(context, favouritesRelationQuery.find());
-            } catch (ParseException e) {
-                e.printStackTrace();
+                Log.d("Pascal debug", "downloading favourites...");
+                ParseUser user=ParseUser.getCurrentUser();
+                if(user!=null) {
+                    ParseRelation<ParseObject> favouritesRelation = user.getRelation("favourite");
+                    ParseQuery<ParseObject> favouritesRelationQuery=favouritesRelation.getQuery();
+                    //TODO: ok, like this?
+                    favouritesRelationQuery.setLimit(MapsActivity.MAX_NUMBER_OF_FAVOURITES);
+                    //
+                    try {
+
+                        saveFavouritesLocally(context, favouritesRelationQuery.find());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+
+                    threadsInThisClass.decrementAndGet();
+
+                }
+
+                return null;
             }
 
-            threadsInThisClass.decrementAndGet();
+        }.execute();
 
-        }
+
 
     }
 
@@ -273,10 +283,12 @@ public class Server {
     }
 
     private static void saveFollowingUsersLocally(List<ParseObject> objects){
-        Data.followingUsers.clear();
-        for (int i = 0; i < objects.size() ; i++) {
-            Data.followingUsers.add((String) (((ParseUser) objects.get(i)).getUsername()));
-            Log.d("Pascal debug", "following user "+(String)(((ParseUser)objects.get(i)).getUsername()));
+        if (objects != null) {
+            Data.followingUsers.clear();
+            for (int i = 0; i < objects.size(); i++) {
+                Data.followingUsers.add((String) (((ParseUser) objects.get(i)).getUsername()));
+                Log.d("Pascal debug", "following user " + (String) (((ParseUser) objects.get(i)).getUsername()));
+            }
         }
 
     }
@@ -335,14 +347,14 @@ public class Server {
                     boolean done = false;
                     int n = usersFollowersList.size();
                     for (int i = 0; i < n; i++) {
-                        ParseObject currentUsersFollowers=usersFollowersList.get(i);
-                        ParseUser currentUser=(ParseUser)currentUsersFollowers.get("user");
-                        Log.d("pascal debug",currentUser.getUsername()+" ! = "+otherUser.getUsername());
+                        ParseObject currentUsersFollowers = usersFollowersList.get(i);
+                        ParseUser currentUser = (ParseUser) currentUsersFollowers.get("user");
+                        Log.d("pascal debug", currentUser.getUsername() + " ! = " + otherUser.getUsername());
                         if ((currentUser.getUsername()).equals(otherUser.getUsername())) {
 
                             currentUsersFollowers.getRelation("followers").remove(user);
                             currentUsersFollowers.saveInBackground();
-                            i=n;
+                            i = n;
                         }
                     }
 
@@ -393,10 +405,12 @@ public class Server {
     }
 
     private static void saveFollowerUsersLocally(List<ParseObject> objects){
-        Data.followingUsers.clear();
-        for (int i = 0; i < objects.size() ; i++) {
-            Data.followerUsers.add((String) (((ParseUser) objects.get(i)).getUsername()));
-            //Log.d("pascal debug","cyberdogs follower: "+(((ParseUser) objects.get(i)).getUsername()));
+        if (objects != null) {
+            Data.followingUsers.clear();
+            for (int i = 0; i < objects.size(); i++) {
+                Data.followerUsers.add((String) (((ParseUser) objects.get(i)).getUsername()));
+                //Log.d("pascal debug","cyberdogs follower: "+(((ParseUser) objects.get(i)).getUsername()));
+            }
         }
 
     }

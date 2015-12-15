@@ -53,6 +53,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MapsActivity extends AppCompatActivity {
 
@@ -180,52 +181,64 @@ public class MapsActivity extends AppCompatActivity {
         }
     }
 
+    private AtomicBoolean alreadyInRefresh = new AtomicBoolean(false);
+
     private void refresh() {
-        // feedback
+
+        if (alreadyInRefresh.compareAndSet(false, true)) {
+
+            // feedback
 
 
-        // do everything we need to do to refresh
-        Server.getFlagsFromServer(this); //asynchronous
+            // do everything we need to do to refresh
+            Server.getFlagsFromServer(this); //asynchronous
 
-        if(isLoggedIn()) {
-            Server.getFavouritesFromServer(getApplicationContext());
-            Server.getFollowingUsers();
-            Server.getFollowers();
+            if (isLoggedIn()) {
+                Server.getFavouritesFromServer(getApplicationContext());
+                Server.getFollowingUsers();
+                Server.getFollowers();
 
-        } else {
-            Data.myFlags = new ArrayList<Flag>();
-            Data.userRating = 0;
-            Data.followingUsers = new ArrayList<String>();
-            Data.downvotedFlags = new ArrayList<Flag>();
-            Data.upvotedFlags = new ArrayList<Flag>();
-            Data.favouriteFlagsList = new ArrayList<Flag>();
-            Data.favouriteFlags = new Flag[MAX_NUMBER_OF_FAVOURITES];
-        }
-
-        new AsyncTask<Void, Void, Boolean>() {
-            protected Boolean doInBackground(Void... params) {
-                while (Server.threadsInThisClass.get() > 0) {
-                    //do nothing while still loading newest updates
-                }
-
-                //do everthing after all has loaded
-                Data.calculateUserRating();
-
-                runOnUiThread(new Runnable() {
-                    public void run() {
-                        if (refresh.isRefreshing())
-                            refresh.setRefreshing(false);
-                        setUpMapIfNeeded();
-                    }
-                });
-
-                return null;
+            } else {
+                Data.myFlags = new ArrayList<Flag>();
+                Data.userRating = 0;
+                Data.followingUsers = new ArrayList<String>();
+                Data.downvotedFlags = new ArrayList<Flag>();
+                Data.upvotedFlags = new ArrayList<Flag>();
+                Data.favouriteFlagsList = new ArrayList<Flag>();
+                Data.favouriteFlags = new Flag[MAX_NUMBER_OF_FAVOURITES];
             }
 
-        }.execute();
+            new AsyncTask<Void, Void, Boolean>() {
+                protected Boolean doInBackground(Void... params) {
+                    while (Server.threadsInThisClass.get() > 0) {
+                        //do nothing while still loading newest updates
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    //do everthing after all has loaded
+                    Data.calculateUserRating();
+
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            if (refresh.isRefreshing())
+                                refresh.setRefreshing(false);
+                            setUpMapIfNeeded();
+                        }
+                    });
+
+                    alreadyInRefresh.set(false);
+
+                    return null;
+                }
+
+            }.execute();
 
 
-
+        }
 
     }
 
