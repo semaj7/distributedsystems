@@ -6,7 +6,6 @@
     <string name="Profile">Profile</string>
     <string name="title_activity_profile">ProfileActivity</string>
 
-    <string name="hello_world">Hello world!</string>
     <string name="OK">OK</string>
     <string name="Cancel">Cancel</string>
     <string name="action_settings">Settings</string>
@@ -15,14 +14,14 @@
     <string name="ratingText">Your current rating is @rating. Good job!</string>
     <string name="rating">Rating:</string>
     <string name="settedFlagsText">You have already set @count flags! That\'s fun!</string>
-    <string name="followedUser">You are now following @name. What a stalker!</string>
+    <string name="followedUser">You are now following @name.</string>
     <string name="SportsName">Sports</string>
     <string name="not_in_range_message">You are not close enough to this flag</string>
-    <string name="choose_category">choose category</string>
-    <string name="flag_text_hint">say something</string>
-    <string name="closeByFlagsDialogTitle">Flags near you</string>
+    <string name="choose_category">Choose a category</string>
+    <string name="flag_text_hint">Say something here</string>
+    <string name="closeByFlagsDialogTitle">Flags near your location</string>
     <string name="closeByFlagsDialogMessage">Choose a flag</string>
-    <string name="favouriteDisplayDialogTitle">Your favourite flags!</string>
+    <string name="favouriteDisplayDialogTitle">Your favourite flags</string>
     <string name="noFavourtieYet">You have no favourites yet</string>
     <string name="search_username_title">Search by Username:</string>
     <string name="showAll">Show all flags</string>
@@ -30,8 +29,8 @@
     <string name="followUser">Follow</string>
     <string name="upVote">Upvote</string>
     <string name="downVote">Downvote</string>
-    <string name="noTextFoundDefault">Could\'t find Text for this flag!</string>
-    <string name="flag_text">Flag Text: </string>
+    <string name="noTextFoundDefault">Could\'t find text for this flag</string>
+    <string name="flag_text">Flag text: </string>
     <string name="title_activity_settings">Settings</string>
 
     <!-- Strings related to Settings -->
@@ -90,6 +89,8 @@
     <string name="pref_title_ringtone">Ringtone</string>
     <string name="pref_ringtone_silent">Silent</string>
 
+    <string name="drawer_open">Open Menu</string>
+    <string name="drawer_close">Close Menu</string>
     <string name="pref_title_vibrate">Vibrate</string>
     <string name="noTopFlagsYet">There are no top ranked flags yet...</string>
     <string name="topRankingDisplayDialogTitle">Top flags</string>
@@ -107,9 +108,7 @@
     <string name="provide_email">Please provide an email:</string>
     <string name="title_activity_close_flag_list">CloseFlagListActivity</string>
     <string name="user_name_not_found">No username found</string>
-    <string name="show_close_flags">Show Close Flags</string>
-    <string name="drawer_open">drawer open</string>
-    <string name="drawer_close">drawer close</string>
+    <string name="show_close_flags">Show nearby Flags</string>
     <string name="fieldUsername">Written by: </string>
     <string name="noRating">No Rating</string>
     <string name="Delete">Delete</string>
@@ -117,21 +116,21 @@
     <string name="deleteFavouriteDialogTitle">Too many favourites!</string>
     <string name="deleteFavouriteDialogMessage">Before adding a new favourite, choose one of your old ones to delete</string>
     <string name="newFavouriteSuccessToast">This flag was successfully added to your favourites</string>
-    <string name="newFollowSuccessToast">you are now following @</string>
-    <string name="upVoteSuccessToast">you have successfully upvoted this flag</string>
-    <string name="downVoteSuccessToast">you have successfully downvoted this flag</string>
-    <string name="unFavouriteSuccessToast">this flag no longer is in your favourite\'s list</string>
-    <string name="unFollowSuccessToast">you are no longer following @user</string>
+    <string name="newFollowSuccessToast">You are now following @</string>
+    <string name="upVoteSuccessToast">You have successfully upvoted this flag</string>
+    <string name="downVoteSuccessToast">You have successfully downvoted this flag</string>
+    <string name="unFavouriteSuccessToast">This flag no longer is in your favourite\'s list</string>
+    <string name="unFollowSuccessToast">You are no longer following @user</string>
     <string name="ratedFlagsDialogTitle">Your best rated flags</string>
-    <string name="ratedFlagsDialogMessage">what would you like to do with those?</string>
+    <string name="ratedFlagsDialogMessage">What would you like to do with those?</string>
     <string name="myFlagsDialogTitle">Your flags</string>
     <string name="myFlagsDialogMessage">What would you like to do with them?</string>
-    <string name="unfollow">unfollow</string>
+    <string name="unfollow">Unfollow</string>
     <string name="nothingSelectedToDeleteYet">Nothing selected...</string>
     <string name="followingUsersTextPlaceHolder">You are not following any other users at the moment</string>
     <string name="followerUsersTextPlaceHolder">Sorry, nobody is currently following you</string>
     <string name="followingUsersDialogTitle">You are following these users!</string>
-    <string name="followingUsersDialogMessage">what would you like to do with them?</string>
+    <string name="followingUsersDialogMessage">What would you like to do with them?</string>
     <string name="followerUsersDialogTitle">These users follow you</string>
     <string name="followerUsersDialogMessage">Have a good look!</string>
     <string name="followingText">You are following @ users already!</string>
@@ -142,8 +141,8 @@
     <string name="myFlagsDialogTitleAlienProfile">\@user flags</string>
     <string name="followingUsersDialogTitleAlienProfile">\@user is following these users!</string>
     <string name="followerUsersDialogTitleAlienProfile">These users follow @user</string>
-    <string name="notAllowedToSeeMessage">you are not allowed to see this</string>
-    <string name="noUsersYet">there are no users in this list yet</string>
+    <string name="notAllowedToSeeMessage">You are not allowed to see this</string>
+    <string name="noUsersYet">There are no users in this list yet</string>
     <string name="noFlagsYet">There are no flags to show yet</string>
     <string name="whatsNew">What\\\'s new?</string>
     <string name="user_posted_flag">\@user posted a new flag</string>
@@ -156,8 +155,8 @@
     <string name="gpsAlertDialogMessage">GPS is not enabled. Do you want to go to settings menu?</string>
     <string name="title_activity_no_google_play_services">NoGooglePlayServicesActivity</string>
     <string name="noGooglePlayServices">You seem to have an old version of Google Play Services Installed. For this app to work, you need a newer version. Please download a newer version and start this app again. See you then!</string>
-    <string name="noGooglePlayServicesTitle">Google Play Service Problem</string>
+    <string name="noGooglePlayServicesTitle">Google Play Services problem</string>
     <string name="selectCategory">\n\t\tSelect a category:</string>
-    <string name="logout_message">you are now logged out!</string>
+    <string name="logout_message">You are now logged out!</string>
 
 </resources>
