@@ -144,7 +144,7 @@
     <string name="notAllowedToSeeMessage">You are not allowed to see this</string>
     <string name="noUsersYet">There are no users in this list yet</string>
     <string name="noFlagsYet">There are no flags to show yet</string>
-    <string name="whatsNew">What\\\'s new?</string>
+    <string name="whatsNew">What\'s new?</string>
     <string name="user_posted_flag">\@user posted a new flag</string>
     <string name="noTime">No Time found</string>
     <string name="noCategory">No category</string>
