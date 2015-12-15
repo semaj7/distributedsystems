@@ -3,14 +3,12 @@ package ch.ethz.inf.vs.a4.funwithflags;
 import android.location.Location;
 
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.LatLng;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created by Andres on 13.11.15.
@@ -34,6 +32,8 @@ public final class Data {
     public static ArrayList<Flag> upvotedFlags = new ArrayList<Flag>();
 
     public static ArrayList<String> followingUsers = new ArrayList<String>();
+
+    public static ArrayList<String> followerUsers = new ArrayList<String>();
 
     public final static String[] slideMenuStrings = new String[]{"Search", "Favourites", "Filters","Ranking", "What's new","Settings"};
 

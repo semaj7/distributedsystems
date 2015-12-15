@@ -28,46 +28,43 @@ import java.util.List;
 
 public class Server {
 
+    private static boolean done;
 
     //FLAGS-----------------------------------------------------------//
 
     //just downloads the flags and stores them in allFlags
     public static void getFlagsFromServer(final android.content.Context  context){
 
-        //TODO: get ALL flags! query is default limited to 100 objects.
-        //set the limit to 1000 and with skip download all
-        //for example do a while loop and always skip a 1000
+        done=false;
 
         ParseQuery<ParseObject> flagQuery=new ParseQuery<ParseObject>("Flag");
-        flagQuery.setLimit(1000);
-        flagQuery.setSkip(0);
-        flagQuery.findInBackground(new FindCallback<ParseObject>() {
-            ArrayList<Flag> ret = new ArrayList<Flag>();
-            @Override
-            public void done(List<ParseObject> flags, com.parse.ParseException e) {
-                if (e == null) {
+        final ArrayList<Flag> ret = new ArrayList<Flag>();
+        int i=0;
+        while(done==false){
+            flagQuery.setLimit(1000);
+            flagQuery.setSkip(i * 1000);
+            flagQuery.findInBackground(new FindCallback<ParseObject>() {
 
-                    for (int i = 0; i < flags.size(); i++) {
-
-                        ParseObject parseFlag=flags.get(i);
-
-                        //TODO remove this stuff, it's only for testing
-                        if(i==10){
-                            Server.submitFavouriteToServer(parseFlagToFlag(context, parseFlag));
-                            Log.d("Pascal debug", "as always, just submitting Flag number 10 to favourites ");
+                @Override
+                public void done(List<ParseObject> flags, com.parse.ParseException e) {
+                    if (e == null) {
+                        int n = flags.size();
+                        for (int i = 0; i < flags.size(); i++) {
+                            ParseObject parseFlag = flags.get(i);
+                            ret.add(parseFlagToFlag(context, parseFlag));
                         }
-                        //remove until here
-
-
-                        ret.add(parseFlagToFlag(context, parseFlag));
-                        //Log.d("pascal debug","just downloaded a flag");
+                        if (n == 0) {
+                            done = true;
+                        }
                     }
+
+
                 }
-                Data.setAllFlags(ret);
 
-            }
-
-        });
+            });
+            i++;
+        }
+        Data.setAllFlags(ret);
 
     }
 
@@ -87,6 +84,7 @@ public class Server {
 
         //TODO: when this saveInBackground completed, execute:
         //getFlags();
+        //TODO: Pascal: is this still needed??? seems to work without it...
 
     }
     public static void deleteFlagFromServer(Flag f){
@@ -114,7 +112,7 @@ public class Server {
             e.printStackTrace();
         }
 
-        Log.d("debug","tried to download a flag that was not yet uploaded");
+        Log.d("debug", "tried to download a flag that was not yet uploaded");
         return null;
     }
 
@@ -123,15 +121,18 @@ public class Server {
 
     public static void getFavouritesFromServer(final android.content.Context  context){
         //TODO: right now one can have an indefined amount of favourites, should change this
-        //new implementation
+        //TODO: Pascal: how should this limit behave?
         Log.d("Pascal debug", "downloading favourites...");
         ParseUser user=ParseUser.getCurrentUser();
         if(user!=null) {
-
             ParseRelation<ParseObject> favouritesRelation = user.getRelation("favourite");
+            ParseQuery<ParseObject> favouritesRelationQuery=favouritesRelation.getQuery();
+            //TODO: ok, like this?
+            favouritesRelationQuery.setLimit(MapsActivity.MAX_NUMBER_OF_FAVOURITES);
+            //
             try {
                 Log.d("Pascal debug", "got 'em favourites, now saving 'em favourites locally...");
-                saveFavouritesLocally(context, favouritesRelation.getQuery().find());
+                saveFavouritesLocally(context, favouritesRelationQuery.find());
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -142,14 +143,13 @@ public class Server {
 
     private static void saveFavouritesLocally(Context context, List<ParseObject> objects){
         //TODO: now we have both a list and a array of favourites...
+        //TODO: Pascal: in my opinion we can remove the list, it is never used, right?
         Data.favouriteFlagsList.clear();
         for (int i = 0; i < objects.size() ; i++) {
             Log.d("Pascal debug", "added a favourite to the local list!!");
             Data.favouriteFlagsList.add(parseFlagToFlag(context, objects.get(i)));
             Data.favouriteFlags[i] = Data.favouriteFlagsList.get(i);
         }
-        //Data.favouriteFlags=(Flag[]) Data.favouriteFlagsList.toArray();
-
     }
 
     public static void submitFavouriteToServer(Flag f){
@@ -160,14 +160,10 @@ public class Server {
             return;
         }
 
-        //implementation with relation
         ParseUser user=ParseUser.getCurrentUser();
         Log.d("Pascal debug", user.getUsername());
         if(user!=null) {
             ParseRelation<ParseObject> favouritesRelation = user.getRelation("favourite");
-            //if(favouritesRelation==null) {Log.d("Pascal debug", "lfw ftw");}
-            //if(favouritesRelation!=null) {Log.d("Pascal debug", "it's not null. very dope");}
-            //if(parseFlag==null) {Log.d("Pascal debug", "the f***ing parseFlag is null");}
             favouritesRelation.add(parseFlag);
         }
         user.saveEventually();
@@ -181,7 +177,6 @@ public class Server {
 
         Log.d("debug", "Trying to remove a flag from favourites...");
 
-        //implementation with relation
         ParseUser user=ParseUser.getCurrentUser();
         ParseRelation<ParseObject> favouritesRelation=user.getRelation("favourite");
         favouritesRelation.remove(getParseFlag(f));
@@ -194,6 +189,7 @@ public class Server {
     //RATING---------------------------------------------------------------//
 
     public static void submitRatingToServer(Flag f, boolean upOrDown){
+        //TODO: could be made more efficient
         ParseObject flag=getParseFlag(f);
 
         if(flag==null) {
@@ -253,58 +249,132 @@ public class Server {
 
     private static void saveFollowingUsersLocally(List<ParseObject> objects){
         Data.followingUsers.clear();
-        if(objects != null)
         for (int i = 0; i < objects.size() ; i++) {
-            if (objects.get(i) != null) {
-                Data.followingUsers.add((String) (((ParseUser) objects.get(i)).getUsername()));
-                Log.d("Pascal debug", "following user " + (String) (((ParseUser) objects.get(i)).getUsername()));
-            }
+            Data.followingUsers.add((String) (((ParseUser) objects.get(i)).getUsername()));
+            Log.d("Pascal debug", "following user "+(String)(((ParseUser)objects.get(i)).getUsername()));
         }
 
     }
 
-    public static void getFlags(final Context c) {
+    public static void follow(String userName){
+        final ParseUser otherUser=getParseUser(userName);
+        final ParseUser user=ParseUser.getCurrentUser();
 
-        // Server.getFlagsFromServer(this);
+        ParseRelation<ParseObject> followingRelation=user.getRelation("following");
+        followingRelation.add(otherUser);
 
-        ParseQuery<ParseObject> flagQuery = new ParseQuery<ParseObject>("Flag");
-        flagQuery.setLimit(1000);
-        flagQuery.findInBackground(new FindCallback<ParseObject>() {
+        ParseQuery<ParseObject> userQuery=new ParseQuery<ParseObject>("followers");
+        userQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
-            public void done(List<ParseObject> flags, com.parse.ParseException e) {
+            public void done(List<ParseObject> usersFollowersList, com.parse.ParseException e) {
                 if (e == null) {
-                    ArrayList<Flag> ret = new ArrayList<Flag>();
+                    boolean done = false;
+                    int n = usersFollowersList.size();
+                    for (int i = 0; i < n; i++) {
+                        ParseObject currentUsersFollowers = usersFollowersList.get(i);
+                        ParseUser currentUser = (ParseUser) currentUsersFollowers.get("user");
+                        Log.d("pascal debug", currentUser.getUsername() + " ! = " + otherUser.getUsername());
+                        if ((currentUser.getUsername()).equals(otherUser.getUsername())) {
+                            Log.d("pascal debug", "a user that has already followers gets one more");
 
-                    Flag f;
-                    for (int i = 0; i < flags.size(); i++) {
+                            currentUsersFollowers.getRelation("followers").add(user);
+                            currentUsersFollowers.saveInBackground();
+                            i = n;
+                            done = true;
+                        }
+                    }
+                    if (done == false) {
+                        ParseObject usersFollowers = new ParseObject("followers");
+                        usersFollowers.put("user", otherUser);
+                        ParseRelation<ParseObject> followerRelation = usersFollowers.getRelation("followers");
+                        followerRelation.add(user);
+                        usersFollowers.saveInBackground();
+                    }
+                }
+            }
 
-                        f = Server.parseFlagToFlag(c, flags.get(i));
+        });
 
-                        ret.add(f);
+        user.saveInBackground();
+
+        //TODO: remove, it's just for testing
+        getFollowers();
+
+    }
+
+    public static void unFollow(String userName){
+        final ParseUser user=ParseUser.getCurrentUser();
+        final ParseUser otherUser=getParseUser(userName);
+        ParseQuery<ParseObject> userQuery=new ParseQuery<ParseObject>("followers");
+        userQuery.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> usersFollowersList, com.parse.ParseException e) {
+                if (e == null) {
+                    boolean done = false;
+                    int n = usersFollowersList.size();
+                    for (int i = 0; i < n; i++) {
+                        ParseObject currentUsersFollowers=usersFollowersList.get(i);
+                        ParseUser currentUser=(ParseUser)currentUsersFollowers.get("user");
+                        Log.d("pascal debug",currentUser.getUsername()+" ! = "+otherUser.getUsername());
+                        if ((currentUser.getUsername()).equals(otherUser.getUsername())) {
+
+                            currentUsersFollowers.getRelation("followers").remove(user);
+                            currentUsersFollowers.saveInBackground();
+                            i=n;
+                        }
                     }
 
-                    Data.dataSetChanged(ret);
                 }
+            }
+
+        });
 
 
 
+    }
+
+    public static void getFollowers(){
+
+        final ParseUser user=ParseUser.getCurrentUser();
+        ParseQuery<ParseObject> userQuery=new ParseQuery<ParseObject>("followers");
+        userQuery.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> usersFollowersList, com.parse.ParseException e) {
+                if (e == null) {
+                    boolean done = false;
+                    int n = usersFollowersList.size();
+                    for (int i = 0; i < n; i++) {
+                        ParseObject currentUsersFollowers=usersFollowersList.get(i);
+                        ParseUser currentUser=(ParseUser)currentUsersFollowers.get("user");
+                        //TODO (done already), change "Andi" to user.getUsername()
+                        if ((currentUser.getUsername()).equals(user.getUsername())) {
+                            //Log.d("pascal debug","Cyberdogs entry was fount");
+                            currentUsersFollowers.getRelation("followers").getQuery().findInBackground(new FindCallback<ParseObject>() {
+                                @Override
+                                public void done(List<ParseObject> followers, com.parse.ParseException e) {
+                                    saveFollowerUsersLocally(followers);
+                                }
+
+                            });
+
+
+                            i=n;
+                        }
+                    }
+
+                }
             }
 
         });
     }
 
-    public static void follow(String userName){
-        ParseUser user=ParseUser.getCurrentUser();
-        ParseRelation<ParseObject> followingRelation=user.getRelation("following");
-        followingRelation.add(getParseUser(userName));
-        user.saveInBackground();
-    }
+    private static void saveFollowerUsersLocally(List<ParseObject> objects){
+        Data.followingUsers.clear();
+        for (int i = 0; i < objects.size() ; i++) {
+            Data.followerUsers.add((String) (((ParseUser) objects.get(i)).getUsername()));
+            //Log.d("pascal debug","cyberdogs follower: "+(((ParseUser) objects.get(i)).getUsername()));
+        }
 
-    public static void unFollow(String userName){
-        ParseUser user=ParseUser.getCurrentUser();
-        ParseRelation<ParseObject> followingRelation=user.getRelation("following");
-        followingRelation.remove(getParseUser(userName));
-        user.saveInBackground();
     }
 
     //HELPER FUNCTIONS------------------------------------------------------//
@@ -328,7 +398,7 @@ public class Server {
     public static ParseUser getParseUser(String userName) {
         ParseQuery<ParseUser> query = ParseUser.getQuery();
         query.whereEqualTo("username", userName);
-
+        Log.d("pascal debug","trying to get user "+userName);
         try {
 
             return query.find().get(0);
@@ -354,11 +424,9 @@ public class Server {
         // was locally (i.e "0" in the beginning)
         Object downVotesCount=parseFlag.get("downVotesCount");
         Object upVotesCount=parseFlag.get("upVotesCount");
-        if(downVotesCount!=null){
-            flag.setDownVotes((int) downVotesCount);
-        }
-        if(upVotesCount!=null) {
-            flag.setUpVotes((int) upVotesCount);
+        if(downVotesCount!=null&&upVotesCount!=null){
+            flag.setDownVotes((int)downVotesCount);
+            flag.setUpVotes((int)upVotesCount);
         }
 
         return flag;

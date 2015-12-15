@@ -29,7 +29,7 @@ public class SplashScreen extends Activity {
             }
         };
         timerThread.start();
-        Server.getFlags(getApplicationContext());
+        Server.getFlagsFromServer(getApplicationContext());
         if(MapsActivity.isLoggedIn()) {
             Server.getFavouritesFromServer(getApplicationContext());
             Server.getFollowingUsers();
@@ -38,6 +38,7 @@ public class SplashScreen extends Activity {
             Data.myFlags = new ArrayList<Flag>();
             Data.userRating = 0;
             Data.followingUsers = new ArrayList<String>();
+            Data.followerUsers = new ArrayList<String>();
             Data.downvotedFlags = new ArrayList<Flag>();
             Data.upvotedFlags = new ArrayList<Flag>();
             Data.favouriteFlagsList = new ArrayList<Flag>();

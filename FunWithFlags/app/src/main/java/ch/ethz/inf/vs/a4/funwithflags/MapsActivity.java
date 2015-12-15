@@ -6,11 +6,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.location.Location;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.os.Vibrator;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
@@ -1355,7 +1351,7 @@ public class MapsActivity extends AppCompatActivity {
 
     }
     private void getFlags(){
-        Server.getFlags(this);
+        Server.getFlagsFromServer(this);
         setUpMapIfNeeded();
     }
 
