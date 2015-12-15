@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -191,8 +192,8 @@ public class MapsActivity extends AppCompatActivity {
         if(isLoggedIn()) {
             Server.getFavouritesFromServer(getApplicationContext());
             Server.getFollowingUsers();
+            Server.getFollowers();
 
-            Data.calculateUserRating();
         } else {
             Data.myFlags = new ArrayList<Flag>();
             Data.userRating = 0;
@@ -203,9 +204,31 @@ public class MapsActivity extends AppCompatActivity {
             Data.favouriteFlags = new Flag[MAX_NUMBER_OF_FAVOURITES];
         }
 
-        setUpMapIfNeeded();
-        if(refresh.isRefreshing())
-            refresh.setRefreshing(false);
+        new AsyncTask<Void, Void, Boolean>() {
+            protected Boolean doInBackground(Void... params) {
+                while (Server.threadsInThisClass.get() > 0) {
+                    //do nothing while still loading newest updates
+                }
+
+                //do everthing after all has loaded
+                Data.calculateUserRating();
+
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        if (refresh.isRefreshing())
+                            refresh.setRefreshing(false);
+                        setUpMapIfNeeded();
+                    }
+                });
+
+                return null;
+            }
+
+        }.execute();
+
+
+
+
     }
 
 
@@ -892,7 +915,7 @@ public class MapsActivity extends AppCompatActivity {
 
 
                     //TODO: get the category here
-                    Flag f = new Flag(null,getCurrentLoggedInUserName(), inputText, currentPosition, cat[0], new Timestamp(System.currentTimeMillis()), getApplicationContext());
+                    Flag f = new Flag(null,Server.getCurrentLoggedInUserName(), inputText, currentPosition, cat[0], new Timestamp(System.currentTimeMillis()), getApplicationContext());
                     //TODO: get the flags ID somewhere
                     // f.setID(ID);
                     Server.submitFlag(f);
@@ -919,22 +942,6 @@ public class MapsActivity extends AppCompatActivity {
 
             switchToLogin();
         }
-
-    }
-
-    private String getCurrentLoggedInUserName() {
-        //before executing this, check if user is logged in!
-
-        ParseUser currentUser = ParseUser.getCurrentUser();
-        if (currentUser != null) {
-            return currentUser.getUsername();
-        } else {
-            //this should almost never happen, because before executing getCurrentLoggedInUserName, one should always check if the user is logged in
-            //but it could happen that the user is logged out right after isLoggedIn() is checked
-            //TODO: handle this error with an alert or exit the app gracefully
-            return "DefaultUser";
-        }
-
 
     }
 
@@ -991,7 +998,7 @@ public class MapsActivity extends AppCompatActivity {
             String username = ((TextView) v).getText().toString();
 
             if (isLoggedIn()) {
-                if (getCurrentLoggedInUserName().equals(username)) {
+                if (Server.getCurrentLoggedInUserName().equals(username)) {
                     switchToProfile(v);
                 }
                 else {
@@ -1016,7 +1023,7 @@ public class MapsActivity extends AppCompatActivity {
         if(isLoggedIn()) {
             Data.calculateUserRating();
             Intent newIntent = new Intent(this, ProfileActivity.class);
-            newIntent.putExtra("username", getCurrentLoggedInUserName());
+            newIntent.putExtra("username", Server.getCurrentLoggedInUserName());
             startActivity(newIntent);
         } else {
             startActivity(new Intent(this, LoginActivity.class));

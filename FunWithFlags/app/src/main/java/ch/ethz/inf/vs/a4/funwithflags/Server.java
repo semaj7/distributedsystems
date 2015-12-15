@@ -17,6 +17,8 @@ import com.parse.ParseUser;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by pascalwiesmann on 30.11.15.
@@ -29,16 +31,18 @@ import java.util.List;
 
 public class Server {
 
+    public static AtomicInteger threadsInThisClass = new AtomicInteger(0);
 
-    public static boolean done = true;
+
+    public static AtomicBoolean done = new AtomicBoolean(true);
     //FLAGS-----------------------------------------------------------//
 
     //asynchronously just downloads the flags and stores them in allFlags
     public static void getFlagsFromServer(final android.content.Context  context){
 
-        if (done) { //something like a lock
+        if (done.compareAndSet(true, false)) {
 
-            done = false; //TODO: make this lock atomic
+            threadsInThisClass.incrementAndGet();
 
             new AsyncTask<Void, Void, Boolean>() {
 
@@ -47,14 +51,14 @@ public class Server {
                     int i = 0;
                     ParseQuery<ParseObject> flagQuery = new ParseQuery<ParseObject>("Flag");
                     List<ParseObject> flags = new ArrayList<ParseObject>();
-                    while (!done) {
+                    while (!done.get()) {
                         flagQuery.setLimit(1000);
                         flagQuery.setSkip(i * 1000);
                         try {
                             flags.addAll(flagQuery.find());
                         } catch (ParseException e) {
                             //empty or failed -> finish
-                            done = true;
+                            done.set(true);
                         }
                         i++;
                     }
@@ -66,6 +70,8 @@ public class Server {
                     }
 
                     Data.setAllFlags(ret);
+
+                    threadsInThisClass.decrementAndGet();
                     return null;
                 }
 
@@ -95,6 +101,8 @@ public class Server {
 
     }
     public static void deleteFlagFromServer(Flag f){
+
+        threadsInThisClass.incrementAndGet();
         //don't forget to remove all the local references to this flag, by e.g. calling deleteFlag
         ParseQuery<ParseObject> flagQuery=new ParseQuery<ParseObject>("Flag");
         flagQuery.getInBackground(f.getID(), new GetCallback<ParseObject>() {
@@ -105,6 +113,8 @@ public class Server {
                 } catch (com.parse.ParseException e1) {
                     e1.printStackTrace();
                 }
+
+                threadsInThisClass.decrementAndGet();
             }
         });
 
@@ -127,8 +137,11 @@ public class Server {
     //FAVOURITES-----------------------------------------------------------//
 
     public static void getFavouritesFromServer(final android.content.Context  context){
-        //TODO: right now one can have an indefined amount of favourites, should change this
+        //TODO: right now one can have an undefined amount of favourites, should change this
         //TODO: Pascal: how should this limit behave?
+        threadsInThisClass.incrementAndGet();
+
+
         Log.d("Pascal debug", "downloading favourites...");
         ParseUser user=ParseUser.getCurrentUser();
         if(user!=null) {
@@ -143,6 +156,8 @@ public class Server {
             } catch (ParseException e) {
                 e.printStackTrace();
             }
+
+            threadsInThisClass.decrementAndGet();
 
         }
 
@@ -243,6 +258,8 @@ public class Server {
     //FOLLOWING---------------------------------------------------------------//
 
     public static void getFollowingUsers(){
+
+        threadsInThisClass.incrementAndGet();
         ParseUser user=ParseUser.getCurrentUser();
         ParseRelation<ParseObject> followingRelation=user.getRelation("following");
         ParseQuery<ParseObject> followingRelationQuery = followingRelation.getQuery();
@@ -250,6 +267,7 @@ public class Server {
             @Override
             public void done(List<ParseObject> objects, ParseException e) {
                 saveFollowingUsersLocally(objects);
+                threadsInThisClass.decrementAndGet();
             }
         });
     }
@@ -339,6 +357,8 @@ public class Server {
 
     public static void getFollowers(){
 
+        threadsInThisClass.incrementAndGet();
+
         final ParseUser user=ParseUser.getCurrentUser();
         ParseQuery<ParseObject> userQuery=new ParseQuery<ParseObject>("followers");
         userQuery.findInBackground(new FindCallback<ParseObject>() {
@@ -366,6 +386,7 @@ public class Server {
                     }
 
                 }
+                threadsInThisClass.decrementAndGet();
             }
 
         });
