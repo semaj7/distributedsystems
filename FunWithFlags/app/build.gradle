@@ -21,8 +21,6 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    //Pascal added this stuff:
-    compile project(':volley')
     compile 'org.apache.httpcomponents:httpclient-android:4.3.5.1'
     compile 'com.parse.bolts:bolts-android:1.+'
     compile 'com.parse.bolts:bolts-android:1.+'
