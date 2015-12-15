@@ -154,5 +154,7 @@
     <string name="usersProfile">\@user Profile</string>
     <string name="gpsAlertDialogTitle">GPS Disabled!</string>
     <string name="gpsAlertDialogMessage">GPS is not enabled. Do you want to go to settings menu?</string>
+    <string name="selectCategory">\n\t\tSelect a category:</string>
+    <string name="logout_message">you are now logged out!</string>
 
 </resources>
