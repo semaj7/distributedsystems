@@ -56,8 +56,9 @@ public class Flag {
             downVotes--;
         }
         if(!Data.upvotedFlags.contains(this)) {
-            Server.submitRatingToServer(this, true);
             upVotes++;
+            Server.submitRatingToServer(this, true);
+
         }
         Data.putUpvoted(this);
         Data.checkIfTopAndAdd(this);
@@ -172,24 +173,6 @@ public class Flag {
         if (Data.lastLocation == null) return false;
 
         return isInRange(Data.lastLocation);
-
-        /*
-        LatLng phoneLatLong = new LatLng(gpsTracker.getLatitude(),gpsTracker.getLongitude());
-        // check if flag is a favourite -> always visible
-
-
-        // this is an approximation of the distance that works best if close by, but since we want to only see close by flags, this should work just fine
-        int R = 6371; // km
-        double x = (getLatLng().longitude - phoneLatLong.longitude) * Math.cos((phoneLatLong.latitude + getLatLng().latitude) / 2);
-        double y = (getLatLng().latitude - phoneLatLong.latitude);
-        double distance = Math.sqrt(x * x + y * y) * R;
-
-        if (distance <= MapsActivity.MAX_FLAG_VISIBILITY_RANGE)
-            return true;
-        else
-            return false;
-
-            */
     }
 
     public String getUserName() {return userName;}
