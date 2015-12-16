@@ -378,6 +378,10 @@ public class Server {
         final ParseUser otherUser=getParseUser(userName);
 
         if (user != null && otherUser != null ) {
+
+            ParseRelation<ParseObject> followingRelation = user.getRelation("following");
+            followingRelation.remove(otherUser);
+
             ParseQuery<ParseObject> userQuery = new ParseQuery<ParseObject>("followers");
             userQuery.findInBackground(new FindCallback<ParseObject>() {
                 @Override
