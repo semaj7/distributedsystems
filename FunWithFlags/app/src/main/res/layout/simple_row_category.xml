@@ -9,7 +9,7 @@
         android:id="@+id/categorySimpleTextView"
         android:textSize="20sp"
         android:paddingStart="5dp"
-     
+
         />
 
 </LinearLayout>

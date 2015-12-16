@@ -637,6 +637,7 @@ public class MapsActivity extends AppCompatActivity {
                 android.R.layout.simple_list_item_1, sortedFlagList);
         listview.setAdapter(adapter);
 
+        //TODO: this does not get invoked when clicked!
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
@@ -866,45 +867,21 @@ public class MapsActivity extends AppCompatActivity {
             input.setHint(R.string.flag_text_hint);
 
             final Spinner categorySpinner = new Spinner(this);
-            List<String> types = Category.getallCategoryNames();
-            String[] cat_names = types.toArray(new String[types.size()]);
-            ArrayAdapter<String> adapter =new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, cat_names);
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+
+
+            final CategoryArrayAdapter adapter = new CategoryArrayAdapter(this,
+                    android.R.layout.simple_spinner_dropdown_item, Category.getallCategories());
+
             categorySpinner.setAdapter(adapter);
             final Category[] cat = new Category[1];
             categorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    switch (position) {
-                        case 0:
-                            cat[0] = Category.DEFAULT;
-                            break;
-                        case 1:
-                            cat[0] = Category.WORK;
-                            break;
-                        case 2:
-                            cat[0] = Category.LANDSCAPE;
-                            break;
-                        case 3:
-                            cat[0] = Category.SPORT;
-                            break;
-                        case 4:
-                            cat[0] = Category.FOOD;
-                            break;
-                        case 5:
-                            cat[0] = Category.LIFESTYLE;
-                            break;
-                        case 6:
-                            cat[0] = Category.MYSTERY;
-                            break;
-                        case 7:
-                            cat[0] = Category.TOURISM;
-                            break;
-                        default:
-                            cat[0] = Category.DEFAULT;
-                            break;
+                    final Category item = (Category) parent.getItemAtPosition(position);
+
+                    cat[0] = item;
                     }
-                }
 
                 @Override
                 public void onNothingSelected(AdapterView<?> parent) {
