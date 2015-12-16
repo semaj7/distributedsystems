@@ -141,7 +141,7 @@ public class MapsActivity extends AppCompatActivity {
         refresh();
         // map
         setUpMapIfNeeded();
-        locationChanged();
+
         if (mMap != null)
             mMap.setOnMapLongClickListener(new MapLongClickListenerRefresh());
     }
@@ -184,6 +184,8 @@ public class MapsActivity extends AppCompatActivity {
     private AtomicBoolean alreadyInRefresh = new AtomicBoolean(false);
 
     private void refresh() {
+
+        locationChanged();
 
         if (alreadyInRefresh.compareAndSet(false, true)) {
 
@@ -816,12 +818,12 @@ public class MapsActivity extends AppCompatActivity {
 
     public void addCircleToCurrentDestination(int radius_in_meters){
 
-        //remove old circle
-        if (circle_visible_range != null) circle_visible_range.remove();
-
         LatLng coord = getCoordinates();
 
         if (coord != null) {
+
+            //remove old circle
+            if (circle_visible_range != null) circle_visible_range.remove();
 
             System.out.print("location: " + coord.latitude + ", " + coord.longitude);
 
@@ -1315,6 +1317,8 @@ public class MapsActivity extends AppCompatActivity {
         if (mMap != null) {
             //see other marker options: https://developers.google.com/maps/documentation/android-api/marker
             mMap.clear();
+
+            locationChanged(); //add the circle again
 
             if (Data.filteringEnabled.size() > 0) { //we have already set a filter and keep it that way
 
