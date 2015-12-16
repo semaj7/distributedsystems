@@ -69,6 +69,16 @@ public enum Category {
         }
     }
 
+    public static List<Category> getallCategories() {
+
+        ArrayList<Category> categories = new ArrayList<>();
+        for (Category c : Category.values()) {
+            categories.add(c);
+        }
+        return categories;
+
+    }
+
 
 
     public static List<String> getallCategoryNames() {

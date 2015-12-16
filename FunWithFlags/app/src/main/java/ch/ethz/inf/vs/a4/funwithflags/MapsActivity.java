@@ -759,25 +759,28 @@ public class MapsActivity extends AppCompatActivity {
 
         AlertDialog.Builder b = new AlertDialog.Builder(this);
         b.setTitle(R.string.choose_category);
-        List<String> types = Category.getallCategoryNames();
 
-        String[] cat_names = types.toArray(new String[types.size()]);
-        b.setItems(cat_names, new DialogInterface.OnClickListener() {
 
-            @Override
-            public void onClick(DialogInterface dialog, int whichCategory) {
+        final CategoryArrayAdapter adapter = new CategoryArrayAdapter(this,
+                android.R.layout.simple_list_item_1, Category.getallCategories());
+        b.setAdapter(adapter, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int item) {
 
-                List<Flag> filteredFlags = filterFlagsByCategory(flagsToFilter, Category.values()[whichCategory]);
+                final Category chosen_category = adapter.getItemAtPosition(item);
+
+                List<Flag> filteredFlags = filterFlagsByCategory(flagsToFilter, chosen_category);
                 Data.flagsToShow.removeAll(Data.flagsToShow);
                 Data.flagsToShow.addAll(filteredFlags);
                 setUpMap();
                 dialog.dismiss();
-
             }
 
         });
 
-        b.show();
+        AlertDialog alert = b.create();
+
+
+        alert.show();
 
     }
 
