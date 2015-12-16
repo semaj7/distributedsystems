@@ -611,7 +611,7 @@ public class MapsActivity extends AppCompatActivity {
 
             listview.setAdapter(adapter);
 
-            whatsNewPopUpWindow = new PopupWindow(popupView, WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT, true);
+            whatsNewPopUpWindow = new PopupWindow(popupView, WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
 
             whatsNewPopUpWindow.setAnimationStyle(R.style.animation);
             whatsNewPopUpWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
