@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created by Andres on 13.11.15.
@@ -27,25 +28,25 @@ public final class Data {
 
     public static int userRating;
 
-    public static ArrayList<Flag> downvotedFlags = new ArrayList<Flag>();
+    public static List<Flag> downvotedFlags = new CopyOnWriteArrayList<Flag>();
 
-    public static ArrayList<Flag> upvotedFlags = new ArrayList<Flag>();
+    public static List<Flag> upvotedFlags = new CopyOnWriteArrayList<Flag>();
 
-    public static ArrayList<String> followingUsers = new ArrayList<String>();
+    public static List<String> followingUsers = new CopyOnWriteArrayList<String>();
 
-    public static ArrayList<String> followerUsers = new ArrayList<String>();
+    public static List<String> followerUsers = new CopyOnWriteArrayList<String>();
 
-    public final static String[] slideMenuStrings = new String[]{"Search", "Favourites", "Filters","Ranking", "What's new","Settings"};
+    public final static String[] slideMenuStrings = new String[]{"Search", "Favourites", "Filters","Ranking", "What's new"};
 
-    public final static List<Flag> flagsToShow = new ArrayList<Flag>();
+    public final static List<Flag> flagsToShow = new CopyOnWriteArrayList<Flag>();
 
-    public static List<Flag> allFlags = new ArrayList<Flag>();
+    public static List<Flag> allFlags = new CopyOnWriteArrayList<Flag>();
 
     public static HashMap<Flag, Marker> flagMarkerHashMap = new HashMap<Flag, Marker>();
 
-    public static ArrayList<Flag>closeFlags = new ArrayList<Flag>();
+    public static CopyOnWriteArrayList<Flag>closeFlags = new CopyOnWriteArrayList<Flag>();
 
-    public static ArrayList<Flag>myFlags = new ArrayList<Flag>();
+    public static CopyOnWriteArrayList<Flag>myFlags = new CopyOnWriteArrayList<>();
 
     //following the KISS principle:
 
@@ -79,7 +80,7 @@ public final class Data {
 
         }
 
-        Data.closeFlags = new ArrayList<Flag>(closeFlags);
+        Data.closeFlags = new CopyOnWriteArrayList<Flag>(closeFlags);
     }
 
     public static final void dataSetChanged(List<Flag> flags) {
@@ -115,7 +116,7 @@ public final class Data {
 
     static Random r = new Random();
 
-    public static final ArrayList<Flag> quickSortListByDate(ArrayList<Flag> closeFlags) {
+    public static final List<Flag> quickSortListByDate(List<Flag> closeFlags) {
 
         if (closeFlags.size() <= 1)
             return closeFlags;
@@ -212,8 +213,8 @@ public final class Data {
     public static void setAllFlags(List<Flag> flags){
         allFlags.clear();
         myFlags.clear();
-        allFlags=new ArrayList<Flag>(flags);
-        myFlags=new ArrayList<Flag>(flags);
+        allFlags=new CopyOnWriteArrayList<Flag>(flags);
+        myFlags=new CopyOnWriteArrayList<Flag>(flags);
         for(Flag flag: flags){
             if(!Data.containsFlag(flag, topRankedFlags))
                 checkIfTopAndAdd(flag);
@@ -233,7 +234,7 @@ public final class Data {
 
     public static final void updateMyFlagsFromAll() {
 
-        Data.myFlags = new ArrayList<Flag>();
+        Data.myFlags = new CopyOnWriteArrayList<Flag>();
         for(Flag f: Data.allFlags){
             if(user != null) {
                 if (f.getUserName().equals(Data.user.getUsername()))
@@ -294,14 +295,14 @@ public final class Data {
             followingUsers.remove(username);
     }
 
-    public static ArrayList<Flag> flagsSortedByRating(ArrayList<Flag> flags) {
+    public static List<Flag> flagsSortedByRating(List<Flag> flags) {
         if (flags.size() <= 1)
             return flags;
         int rotationplacement = r.nextInt(flags.size());
         Flag rotation = flags.get(rotationplacement);
         flags.remove(rotationplacement);
-        ArrayList<Flag> lower = new ArrayList<Flag>();
-        ArrayList<Flag> higher = new ArrayList<Flag>();
+        List<Flag> lower = new CopyOnWriteArrayList<Flag>();
+        List<Flag> higher = new CopyOnWriteArrayList<Flag>();
         for (Flag f : flags)
             if (f.getVoteRateAbsolut() > (rotation.getVoteRateAbsolut()))
                 lower.add(f);
@@ -316,8 +317,8 @@ public final class Data {
         flags.addAll(higher);
         return flags;    }
 
-    public static ArrayList<Flag> flagsFrom(ArrayList<String> users) {
-        ArrayList<Flag> result = new ArrayList<Flag>();
+    public static List<Flag> flagsFrom(List<String> users) {
+        List<Flag> result = new CopyOnWriteArrayList<Flag>();
 
         for(Flag f: allFlags){
             if(users.contains(f.getUserName())){

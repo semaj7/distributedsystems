@@ -53,6 +53,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MapsActivity extends AppCompatActivity {
@@ -201,12 +202,13 @@ public class MapsActivity extends AppCompatActivity {
                 Server.getFollowers();
 
             } else {
-                Data.myFlags = new ArrayList<Flag>();
+                Data.myFlags = new CopyOnWriteArrayList<Flag>();
                 Data.userRating = 0;
-                Data.followingUsers = new ArrayList<String>();
-                Data.downvotedFlags = new ArrayList<Flag>();
-                Data.upvotedFlags = new ArrayList<Flag>();
-                Data.favouriteFlagsList = new ArrayList<Flag>();
+                Data.followingUsers = new CopyOnWriteArrayList<String>();
+                Data.followerUsers = new CopyOnWriteArrayList<String>();
+                Data.downvotedFlags = new CopyOnWriteArrayList<Flag>();
+                Data.upvotedFlags = new CopyOnWriteArrayList<Flag>();
+                Data.favouriteFlagsList = new CopyOnWriteArrayList<Flag>();
                 Data.favouriteFlags = new Flag[MAX_NUMBER_OF_FAVOURITES];
             }
 
@@ -523,7 +525,7 @@ public class MapsActivity extends AppCompatActivity {
         if (userName == null) return flagsToFilter;
         if (userName.isEmpty()) return  flagsToFilter;
 
-        List<Flag> filteredFlags = new ArrayList<Flag>();
+        List<Flag> filteredFlags = new CopyOnWriteArrayList<Flag>();
         for (Flag f: flagsToFilter) {
             if (f.getUserName().equals(userName))
                 filteredFlags.add(f);
@@ -533,7 +535,7 @@ public class MapsActivity extends AppCompatActivity {
     }
 
     private List<Flag> filterFlagsByApproximatePositions(List<Flag> InitialFlags, LatLng position) {
-        List<Flag> resultList = new ArrayList<Flag>();
+        List<Flag> resultList = new CopyOnWriteArrayList<Flag>();
 
         for(Flag f : InitialFlags){
             double flagLat = f.getLatLng().latitude;
@@ -573,10 +575,8 @@ public class MapsActivity extends AppCompatActivity {
                 whatsNewPopup();
                 mDrawerLayout.closeDrawers();
                 break;
-            default: // Settings
+            default: // Nothing
                 mDrawerLayout.closeDrawers();
-                startActivity(new Intent(this, SettingsActivity.class));
-
                 break;
         }
     }
@@ -592,7 +592,7 @@ public class MapsActivity extends AppCompatActivity {
 
             final ListView listview = (ListView) popupView.findViewById(R.id.listview);
 
-            final ArrayList<Flag> sortedFlagList = Data.quickSortListByDate(Data.flagsFrom(Data.followingUsers));
+            final List<Flag> sortedFlagList = Data.quickSortListByDate(Data.flagsFrom(Data.followingUsers));
 
             final WhatsNewFlagAdapter adapter = new WhatsNewFlagAdapter(this,
                     android.R.layout.simple_list_item_1, sortedFlagList);
@@ -631,7 +631,7 @@ public class MapsActivity extends AppCompatActivity {
         //init controls
         final ListView listview = (ListView) popupView.findViewById(R.id.listview);
 
-        final ArrayList<Flag> sortedFlagList = Data.quickSortListByDate(Data.closeFlags);
+        final List<Flag> sortedFlagList = Data.quickSortListByDate(Data.closeFlags);
 
         final FlagArrayAdapter adapter = new FlagArrayAdapter(this,
                 android.R.layout.simple_list_item_1, sortedFlagList);
@@ -792,7 +792,7 @@ public class MapsActivity extends AppCompatActivity {
         if (c == Category.DEFAULT) return flagsToFilter; //Do not filter if someone selects DEFAULT category
 
         Data.filteringEnabled.add(c);
-        ArrayList<Flag> flagsThatAreInCategory = new ArrayList<Flag>();
+        List<Flag> flagsThatAreInCategory = new CopyOnWriteArrayList<Flag>();
 
         for (Flag f: flagsToFilter) {
             if(f.getCategory() == c)
@@ -1292,32 +1292,40 @@ public class MapsActivity extends AppCompatActivity {
      * <p/>
      * This should only be called once and when we are sure that {@link #mMap} is not null.
      */
+
+    //make sure there are not two threads setting up the map at the same time
+    private static AtomicBoolean setUpMapLock = new AtomicBoolean(false);
     private void setUpMap() {
 
-        if (mMap != null) {
-            //see other marker options: https://developers.google.com/maps/documentation/android-api/marker
-            mMap.clear();
+        if (setUpMapLock.compareAndSet(false, true)) {
 
-            locationChanged(); //add the circle again
+            if (mMap != null) {
+                //see other marker options: https://developers.google.com/maps/documentation/android-api/marker
+                mMap.clear();
 
-            if (Data.filteringEnabled.size() > 0) { //we have already set a filter and keep it that way
+                locationChanged(); //add the circle again
 
-                showAllButton.setVisibility(View.VISIBLE);
-                Toast.makeText(this, "Displaying " + Data.flagsToShow.size() + " flags after filtering.", Toast.LENGTH_SHORT).show();
+                if (Data.filteringEnabled.size() > 0) { //we have already set a filter and keep it that way
 
-                for (Flag f : Data.flagsToShow) {
-                    displayFlag(f);
+                    showAllButton.setVisibility(View.VISIBLE);
+                    Toast.makeText(this, "Displaying " + Data.flagsToShow.size() + " flags after filtering.", Toast.LENGTH_SHORT).show();
+
+                    for (Flag f : Data.flagsToShow) {
+                        displayFlag(f);
+                    }
+                } else { //we just started the App and have not yet set a filter
+                    showAllButton.setVisibility(View.INVISIBLE);
+                    for (Flag f : Data.allFlags) {
+                        displayFlag(f);
+                    }
                 }
-            } else { //we just started the App and have not yet set a filter
-                showAllButton.setVisibility(View.INVISIBLE);
-                for (Flag f : Data.allFlags) {
-                    displayFlag(f);
-                }
+
+
             }
 
 
+            setUpMapLock.set(false);
         }
-        //LatLng in degrees, (double, double), ([-90,90],[-180,180])
 
     }
 

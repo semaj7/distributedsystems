@@ -19,13 +19,15 @@ import android.widget.Toast;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ProfileActivity extends AppCompatActivity {
 
     private SwipeRefreshLayout refresh;
     private int choosenDialogElement;
     private boolean ownProfile;
-    private ArrayList<Flag> flags;
+    private List<Flag> flags;
     private String profilesUsername;
     private Button logoutFollowButton;
 
@@ -48,7 +50,7 @@ public class ProfileActivity extends AppCompatActivity {
             }
         }
 
-        ArrayList<String> temp = new ArrayList<String>();
+        List<String> temp = new CopyOnWriteArrayList<String>();
         temp.add(profilesUsername);
         flags = Data.flagsFrom(temp);
 
@@ -90,7 +92,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         switch (id){
             case R.id.ratingButton:
-                ArrayList<Flag> myFlagsRated = Data.flagsSortedByRating(flags);
+                List<Flag> myFlagsRated = Data.flagsSortedByRating(flags);
                 infoToShow = new String[myFlagsRated.size()];
                 correspondingFlags = new Flag[myFlagsRated.size()];
                 for(int i = 0; i< myFlagsRated.size(); i++){
@@ -121,7 +123,7 @@ public class ProfileActivity extends AppCompatActivity {
             case R.id.settedFlagsCountButton:
                 infoToShow = new String[flags.size()];
                 correspondingFlags = new Flag[flags.size()];
-                ArrayList<Flag> myFlags = Data.quickSortListByDate(flags);
+                List<Flag> myFlags = Data.quickSortListByDate(flags);
                 for(int i = 0; i < infoToShow.length;i++){
                     correspondingFlags[i] = myFlags.get(i);
                     infoToShow[i] = myFlags.get(i).getText();
