@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -54,8 +55,31 @@ public class ProfileActivity extends AppCompatActivity {
         temp.add(profilesUsername);
         flags = Data.flagsFrom(temp);
 
-
-
+        Button ratingB = (Button) findViewById(R.id.ratingButton);
+        Button flagB = (Button) findViewById(R.id.settedFlagsCountButton);
+        Button followingB = (Button) findViewById(R.id.followingUsersButton);
+        Button followerB = (Button) findViewById(R.id.followersButton);
+        if(getResources().getConfiguration().orientation != 1){
+            // device is held in landscape mode
+            ratingB.getLayoutParams().width=300;
+            ratingB.getLayoutParams().height=300;
+            flagB.getLayoutParams().width=300;
+            flagB.getLayoutParams().height=300;
+            followingB.getLayoutParams().width=300;
+            followingB.getLayoutParams().height=300;
+            followerB.getLayoutParams().width=300;
+            followerB.getLayoutParams().height=300;
+        } else {
+            // portrait mode
+            ratingB.getLayoutParams().width=450;
+            ratingB.getLayoutParams().height=450;
+            flagB.getLayoutParams().width=450;
+            flagB.getLayoutParams().height=450;
+            followingB.getLayoutParams().width=450;
+            followingB.getLayoutParams().height=450;
+            followerB.getLayoutParams().width=450;
+            followerB.getLayoutParams().height=450;
+        }
 
         updateUI();
 
@@ -233,7 +257,7 @@ public class ProfileActivity extends AppCompatActivity {
                 positiveText = String.format(res.getString(R.string.OK));
         else {
             if (id == R.id.followersButton)
-                positiveText = String.format(res.getString(R.string.OK));
+                positiveText = String.format(res.getString(R.string.Cancel));
             else
                 positiveText = String.format(res.getString(R.string.unfollow));
         }
@@ -302,12 +326,14 @@ public class ProfileActivity extends AppCompatActivity {
         }
 
         if(ownProfile)
-            alert.setNegativeButton(String.format(res.getString(R.string.Cancel))+"\n", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                }
-            });
+            if(id != R.id.followersButton) {
+                alert.setNegativeButton(String.format(res.getString(R.string.Cancel)) + "\n", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+            }
 
         alert.show();
 
