@@ -262,9 +262,11 @@ public class ProfileActivity extends AppCompatActivity {
                     else {
                         // dealing with users
                         if(id == R.id.followingUsersButton){
+                            String userNameToUnfollow = infoToShow[choosenDialogElement];
                             String toastText = res.getString(R.string.unFollowSuccessToast);
-                            toastText = toastText.replace("@user", infoToShow[choosenDialogElement] );
-                            Data.unFollow(infoToShow[choosenDialogElement]);
+                            toastText = toastText.replace("@user",  userNameToUnfollow);
+                            Data.unFollow(userNameToUnfollow);
+                            Server.unFollow(userNameToUnfollow);
                             Toast.makeText(getApplicationContext(),toastText, Toast.LENGTH_SHORT).show();
                         }
                         else {
@@ -380,14 +382,26 @@ public class ProfileActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), String.format(getResources().getString(R.string.needToBeLogedInForThisMessage)), Toast.LENGTH_SHORT).show();
             startActivity(new Intent(getApplicationContext(), LoginActivity.class));
         } else {
+            final Resources res = getResources();
             if (Data.followingUsers.contains(profilesUsername)) {
                 // unfollow
+                String toastText = res.getString(R.string.unFollowSuccessToast);
+                toastText = toastText.replace("@user",  profilesUsername);
+                Toast.makeText(getApplicationContext(), toastText, Toast.LENGTH_SHORT).show();
+
+                //TODO: somehow doesn't work...Time: 16.12. 14:57
                 Data.unFollow(profilesUsername);
-                Toast.makeText(getApplicationContext(), getResources().getString(R.string.unFollowSuccessToast), Toast.LENGTH_SHORT).show();
+                Server.unFollow(profilesUsername);
+
             } else {
                 // follow
+                String toastText = res.getString(R.string.newFollowSuccessToast);
+                toastText = toastText.replace("@",  profilesUsername);
+                Toast.makeText(getApplicationContext(), toastText, Toast.LENGTH_SHORT).show();
+
                 Data.follow(profilesUsername);
-                Toast.makeText(getApplicationContext(), getResources().getString(R.string.newFollowSuccessToast), Toast.LENGTH_SHORT).show();
+                Server.follow(profilesUsername);
+
             }
         }
     }
