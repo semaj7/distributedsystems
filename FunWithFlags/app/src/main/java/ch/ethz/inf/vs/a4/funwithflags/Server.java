@@ -205,8 +205,9 @@ public class Server {
         if(user!=null) {
             ParseRelation<ParseObject> favouritesRelation = user.getRelation("favourite");
             favouritesRelation.add(parseFlag);
+            user.saveEventually();
         }
-        user.saveEventually();
+
     }
     public static void deleteFavouriteFromServer(Flag f){
         ParseObject parseFlag= getParseFlag(f);
@@ -218,11 +219,13 @@ public class Server {
         Log.d("debug", "Trying to remove a flag from favourites...");
 
         ParseUser user=ParseUser.getCurrentUser();
-        ParseRelation<ParseObject> favouritesRelation=user.getRelation("favourite");
-        favouritesRelation.remove(getParseFlag(f));
-        user.saveInBackground();
 
+        if (user != null) {
+            ParseRelation<ParseObject> favouritesRelation = user.getRelation("favourite");
+            favouritesRelation.remove(getParseFlag(f));
+            user.saveInBackground();
 
+        }
 
     }
 
@@ -240,35 +243,40 @@ public class Server {
         ParseRelation<ParseObject> upVotesRelation=flag.getRelation("upVotes");
         ParseRelation<ParseObject> downVotesRelation=flag.getRelation("downVotes");
 
-        upVotesRelation.remove(ParseUser.getCurrentUser());
-        downVotesRelation.remove(ParseUser.getCurrentUser());
+        ParseUser currentUser = ParseUser.getCurrentUser();
+
+        if (currentUser != null){
+
+            upVotesRelation.remove(currentUser);
+            downVotesRelation.remove(currentUser);
 
 
-        if(upOrDown){
-            upVotesRelation.add(ParseUser.getCurrentUser());
-        }
-        else{
-            downVotesRelation.add(ParseUser.getCurrentUser());
-        }
-        int newUpVoteCount=0;
-        int newDownVoteCount=0;
-        //update the count
-        try {
-            flag.save();
-            newUpVoteCount=upVotesRelation.getQuery().count();
-            Log.d("pascal debug", "updating the up/down-votes counters");
-            flag.put("upVotesCount", newUpVoteCount);
-            Log.d("pascal debug", "upvotes: " + newUpVoteCount);
-            newDownVoteCount=downVotesRelation.getQuery().count();
-            flag.put("downVotesCount", newDownVoteCount);
-            Log.d("pascal debug", "downvotes: " + newDownVoteCount);
-            flag.save();
+            if(upOrDown){
+                upVotesRelation.add(currentUser);
+            }
+            else{
+                downVotesRelation.add(currentUser);
+            }
+            int newUpVoteCount=0;
+            int newDownVoteCount=0;
+            //update the count
+            try {
+                flag.save();
+                newUpVoteCount=upVotesRelation.getQuery().count();
+                Log.d("pascal debug", "updating the up/down-votes counters");
+                flag.put("upVotesCount", newUpVoteCount);
+                Log.d("pascal debug", "upvotes: " + newUpVoteCount);
+                newDownVoteCount=downVotesRelation.getQuery().count();
+                flag.put("downVotesCount", newDownVoteCount);
+                Log.d("pascal debug", "downvotes: " + newDownVoteCount);
+                flag.save();
 
-        } catch (ParseException e) {
-            e.printStackTrace();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            f.setDownVotes(newDownVoteCount);
+            f.setUpVotes(newUpVoteCount);
         }
-        f.setDownVotes(newDownVoteCount);
-        f.setUpVotes(newUpVoteCount);
 
     }
 
@@ -283,16 +291,19 @@ public class Server {
 
             threadsInThisClass.incrementAndGet();
             ParseUser user = ParseUser.getCurrentUser();
-            ParseRelation<ParseObject> followingRelation = user.getRelation("following");
-            ParseQuery<ParseObject> followingRelationQuery = followingRelation.getQuery();
-            followingRelationQuery.findInBackground(new FindCallback<ParseObject>() {
-                @Override
-                public void done(List<ParseObject> objects, ParseException e) {
-                    saveFollowingUsersLocally(objects);
-                    threadsInThisClass.decrementAndGet();
-                    getFollowingLock.set(false);
-                }
-            });
+
+            if (user != null) {
+                ParseRelation<ParseObject> followingRelation = user.getRelation("following");
+                ParseQuery<ParseObject> followingRelationQuery = followingRelation.getQuery();
+                followingRelationQuery.findInBackground(new FindCallback<ParseObject>() {
+                    @Override
+                    public void done(List<ParseObject> objects, ParseException e) {
+                        saveFollowingUsersLocally(objects);
+                        threadsInThisClass.decrementAndGet();
+                        getFollowingLock.set(false);
+                    }
+                });
+            }
         }
     }
 
@@ -311,73 +322,78 @@ public class Server {
         final ParseUser otherUser=getParseUser(userName);
         final ParseUser user=ParseUser.getCurrentUser();
 
-        ParseRelation<ParseObject> followingRelation=user.getRelation("following");
-        followingRelation.add(otherUser);
+        if (user != null && otherUser != null ) {
 
-        ParseQuery<ParseObject> userQuery=new ParseQuery<ParseObject>("followers");
-        userQuery.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> usersFollowersList, com.parse.ParseException e) {
-                if (e == null) {
-                    boolean done = false;
-                    int n = usersFollowersList.size();
-                    for (int i = 0; i < n; i++) {
-                        ParseObject currentUsersFollowers = usersFollowersList.get(i);
-                        ParseUser currentUser = (ParseUser) currentUsersFollowers.get("user");
-                        Log.d("pascal debug", currentUser.getUsername() + " ! = " + otherUser.getUsername());
-                        if ((currentUser.getUsername()).equals(otherUser.getUsername())) {
-                            Log.d("pascal debug", "a user that has already followers gets one more");
+            ParseRelation<ParseObject> followingRelation = user.getRelation("following");
+            followingRelation.add(otherUser);
 
-                            currentUsersFollowers.getRelation("followers").add(user);
-                            currentUsersFollowers.saveInBackground();
-                            i = n;
-                            done = true;
+            ParseQuery<ParseObject> userQuery = new ParseQuery<ParseObject>("followers");
+            userQuery.findInBackground(new FindCallback<ParseObject>() {
+                @Override
+                public void done(List<ParseObject> usersFollowersList, com.parse.ParseException e) {
+                    if (e == null) {
+                        boolean done = false;
+                        int n = usersFollowersList.size();
+                        for (int i = 0; i < n; i++) {
+                            ParseObject currentUsersFollowers = usersFollowersList.get(i);
+                            ParseUser currentUser = (ParseUser) currentUsersFollowers.get("user");
+                            Log.d("pascal debug", currentUser.getUsername() + " ! = " + otherUser.getUsername());
+                            if ((currentUser.getUsername()).equals(otherUser.getUsername())) {
+                                Log.d("pascal debug", "a user that has already followers gets one more");
+
+                                currentUsersFollowers.getRelation("followers").add(user);
+                                currentUsersFollowers.saveInBackground();
+                                i = n;
+                                done = true;
+                            }
+                        }
+                        if (done == false) {
+                            ParseObject usersFollowers = new ParseObject("followers");
+                            usersFollowers.put("user", otherUser);
+                            ParseRelation<ParseObject> followerRelation = usersFollowers.getRelation("followers");
+                            followerRelation.add(user);
+                            usersFollowers.saveInBackground();
                         }
                     }
-                    if (done == false) {
-                        ParseObject usersFollowers = new ParseObject("followers");
-                        usersFollowers.put("user", otherUser);
-                        ParseRelation<ParseObject> followerRelation = usersFollowers.getRelation("followers");
-                        followerRelation.add(user);
-                        usersFollowers.saveInBackground();
-                    }
                 }
-            }
 
-        });
+            });
 
-        user.saveInBackground();
+            user.saveInBackground();
+        }
 
     }
 
     public static void unFollow(String userName){
         final ParseUser user=ParseUser.getCurrentUser();
         final ParseUser otherUser=getParseUser(userName);
-        ParseQuery<ParseObject> userQuery=new ParseQuery<ParseObject>("followers");
-        userQuery.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> usersFollowersList, com.parse.ParseException e) {
-                if (e == null) {
-                    boolean done = false;
-                    int n = usersFollowersList.size();
-                    for (int i = 0; i < n; i++) {
-                        ParseObject currentUsersFollowers = usersFollowersList.get(i);
-                        ParseUser currentUser = (ParseUser) currentUsersFollowers.get("user");
-                        Log.d("pascal debug", currentUser.getUsername() + " ! = " + otherUser.getUsername());
-                        if ((currentUser.getUsername()).equals(otherUser.getUsername())) {
 
-                            currentUsersFollowers.getRelation("followers").remove(user);
-                            currentUsersFollowers.saveInBackground();
-                            i = n;
+        if (user != null && otherUser != null ) {
+            ParseQuery<ParseObject> userQuery = new ParseQuery<ParseObject>("followers");
+            userQuery.findInBackground(new FindCallback<ParseObject>() {
+                @Override
+                public void done(List<ParseObject> usersFollowersList, com.parse.ParseException e) {
+                    if (e == null) {
+                        boolean done = false;
+                        int n = usersFollowersList.size();
+                        for (int i = 0; i < n; i++) {
+                            ParseObject currentUsersFollowers = usersFollowersList.get(i);
+                            ParseUser currentUser = (ParseUser) currentUsersFollowers.get("user");
+                            Log.d("pascal debug", currentUser.getUsername() + " ! = " + otherUser.getUsername());
+                            if ((currentUser.getUsername()).equals(otherUser.getUsername())) {
+
+                                currentUsersFollowers.getRelation("followers").remove(user);
+                                currentUsersFollowers.saveInBackground();
+                                i = n;
+                            }
                         }
+
                     }
-
                 }
-            }
 
-        });
+            });
 
-
+        }
 
     }
 
@@ -390,38 +406,43 @@ public class Server {
             threadsInThisClass.incrementAndGet();
 
             final ParseUser user = ParseUser.getCurrentUser();
-            ParseQuery<ParseObject> userQuery = new ParseQuery<ParseObject>("followers");
-            userQuery.findInBackground(new FindCallback<ParseObject>() {
-                @Override
-                public void done(List<ParseObject> usersFollowersList, com.parse.ParseException e) {
-                    if (e == null) {
-                        boolean done = false;
-                        int n = usersFollowersList.size();
-                        for (int i = 0; i < n; i++) {
-                            ParseObject currentUsersFollowers = usersFollowersList.get(i);
-                            ParseUser currentUser = (ParseUser) currentUsersFollowers.get("user");
-                            if ((currentUser.getUsername()).equals(user.getUsername())) {
-                                //Log.d("pascal debug","Cyberdogs entry was fount");
-                                currentUsersFollowers.getRelation("followers").getQuery().findInBackground(new FindCallback<ParseObject>() {
-                                    @Override
-                                    public void done(List<ParseObject> followers, com.parse.ParseException e) {
-                                        saveFollowerUsersLocally(followers);
+
+            if (user != null) {
+                ParseQuery<ParseObject> userQuery = new ParseQuery<ParseObject>("followers");
+                userQuery.findInBackground(new FindCallback<ParseObject>() {
+                    @Override
+                    public void done(List<ParseObject> usersFollowersList, com.parse.ParseException e) {
+                        if (e == null) {
+                            boolean done = false;
+                            int n = usersFollowersList.size();
+                            for (int i = 0; i < n; i++) {
+                                ParseObject currentUsersFollowers = usersFollowersList.get(i);
+                                ParseUser currentUser = (ParseUser) currentUsersFollowers.get("user");
+                                if (currentUser != null) {
+                                    if ((currentUser.getUsername()).equals(user.getUsername())) {
+                                        //Log.d("pascal debug","Cyberdogs entry was fount");
+                                        currentUsersFollowers.getRelation("followers").getQuery().findInBackground(new FindCallback<ParseObject>() {
+                                            @Override
+                                            public void done(List<ParseObject> followers, com.parse.ParseException e) {
+                                                saveFollowerUsersLocally(followers);
+                                            }
+
+                                        });
+
+
+                                        i = n;
                                     }
-
-                                });
-
-
-                                i = n;
+                                }
                             }
+
                         }
+                        threadsInThisClass.decrementAndGet();
 
+                        getFollowersLock.set(false);
                     }
-                    threadsInThisClass.decrementAndGet();
 
-                    getFollowersLock.set(false);
-                }
-
-            });
+                });
+            }
         }
     }
 
