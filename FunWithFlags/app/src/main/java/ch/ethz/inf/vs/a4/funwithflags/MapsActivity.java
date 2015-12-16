@@ -1099,10 +1099,11 @@ public class MapsActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), String.format(res.getString(R.string.needToBeLogedInForThisMessage)), Toast.LENGTH_SHORT).show();
                         switchToLogin();
                     } else {
+                        Toast.makeText(getApplicationContext(), String.format(res.getString(R.string.upVoteSuccessToast)), Toast.LENGTH_SHORT).show();
+
                         f.upVote();
                         System.out.println("debug, got upvoted, now is at: " + f.getVoteRateAbsolut());
                         ratingTv.setText(String.valueOf(f.getVoteRateAbsolut()));
-                        Toast.makeText(getApplicationContext(), String.format(res.getString(R.string.upVoteSuccessToast)), Toast.LENGTH_SHORT).show();
                     }
                 }
             });
@@ -1114,6 +1115,9 @@ public class MapsActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), String.format(res.getString(R.string.needToBeLogedInForThisMessage)), Toast.LENGTH_SHORT).show();
                         switchToLogin();
                     } else {
+                        ratingTv.setText(String.valueOf(f.getVoteRateAbsolut()));
+                        Toast.makeText(getApplicationContext(), String.format(res.getString(R.string.downVoteSuccessToast)), Toast.LENGTH_SHORT).show();
+
                         if (f.downVote()) {
                             // ratio too bad, delete this flag
                             deleteFlag(f);
@@ -1122,8 +1126,7 @@ public class MapsActivity extends AppCompatActivity {
                         } else {
                             System.out.println("debug, got downvoted, now is at: " + f.getVoteRateAbsolut());
                         }
-                        ratingTv.setText(String.valueOf(f.getVoteRateAbsolut()));
-                        Toast.makeText(getApplicationContext(), String.format(res.getString(R.string.downVoteSuccessToast)), Toast.LENGTH_SHORT).show();
+
                     }
                 }
             });
@@ -1145,21 +1148,25 @@ public class MapsActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), toastMessage, Toast.LENGTH_SHORT).show();*/
                         if (Data.followingUsers.contains(f.getUserName())) {
                             // unfollow
-                            Data.unFollow(f.getUserName());
-                            Server.unFollow(f.getUserName());
                             followUserButton.setImageDrawable(getApplicationContext().getResources().getDrawable(R.drawable.ic_action_add_person));
                             String toastMessage = String.format(res.getString(R.string.unFollowSuccessToast));
                             toastMessage = toastMessage.replace("@user", f.getUserName());
                             Toast.makeText(getApplicationContext(), toastMessage, Toast.LENGTH_SHORT).show();
+
+                            Data.unFollow(f.getUserName());
+                            Server.unFollow(f.getUserName());
+
+
                         } else {
                             // follow
-                            Data.follow(f.getUserName());
-                            Server.follow(f.getUserName());
-                            // todo: julia: do au ersetze met unfollow bitte :)
                             followUserButton.setImageDrawable(getApplicationContext().getResources().getDrawable(R.drawable.ic_action_remove));
                             String toastMessage = String.format(res.getString(R.string.newFollowSuccessToast));
                             toastMessage = toastMessage.replace("@", f.getUserName());
                             Toast.makeText(getApplicationContext(), toastMessage, Toast.LENGTH_SHORT).show();
+
+                            Data.follow(f.getUserName());
+                            Server.follow(f.getUserName());
+
                         }
                     }
                 }
@@ -1180,16 +1187,17 @@ public class MapsActivity extends AppCompatActivity {
                         favouriteFlagButton.setImageDrawable(getApplicationContext().getResources().getDrawable(R.drawable.ic_action_favorite));
                         Toast.makeText(getApplicationContext(), String.format(res.getString(R.string.unFavouriteSuccessToast)), Toast.LENGTH_SHORT).show();
                     } else {
+                        favouriteFlagButton.setImageDrawable(getApplicationContext().getResources().getDrawable(R.drawable.ic_action_favorite_red2));
                         if (!Data.addFavourite(f)) {
                             // Favourites was full, and f was not added, the user should delete one of his favourite flags first
                             System.out.println("debug, fav was full should now show dialog");
                             deleteFavouriteFlagDialogAndReplace(f);
-                            favouriteFlagButton.setImageDrawable(getApplicationContext().getResources().getDrawable(R.drawable.ic_action_favorite_red2));
+
                         }
                         if(Data.containsFlag(f, Data.favouriteFlags)) {
                             Toast.makeText(getApplicationContext(), String.format(res.getString(R.string.newFavouriteSuccessToast)), Toast.LENGTH_SHORT).show();
 
-                            favouriteFlagButton.setImageDrawable(getApplicationContext().getResources().getDrawable(R.drawable.ic_action_favorite_red2));
+
 
 
                         }
