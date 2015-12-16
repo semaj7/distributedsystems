@@ -5,6 +5,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -12,6 +13,8 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.util.Log;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Created by Andres on 03.11.15.
@@ -74,39 +77,51 @@ public class GPSTracker extends Service implements LocationListener {
     /**
      * Function to show settings alert dialog
      * */
+
+    private static AtomicBoolean alreadyShowingAlert = new AtomicBoolean(false);
     public void showSettingsAlert() {
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(mContext);
 
-        // Setting Dialog Title
-        String slaveString = getString(R.string.gpsAlertDialogTitle);
-        alertDialog.setTitle(slaveString);
+        if (alreadyShowingAlert.compareAndSet(false, true)) {
 
-        // Setting Dialog Message
-        slaveString = getString(R.string.gpsAlertDialogMessage);
-        alertDialog.setMessage(slaveString);
+            Resources res = mContext.getResources();
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(mContext);
 
-        // Setting Icon to Dialog
-        //alertDialog.setIcon(R.drawable.delete);
+            // Setting Dialog Title
+            String slaveString = res.getString(R.string.gpsAlertDialogTitle);
+            alertDialog.setTitle(slaveString);
 
-        // On pressing Settings button
-        slaveString = getString(R.string.action_settings);
-        alertDialog.setPositiveButton(slaveString, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                mContext.startActivity(intent);
-            }
-        });
+            // Setting Dialog Message
+            slaveString = res.getString(R.string.gpsAlertDialogMessage);
+            alertDialog.setMessage(slaveString);
 
-        // on pressing cancel button
-        slaveString = getString(R.string.Cancel);
-        alertDialog.setNegativeButton(slaveString, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
+            // Setting Icon to Dialog
+            //alertDialog.setIcon(R.drawable.delete);
 
-        // Showing Alert Message
-        alertDialog.show();
+            // On pressing Settings button
+            slaveString = res.getString(R.string.action_settings);
+            alertDialog.setPositiveButton(slaveString, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    alreadyShowingAlert.set(false);
+                    dialog.cancel();
+                    Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    mContext.startActivity(intent);
+
+
+                }
+            });
+
+            // on pressing cancel button
+            slaveString = res.getString(R.string.Cancel);
+            alertDialog.setNegativeButton(slaveString, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    alreadyShowingAlert.set(false);
+                    dialog.cancel();
+                }
+            });
+
+            // Showing Alert Message
+            alertDialog.show();
+        }
     }
 
     public Location getLocation() {
