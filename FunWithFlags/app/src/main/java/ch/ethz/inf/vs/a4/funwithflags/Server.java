@@ -102,7 +102,7 @@ public class Server {
     }
     public static void deleteFlagFromServer(Flag f){
 
-        threadsInThisClass.incrementAndGet();
+
         //don't forget to remove all the local references to this flag, by e.g. calling deleteFlag
         ParseQuery<ParseObject> flagQuery=new ParseQuery<ParseObject>("Flag");
         flagQuery.getInBackground(f.getID(), new GetCallback<ParseObject>() {
@@ -114,7 +114,7 @@ public class Server {
                     e1.printStackTrace();
                 }
 
-                threadsInThisClass.decrementAndGet();
+
             }
         });
 
@@ -136,40 +136,48 @@ public class Server {
 
     //FAVOURITES-----------------------------------------------------------//
 
+    private static AtomicBoolean getFavouritesLock = new AtomicBoolean(false);
+
     public static void getFavouritesFromServer(final android.content.Context  context){
         //TODO: right now one can have an undefined amount of favourites, should change this
         //TODO: Pascal: how should this limit behave?
 
-        new AsyncTask<Void, Void, Boolean>() {
-            protected Boolean doInBackground(Void... params) {
-                threadsInThisClass.incrementAndGet();
+        if (getFavouritesLock.compareAndSet(false, true)) {
+
+            new AsyncTask<Void, Void, Boolean>() {
+                protected Boolean doInBackground(Void... params) {
+                    threadsInThisClass.incrementAndGet();
 
 
-                Log.d("Pascal debug", "downloading favourites...");
-                ParseUser user=ParseUser.getCurrentUser();
-                if(user!=null) {
-                    ParseRelation<ParseObject> favouritesRelation = user.getRelation("favourite");
-                    ParseQuery<ParseObject> favouritesRelationQuery=favouritesRelation.getQuery();
-                    //TODO: ok, like this?
-                    favouritesRelationQuery.setLimit(MapsActivity.MAX_NUMBER_OF_FAVOURITES);
-                    //
-                    try {
+                    Log.d("Pascal debug", "downloading favourites...");
+                    ParseUser user = ParseUser.getCurrentUser();
+                    if (user != null) {
+                        ParseRelation<ParseObject> favouritesRelation = user.getRelation("favourite");
+                        ParseQuery<ParseObject> favouritesRelationQuery = favouritesRelation.getQuery();
+                        //TODO: ok, like this?
+                        favouritesRelationQuery.setLimit(MapsActivity.MAX_NUMBER_OF_FAVOURITES);
+                        //
+                        try {
 
-                        saveFavouritesLocally(context, favouritesRelationQuery.find());
-                    } catch (ParseException e) {
-                        e.printStackTrace();
+                            saveFavouritesLocally(context, favouritesRelationQuery.find());
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+
+
+
                     }
 
                     threadsInThisClass.decrementAndGet();
 
+                    getFavouritesLock.set(false);
+
+                    return null;
                 }
 
-                return null;
-            }
+            }.execute();
 
-        }.execute();
-
-
+        }
 
     }
 
@@ -267,19 +275,25 @@ public class Server {
 
     //FOLLOWING---------------------------------------------------------------//
 
+    private static AtomicBoolean getFollowingLock = new AtomicBoolean(false);
+
     public static void getFollowingUsers(){
 
-        threadsInThisClass.incrementAndGet();
-        ParseUser user=ParseUser.getCurrentUser();
-        ParseRelation<ParseObject> followingRelation=user.getRelation("following");
-        ParseQuery<ParseObject> followingRelationQuery = followingRelation.getQuery();
-        followingRelationQuery.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> objects, ParseException e) {
-                saveFollowingUsersLocally(objects);
-                threadsInThisClass.decrementAndGet();
-            }
-        });
+        if (getFollowingLock.compareAndSet(false, true)) {
+
+            threadsInThisClass.incrementAndGet();
+            ParseUser user = ParseUser.getCurrentUser();
+            ParseRelation<ParseObject> followingRelation = user.getRelation("following");
+            ParseQuery<ParseObject> followingRelationQuery = followingRelation.getQuery();
+            followingRelationQuery.findInBackground(new FindCallback<ParseObject>() {
+                @Override
+                public void done(List<ParseObject> objects, ParseException e) {
+                    saveFollowingUsersLocally(objects);
+                    threadsInThisClass.decrementAndGet();
+                    getFollowingLock.set(false);
+                }
+            });
+        }
     }
 
     private static void saveFollowingUsersLocally(List<ParseObject> objects){
@@ -367,41 +381,48 @@ public class Server {
 
     }
 
+    private static AtomicBoolean getFollowersLock = new AtomicBoolean(false);
+
     public static void getFollowers(){
 
-        threadsInThisClass.incrementAndGet();
+        if (getFollowersLock.compareAndSet(false, true)) {
 
-        final ParseUser user=ParseUser.getCurrentUser();
-        ParseQuery<ParseObject> userQuery=new ParseQuery<ParseObject>("followers");
-        userQuery.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> usersFollowersList, com.parse.ParseException e) {
-                if (e == null) {
-                    boolean done = false;
-                    int n = usersFollowersList.size();
-                    for (int i = 0; i < n; i++) {
-                        ParseObject currentUsersFollowers=usersFollowersList.get(i);
-                        ParseUser currentUser=(ParseUser)currentUsersFollowers.get("user");
-                        if ((currentUser.getUsername()).equals(user.getUsername())) {
-                            //Log.d("pascal debug","Cyberdogs entry was fount");
-                            currentUsersFollowers.getRelation("followers").getQuery().findInBackground(new FindCallback<ParseObject>() {
-                                @Override
-                                public void done(List<ParseObject> followers, com.parse.ParseException e) {
-                                    saveFollowerUsersLocally(followers);
-                                }
+            threadsInThisClass.incrementAndGet();
 
-                            });
+            final ParseUser user = ParseUser.getCurrentUser();
+            ParseQuery<ParseObject> userQuery = new ParseQuery<ParseObject>("followers");
+            userQuery.findInBackground(new FindCallback<ParseObject>() {
+                @Override
+                public void done(List<ParseObject> usersFollowersList, com.parse.ParseException e) {
+                    if (e == null) {
+                        boolean done = false;
+                        int n = usersFollowersList.size();
+                        for (int i = 0; i < n; i++) {
+                            ParseObject currentUsersFollowers = usersFollowersList.get(i);
+                            ParseUser currentUser = (ParseUser) currentUsersFollowers.get("user");
+                            if ((currentUser.getUsername()).equals(user.getUsername())) {
+                                //Log.d("pascal debug","Cyberdogs entry was fount");
+                                currentUsersFollowers.getRelation("followers").getQuery().findInBackground(new FindCallback<ParseObject>() {
+                                    @Override
+                                    public void done(List<ParseObject> followers, com.parse.ParseException e) {
+                                        saveFollowerUsersLocally(followers);
+                                    }
+
+                                });
 
 
-                            i=n;
+                                i = n;
+                            }
                         }
+
                     }
+                    threadsInThisClass.decrementAndGet();
 
+                    getFollowersLock.set(false);
                 }
-                threadsInThisClass.decrementAndGet();
-            }
 
-        });
+            });
+        }
     }
 
     private static void saveFollowerUsersLocally(List<ParseObject> objects){
