@@ -66,7 +66,7 @@ public class ProfileActivity extends AppCompatActivity {
             public void onRefresh() {
                 refresh.setRefreshing(true);
                 updateUI();
-                ArrayList<String> temp = new ArrayList<String>();
+                List<String> temp = new CopyOnWriteArrayList<String>();
                 temp.add(profilesUsername);
                 flags = Data.flagsFrom(temp);
                 refresh.setRefreshing(false);

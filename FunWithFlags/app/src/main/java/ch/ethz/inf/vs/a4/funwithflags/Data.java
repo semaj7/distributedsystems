@@ -48,7 +48,6 @@ public final class Data {
 
     public static CopyOnWriteArrayList<Flag>myFlags = new CopyOnWriteArrayList<>();
 
-    //following the KISS principle:
 
     public static Location lastLocation;
 
@@ -287,7 +286,8 @@ public final class Data {
     }
 
     public final static void follow(String username){
-        followingUsers.add(username);
+        if (!followingUsers.contains(username))
+                followingUsers.add(username);
     }
 
     public final static void unFollow(String username){

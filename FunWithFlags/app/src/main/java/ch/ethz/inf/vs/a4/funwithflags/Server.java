@@ -400,7 +400,6 @@ public class Server {
                             }
                             String otherUserName = otherUser.getUsername();
 
-                            Log.d("pascal debug", currentUser.getUsername() + " ! = " + otherUser.getUsername());
                             if (currentUserName.equals(otherUserName)) {
 
                                 currentUsersFollowers.getRelation("followers").remove(user);

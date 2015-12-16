@@ -407,9 +407,15 @@ public class MapsActivity extends AppCompatActivity {
         if (m != null) {
             LatLng latLng = m.getPosition();
 
+            float zoom = 15;
+
+            float currentZoom = mMap.getCameraPosition().zoom;
+
+            if (currentZoom > zoom) zoom = currentZoom;
+
             CameraPosition cameraPosition = new CameraPosition.Builder()
                 .target(latLng)      // Sets the center of the map to Mountain View
-                .zoom(15)                   // Sets the zoom
+                .zoom(zoom)                   // Sets the zoom
                 .bearing(0)                // Sets the orientation of the camera to east
                 .build();                   // Creates a CameraPosition from the builder
             mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
