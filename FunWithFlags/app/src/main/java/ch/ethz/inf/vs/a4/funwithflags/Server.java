@@ -370,6 +370,10 @@ public class Server {
         final ParseUser otherUser=getParseUser(userName);
 
         if (user != null && otherUser != null ) {
+
+            ParseRelation<ParseObject> followingRelation = user.getRelation("following");
+            followingRelation.remove(otherUser);
+
             ParseQuery<ParseObject> userQuery = new ParseQuery<ParseObject>("followers");
             userQuery.findInBackground(new FindCallback<ParseObject>() {
                 @Override
@@ -380,7 +384,7 @@ public class Server {
                         for (int i = 0; i < n; i++) {
                             ParseObject currentUsersFollowers = usersFollowersList.get(i);
                             ParseUser currentUser = (ParseUser) currentUsersFollowers.get("user");
-                            Log.d("pascal debug", currentUser.getUsername() + " ! = " + otherUser.getUsername());
+
                             if ((currentUser.getUsername()).equals(otherUser.getUsername())) {
 
                                 currentUsersFollowers.getRelation("followers").remove(user);

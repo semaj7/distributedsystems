@@ -91,7 +91,7 @@ public final class Data {
     }
 
     public static final void checkIfTopAndAdd(Flag flag){
-        System.out.println("debug, check if top flag");
+
         if (containsFlag(flag, topRankedFlags)) {
             System.out.println("debug, already a top flag");
             sortTopFlags();
