@@ -30,6 +30,7 @@ import java.util.concurrent.atomic.AtomicInteger;
     */
 
 
+
 public class Server {
 
     public static AtomicInteger threadsInThisClass = new AtomicInteger(0);
@@ -339,7 +340,14 @@ public class Server {
                             ParseObject currentUsersFollowers = usersFollowersList.get(i);
                             ParseUser currentUser = (ParseUser) currentUsersFollowers.get("user");
 
-                            if ((currentUser.getUsername()).equals(otherUser.getUsername())) {
+                            String currentUserName = null;
+                            try {
+                                currentUserName = currentUser.fetchIfNeeded().getUsername();
+                            } catch (ParseException e1) {
+                                e1.printStackTrace();
+                            }
+                            String otherUserName = otherUser.getUsername();
+                            if (currentUserName.equals(otherUserName)){
                                 Log.d("pascal debug", "a user that has already followers gets one more");
 
                                 currentUsersFollowers.getRelation("followers").add(user);
@@ -380,8 +388,16 @@ public class Server {
                         for (int i = 0; i < n; i++) {
                             ParseObject currentUsersFollowers = usersFollowersList.get(i);
                             ParseUser currentUser = (ParseUser) currentUsersFollowers.get("user");
+                            String currentUserName = null;
+                            try {
+                                currentUserName = currentUser.fetchIfNeeded().getUsername();
+                            } catch (ParseException e1) {
+                                e1.printStackTrace();
+                            }
+                            String otherUserName = otherUser.getUsername();
+
                             Log.d("pascal debug", currentUser.getUsername() + " ! = " + otherUser.getUsername());
-                            if ((currentUser.getUsername()).equals(otherUser.getUsername())) {
+                            if (currentUserName.equals(otherUserName)) {
 
                                 currentUsersFollowers.getRelation("followers").remove(user);
                                 currentUsersFollowers.saveInBackground();
@@ -421,14 +437,14 @@ public class Server {
                                 ParseObject currentUsersFollowers = usersFollowersList.get(i);
                                 ParseUser currentUser = (ParseUser) currentUsersFollowers.get("user");
                                 if (currentUser != null) {
-                                    String temp = user.getUsername();
+                                    String userName = user.getUsername();
                                     String currentUserName = null;
                                     try {
                                         currentUserName = currentUser.fetchIfNeeded().getUsername();
                                     } catch (ParseException e1) {
                                         e1.printStackTrace();
                                     }
-                                    if (currentUserName.equals(temp)) {
+                                    if (currentUserName.equals(userName)) {
                                         //Log.d("pascal debug","Cyberdogs entry was found");
                                         currentUsersFollowers.getRelation("followers").getQuery().findInBackground(new FindCallback<ParseObject>() {
                                             @Override
