@@ -180,7 +180,7 @@ public class ProfileActivity extends AppCompatActivity {
                     return;
                 }
                 correspondingFlags = new Flag[0];
-                // todo: get users that follow this user from server
+
                 infoToShow = new String[0];
                 if(infoToShow.length == 0)
                     nothing = true;
