@@ -26,14 +26,27 @@ public class FlagArrayAdapter extends ArrayAdapter<Flag> {
     Context context;
 
 
+
     public FlagArrayAdapter(Context context, int textViewResourceId,
                             List<Flag> flags) {
         super(context, textViewResourceId, flags);
+
         this.context = context;
         this.flags = flags;
         for (int i = 0; i < flags.size(); ++i) {
             mIdMap.put(flags.get(i), i);
         }
+    }
+
+    @Override
+    public boolean isEnabled(int position)
+    {
+        return true;
+    }
+
+    @Override
+    public boolean areAllItemsEnabled() {
+        return true;
     }
 
     @Override
@@ -56,6 +69,7 @@ public class FlagArrayAdapter extends ArrayAdapter<Flag> {
 
         ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);
 
+
         TextView whoPosted = (TextView) rowView.findViewById(R.id.whoPosted);
         TextView whenPosted = (TextView) rowView.findViewById(R.id.whenPosted);
         TextView textOfFlag = (TextView) rowView.findViewById(R.id.textOfFlag);
@@ -65,10 +79,11 @@ public class FlagArrayAdapter extends ArrayAdapter<Flag> {
 
         // POPULATE ROW VIEW WITH DATA ACCORDING TO FLAG
 
-        Flag flag = flags.get(position);
+        final Flag flag = flags.get(position);
 
         whoPosted.setText(flag.getUserName());
         textOfFlag.setText(flag.getText());
+
 
 
         //add the prettytime class initialized with the display language
@@ -76,8 +91,20 @@ public class FlagArrayAdapter extends ArrayAdapter<Flag> {
         whenPosted.setText(time.format(flag.getDate()));
 
 
+
         rowView.setBackgroundColor(Color.HSVToColor(new float[]{flag.getCategory().hue, 0.5f, 1f}));
 
+        rowView.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if (context instanceof MapsActivity) {
+                    MapsActivity maps = (MapsActivity)context;
+                    maps.selectedFlag(flag);
+                }
+            }
+
+        });
 
         return rowView;
     }

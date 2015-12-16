@@ -39,7 +39,7 @@ public class WhatsNewFlagAdapter extends FlagArrayAdapter {
 
         // POPULATE ROW VIEW WITH DATA ACCORDING TO FLAG
 
-        Flag flag = flags.get(position);
+        final Flag flag = flags.get(position);
 
         //whoPosted.setText(flag.getUserName());
 
@@ -56,6 +56,17 @@ public class WhatsNewFlagAdapter extends FlagArrayAdapter {
 
         rowView.setBackgroundColor(Color.HSVToColor(new float[]{flag.getCategory().hue, 0.5f, 1f}));
 
+        rowView.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if (context instanceof MapsActivity) {
+                    MapsActivity maps = (MapsActivity) context;
+                    maps.selectedFlag(flag);
+                }
+            }
+
+        });
 
         return rowView;
     }

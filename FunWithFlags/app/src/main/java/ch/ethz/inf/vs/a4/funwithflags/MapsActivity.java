@@ -608,22 +608,10 @@ public class MapsActivity extends AppCompatActivity {
 
             final WhatsNewFlagAdapter adapter = new WhatsNewFlagAdapter(this,
                     android.R.layout.simple_list_item_1, sortedFlagList);
+
             listview.setAdapter(adapter);
 
-            listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    final Flag item = (Flag) parent.getItemAtPosition(position);
-
-                    whatsNewPopUpWindow.dismiss();
-                    hideWhitescreen();
-                    goToMarker(item);
-                    popUpFlag(item);
-                }
-            });
-
-
-            whatsNewPopUpWindow = new PopupWindow(popupView, WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+            whatsNewPopUpWindow = new PopupWindow(popupView, WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT, true);
 
             whatsNewPopUpWindow.setAnimationStyle(R.style.animation);
             whatsNewPopUpWindow.showAtLocation(popupView, Gravity.CENTER, 0, 0);
@@ -631,6 +619,18 @@ public class MapsActivity extends AppCompatActivity {
             String toastmessage = getString(R.string.notAllowedToSeeMessage);
             Toast.makeText(getApplicationContext(), toastmessage, Toast.LENGTH_SHORT).show();
         }
+
+    }
+
+    //gets called by whats new window or closebyflags window when a flag is chosen
+    public void selectedFlag(Flag f) {
+
+        if (whatsNewPopUpWindow != null) whatsNewPopUpWindow.dismiss();
+        if (closeByFlagsPopUpWindow != null) closeByFlagsPopUpWindow.dismiss();
+
+        hideWhitescreen();
+        goToMarker(f);
+        popUpFlag(f);
 
     }
 
@@ -648,23 +648,6 @@ public class MapsActivity extends AppCompatActivity {
         final FlagArrayAdapter adapter = new FlagArrayAdapter(this,
                 android.R.layout.simple_list_item_1, sortedFlagList);
         listview.setAdapter(adapter);
-
-        //TODO: this does not get invoked when clicked!
-        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> parent, final View view,
-                                    int position, long id) {
-                final Flag item = (Flag) parent.getItemAtPosition(position);
-
-                closeByFlagsPopUpWindow.dismiss();
-                hideWhitescreen();
-                goToMarker(item);
-                popUpFlag(item);
-
-            }
-
-        });
 
         closeByFlagsPopUpWindow = new PopupWindow(popupView, WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
         //this method shows the popup, the first param is just an anchor, passing in the view
