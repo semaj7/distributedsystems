@@ -598,7 +598,13 @@ public class MapsActivity extends AppCompatActivity {
 
             final ListView listview = (ListView) popupView.findViewById(R.id.listview);
 
-            final List<Flag> sortedFlagList = Data.quickSortListByDate(Data.flagsFrom(Data.followingUsers));
+            List<String> usersToShowFlagsFrom = Data.followingUsers;
+            if(Data.user != null) {
+                if (usersToShowFlagsFrom.contains(Data.user.getUsername())) {
+                    usersToShowFlagsFrom.remove(Data.user.getUsername());
+                }
+            }
+            final List<Flag> sortedFlagList = Data.quickSortListByDate(Data.flagsFrom(usersToShowFlagsFrom));
 
             final WhatsNewFlagAdapter adapter = new WhatsNewFlagAdapter(this,
                     android.R.layout.simple_list_item_1, sortedFlagList);
@@ -1019,7 +1025,6 @@ public class MapsActivity extends AppCompatActivity {
     }
 
     private void popUpFlag(final Flag f) {
-        //todo: only show follow button if user does not already follow that user, or at least tell him he already follows that user, if we always show it.
         //inflate the popup layout we just created, make sure the name is correct
         if(f.isVisible()){
 
@@ -1088,10 +1093,12 @@ public class MapsActivity extends AppCompatActivity {
                         switchToLogin();
                     } else {
                         Toast.makeText(getApplicationContext(), String.format(res.getString(R.string.upVoteSuccessToast)), Toast.LENGTH_SHORT).show();
-
+                        if(Data.downvotedFlags.contains(f)){
+                            ratingTv.setText(String.valueOf(f.getVoteRateAbsolut()+2));
+                        } else
+                            ratingTv.setText(String.valueOf(f.getVoteRateAbsolut()+1));
                         f.upVote();
                         System.out.println("debug, got upvoted, now is at: " + f.getVoteRateAbsolut());
-                        ratingTv.setText(String.valueOf(f.getVoteRateAbsolut()));
                     }
                 }
             });
@@ -1103,7 +1110,10 @@ public class MapsActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), String.format(res.getString(R.string.needToBeLogedInForThisMessage)), Toast.LENGTH_SHORT).show();
                         switchToLogin();
                     } else {
-                        ratingTv.setText(String.valueOf(f.getVoteRateAbsolut()));
+                        if(Data.upvotedFlags.contains(f)){
+                            ratingTv.setText(String.valueOf(f.getVoteRateAbsolut()-2));
+                        } else
+                            ratingTv.setText(String.valueOf(f.getVoteRateAbsolut()-1));
                         Toast.makeText(getApplicationContext(), String.format(res.getString(R.string.downVoteSuccessToast)), Toast.LENGTH_SHORT).show();
 
                         if (f.downVote()) {
@@ -1184,9 +1194,6 @@ public class MapsActivity extends AppCompatActivity {
                         }
                         if(Data.containsFlag(f, Data.favouriteFlags)) {
                             Toast.makeText(getApplicationContext(), String.format(res.getString(R.string.newFavouriteSuccessToast)), Toast.LENGTH_SHORT).show();
-
-
-
 
                         }
                     }

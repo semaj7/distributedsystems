@@ -287,18 +287,15 @@ public class ProfileActivity extends AppCompatActivity {
                     if (choosenDialogElement == -1) {
                         Toast.makeText(getApplicationContext(), String.format(res.getString(R.string.nothingSelectedToDeleteYet)), Toast.LENGTH_SHORT).show();
                     } else {
-                        if (id == R.id.followingUsersButton) {
-                            Intent intent = new Intent(getApplicationContext(), ProfileActivity.class);
-                            intent.putExtra("username", infoToShow[choosenDialogElement]);
-                            startActivity(intent);
-                            finish();
-                        }
-                        if (id == R.id.followersButton) {
-                            Intent intent = new Intent(getApplicationContext(), ProfileActivity.class);
-                            intent.putExtra("username", infoToShow[choosenDialogElement]);
-                            startActivity(intent);
-                            finish();
-                        }
+                        if (!infoToShow[choosenDialogElement].equals(profilesUsername)) {
+                            if (id == R.id.followingUsersButton | id == R.id.followersButton) { // in theory unnecessary test
+                                Intent intent = new Intent(getApplicationContext(), ProfileActivity.class);
+                                intent.putExtra("username", infoToShow[choosenDialogElement]);
+                                startActivity(intent);
+                                // finish();
+                            }
+                        } else
+                            dialog.dismiss();
                     }
                 }
             });
@@ -557,7 +554,7 @@ public class ProfileActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         switch (id) {
              case android.R.id.home:
-                this.finish();
+                finish();
                 return true;
         }
 

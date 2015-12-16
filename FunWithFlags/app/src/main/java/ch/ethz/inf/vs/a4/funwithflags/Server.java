@@ -413,6 +413,7 @@ public class Server {
 
             });
 
+            user.saveInBackground();
         }
 
     }
