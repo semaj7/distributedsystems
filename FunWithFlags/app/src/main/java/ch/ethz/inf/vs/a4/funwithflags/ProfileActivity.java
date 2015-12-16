@@ -420,7 +420,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void setFollowerText() {
-        int rating = 0;
+        int rating = Data.followerUsers.size();
 
         Resources res = getResources();
         //String ratingText = String.format(res.getString(R.string.followerText));

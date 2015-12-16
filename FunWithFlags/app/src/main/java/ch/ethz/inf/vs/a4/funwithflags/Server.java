@@ -17,6 +17,7 @@ import com.parse.ParseUser;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -337,7 +338,7 @@ public class Server {
                         for (int i = 0; i < n; i++) {
                             ParseObject currentUsersFollowers = usersFollowersList.get(i);
                             ParseUser currentUser = (ParseUser) currentUsersFollowers.get("user");
-                            Log.d("pascal debug", currentUser.getUsername() + " ! = " + otherUser.getUsername());
+
                             if ((currentUser.getUsername()).equals(otherUser.getUsername())) {
                                 Log.d("pascal debug", "a user that has already followers gets one more");
 
@@ -347,7 +348,7 @@ public class Server {
                                 done = true;
                             }
                         }
-                        if (done == false) {
+                        if (!done) {
                             ParseObject usersFollowers = new ParseObject("followers");
                             usersFollowers.put("user", otherUser);
                             ParseRelation<ParseObject> followerRelation = usersFollowers.getRelation("followers");
@@ -412,6 +413,7 @@ public class Server {
                 userQuery.findInBackground(new FindCallback<ParseObject>() {
                     @Override
                     public void done(List<ParseObject> usersFollowersList, com.parse.ParseException e) {
+
                         if (e == null) {
                             boolean done = false;
                             int n = usersFollowersList.size();
@@ -436,6 +438,8 @@ public class Server {
                             }
 
                         }
+
+
                         threadsInThisClass.decrementAndGet();
 
                         getFollowersLock.set(false);
@@ -448,7 +452,7 @@ public class Server {
 
     private static void saveFollowerUsersLocally(List<ParseObject> objects){
         if (objects != null) {
-            Data.followingUsers.clear();
+            Data.followerUsers = new CopyOnWriteArrayList<>();
             for (int i = 0; i < objects.size(); i++) {
                 Data.followerUsers.add((String) (((ParseUser) objects.get(i)).getUsername()));
                 //Log.d("pascal debug","cyberdogs follower: "+(((ParseUser) objects.get(i)).getUsername()));
