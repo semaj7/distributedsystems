@@ -180,8 +180,9 @@ public class ProfileActivity extends AppCompatActivity {
                     return;
                 }
                 correspondingFlags = new Flag[0];
-
-                infoToShow = new String[0];
+                infoToShow = new String[Data.followerUsers.size()];
+                for(int i = 0 ; i < infoToShow.length; i ++)
+                    infoToShow[i] = Data.followerUsers.get(i);
                 if(infoToShow.length == 0)
                     nothing = true;
                 else
@@ -288,6 +289,13 @@ public class ProfileActivity extends AppCompatActivity {
                             Intent intent = new Intent(getApplicationContext(), ProfileActivity.class);
                             intent.putExtra("username", infoToShow[choosenDialogElement]);
                             startActivity(intent);
+                            finish();
+                        }
+                        if (id == R.id.followersButton) {
+                            Intent intent = new Intent(getApplicationContext(), ProfileActivity.class);
+                            intent.putExtra("username", infoToShow[choosenDialogElement]);
+                            startActivity(intent);
+                            finish();
                         }
                     }
                 }
