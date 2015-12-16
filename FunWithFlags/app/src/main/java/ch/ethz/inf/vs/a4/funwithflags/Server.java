@@ -421,8 +421,15 @@ public class Server {
                                 ParseObject currentUsersFollowers = usersFollowersList.get(i);
                                 ParseUser currentUser = (ParseUser) currentUsersFollowers.get("user");
                                 if (currentUser != null) {
-                                    if ((currentUser.getUsername()).equals(user.getUsername())) {
-                                        //Log.d("pascal debug","Cyberdogs entry was fount");
+                                    String temp = user.getUsername();
+                                    String currentUserName = null;
+                                    try {
+                                        currentUserName = currentUser.fetchIfNeeded().getUsername();
+                                    } catch (ParseException e1) {
+                                        e1.printStackTrace();
+                                    }
+                                    if (currentUserName.equals(temp)) {
+                                        //Log.d("pascal debug","Cyberdogs entry was found");
                                         currentUsersFollowers.getRelation("followers").getQuery().findInBackground(new FindCallback<ParseObject>() {
                                             @Override
                                             public void done(List<ParseObject> followers, com.parse.ParseException e) {
@@ -430,8 +437,6 @@ public class Server {
                                             }
 
                                         });
-
-
                                         i = n;
                                     }
                                 }
